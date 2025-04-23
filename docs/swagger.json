@@ -1,0 +1,527 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "E-Meeting API",
+    "description": "API untuk aplikasi E-Meeting",
+    "version": "1.0.0"
+  },
+  "host": "localhost:8080",
+  "basePath": "/api/v1",
+  "schemes": ["http"],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "security": [],
+        "summary": "Health check endpoint",
+        "description": "Mengecek status kesehatan aplikasi",
+        "responses": {
+          "200": {
+            "description": "Aplikasi sehat",
+            "schema": {
+              "$ref": "#/definitions/HealthResponse"
+            }
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "security": [],
+        "summary": "Register user baru",
+        "description": "Mendaftarkan user baru ke sistem",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegisterRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User berhasil didaftarkan",
+            "schema": {
+              "$ref": "#/definitions/RegisterResponse"
+            }
+          },
+          "400": {
+            "description": "Request tidak valid"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          },
+          "409": {
+            "description": "Username sudah digunakan"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "security": [],
+        "summary": "Login user",
+        "description": "Login user ke sistem",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login berhasil",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
+            }
+          },
+          "400": {
+            "description": "Request tidak valid"
+          },
+          "401": {
+            "description": "Kredensial tidak valid"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
+    "/meetings": {
+      "post": {
+        "summary": "Buat meeting baru",
+        "description": "Membuat meeting baru",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MeetingRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Meeting berhasil dibuat",
+            "schema": {
+              "$ref": "#/definitions/MeetingResponse"
+            }
+          },
+          "400": {
+            "description": "Request tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      },
+      "get": {
+        "summary": "Daftar meeting",
+        "description": "Mendapatkan daftar meeting",
+        "parameters": [
+          {
+            "name": "start_time",
+            "in": "query",
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar meeting berhasil didapatkan",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/MeetingResponse"
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
+    "/meetings/{id}": {
+      "get": {
+        "summary": "Detail meeting",
+        "description": "Mendapatkan detail meeting",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail meeting berhasil didapatkan",
+            "schema": {
+              "$ref": "#/definitions/MeetingResponse"
+            }
+          },
+          "400": {
+            "description": "ID meeting tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "404": {
+            "description": "Meeting tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update meeting",
+        "description": "Mengupdate meeting",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MeetingRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meeting berhasil diupdate",
+            "schema": {
+              "$ref": "#/definitions/SuccessResponse"
+            }
+          },
+          "400": {
+            "description": "Request tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Meeting tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Hapus meeting",
+        "description": "Menghapus meeting",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Meeting berhasil dihapus",
+            "schema": {
+              "$ref": "#/definitions/SuccessResponse"
+            }
+          },
+          "400": {
+            "description": "ID meeting tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Meeting tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
+    "/meetings/{id}/participants/{user_id}": {
+      "post": {
+        "summary": "Tambah peserta meeting",
+        "description": "Menambahkan peserta ke meeting",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Peserta berhasil ditambahkan",
+            "schema": {
+              "$ref": "#/definitions/SuccessResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Meeting atau user tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Hapus peserta meeting",
+        "description": "Menghapus peserta dari meeting",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Peserta berhasil dihapus",
+            "schema": {
+              "$ref": "#/definitions/SuccessResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Meeting atau user tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "HealthResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string"
+        },
+        "uptime": {
+          "type": "string"
+        }
+      }
+    },
+    "RegisterRequest": {
+      "type": "object",
+      "required": ["username", "email", "password", "confirm_password", "language"],
+      "properties": {
+        "username": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 50
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string",
+          "minLength": 6
+        },
+        "confirm_password": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string",
+          "enum": ["id", "en"]
+        }
+      }
+    },
+    "RegisterResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "LoginRequest": {
+      "type": "object",
+      "required": ["username", "password"],
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "LoginResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "MeetingRequest": {
+      "type": "object",
+      "required": ["title", "description", "start_time", "end_time", "location"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string"
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "location": {
+          "type": "string"
+        }
+      }
+    },
+    "MeetingResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "location": {
+          "type": "string"
+        },
+        "created_by": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "SuccessResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+} 
