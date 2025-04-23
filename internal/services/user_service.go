@@ -47,6 +47,9 @@ func (s *userService) Register(req models.RegisterRequest) (*models.User, error)
 	}
 
 	// Create new user
+	if req.Language == "" {
+		req.Language = "id"
+	}
 	user := &models.User{
 		Username: req.Username,
 		Email:    req.Email,
@@ -67,15 +70,17 @@ func (s *userService) Login(req models.LoginRequest) (string, error) {
 	// Get user by username
 	user, err := s.userRepo.GetUserByUsername(context.Background(), req.Username)
 	if err != nil {
+		log.Error().Err(err).Msg("Failed to get user by username")
 		return "", err
 	}
 	if user == nil {
-		return "", errors.New("invalid credentials")
+		return "", errors.New("invalid credentials, user not found")
 	}
 
 	// Check password
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-		return "", errors.New("invalid credentials")
+		log.Error().Err(err).Msg("Failed to compare password")
+		return "", errors.New("invalid credentials, password doesn't match")
 	}
 
 	// Generate JWT token

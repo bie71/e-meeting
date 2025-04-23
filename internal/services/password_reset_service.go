@@ -37,13 +37,13 @@ func NewPasswordResetService(
 	}
 }
 
-func (s *PasswordResetService) RequestReset(ctx context.Context, email string) error {
+func (s *PasswordResetService) RequestReset(ctx context.Context, email string) (string, error) {
 	// Check if user exists
 	user, err := s.userRepo.GetByEmail(ctx, email)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get user by email")
 		// Return success even if user doesn't exist (security through obscurity)
-		return nil
+		return "", nil
 	}
 
 	// Generate reset token
@@ -59,17 +59,17 @@ func (s *PasswordResetService) RequestReset(ctx context.Context, email string) e
 	}
 	if err := s.resetRepo.CreateToken(ctx, resetToken); err != nil {
 		log.Error().Err(err).Msg("Failed to create reset token")
-		return err
+		return "", err
 	}
 
 	// Send reset email
 	resetLink := "http://localhost:8080/api/v1/password/reset?token=" + token
 	if err := s.emailSender.SendPasswordResetEmail(user.Email, resetLink); err != nil {
 		log.Error().Err(err).Msg("Failed to send reset email")
-		return err
+		return "", err
 	}
 
-	return nil
+	return resetLink, nil
 }
 
 func (s *PasswordResetService) ResetPassword(ctx context.Context, token, newPassword string) error {

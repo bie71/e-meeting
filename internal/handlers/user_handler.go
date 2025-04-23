@@ -42,7 +42,7 @@ func (h *UserHandler) Login(c *fiber.Ctx) error {
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to login")
 		return c.Status(fiber.StatusUnauthorized).JSON(models.ErrorResponse{
-			Error: "Invalid credentials",
+			Error: err.Error(),
 		})
 	}
 

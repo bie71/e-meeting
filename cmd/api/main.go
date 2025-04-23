@@ -37,10 +37,7 @@ func gracefulShutdown(app *server.Server, done chan bool) {
 
 func main() {
 	// Load config
-	cfg, err := config.LoadConfig(".")
-	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
-	}
+	cfg := config.NewConfig()
 
 	// Create server
 	app := server.NewServer(cfg)

@@ -1,41 +1,41 @@
 package middleware
 
 import (
-	"bytes"
-	"io"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
 )
 
-func LoggerMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
+func LoggerMiddleware() fiber.Handler {
+	return func(c *fiber.Ctx) error {
 		// Start timer
 		start := time.Now()
 
 		// Read request body
 		var requestBody []byte
-		if c.Request.Body != nil {
-			requestBody, _ = io.ReadAll(c.Request.Body)
-			c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
+		if c.Request().Body() != nil {
+			requestBody = c.Body()
+			// You can't reassign the body in Fiber, so just log it
 		}
 
 		// Process request
-		c.Next()
+		err := c.Next()
 
 		// Stop timer
 		duration := time.Since(start)
 
 		// Log request details
 		log.Info().
-			Str("method", c.Request.Method).
-			Str("path", c.Request.URL.Path).
-			Str("ip", c.ClientIP()).
-			Int("status", c.Writer.Status()).
+			Str("method", c.Method()).
+			Str("path", c.OriginalURL()).
+			Str("ip", c.IP()).
+			Int("status", c.Response().StatusCode()).
 			Dur("duration", duration).
-			Str("user_agent", c.Request.UserAgent()).
+			Str("user_agent", string(c.Request().Header.UserAgent())).
 			Bytes("request_body", requestBody).
 			Msg("HTTP request")
+
+		return err
 	}
 }

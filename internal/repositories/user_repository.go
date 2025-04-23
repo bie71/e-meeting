@@ -35,6 +35,9 @@ func (r *userRepository) GetUserByUsername(ctx context.Context, username string)
 		Where("username = ?", username).
 		First(&user).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &user, nil

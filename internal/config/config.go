@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -14,7 +15,6 @@ type Config struct {
 	AppEnv  string `mapstructure:"APP_ENV"`
 	AppPort string `mapstructure:"APP_PORT"`
 
-	// Database Configuration
 	DBHost               string `mapstructure:"DATABASE_HOST"`
 	DBPort               int    `mapstructure:"DATABASE_PORT"`
 	DBUser               string `mapstructure:"DATABASE_USER"`
@@ -23,13 +23,11 @@ type Config struct {
 	DBMaxOpenConnections int    `mapstructure:"DATABASE_MAX_OPEN_CONNECTIONS"`
 	DBMaxIdleConnections int    `mapstructure:"DATABASE_MAX_IDLE_CONNECTIONS"`
 
-	// JWT Configuration
 	JWT struct {
 		SecretKey     string `mapstructure:"JWT_SECRET_KEY"`
 		TokenDuration int    `mapstructure:"JWT_TOKEN_DURATION"`
 	}
 
-	// SMTP Configuration
 	SMTP struct {
 		Host      string `mapstructure:"SMTP_HOST"`
 		Port      int    `mapstructure:"SMTP_PORT"`
@@ -38,7 +36,6 @@ type Config struct {
 		FromEmail string `mapstructure:"SMTP_FROM_EMAIL"`
 	}
 
-	// Cloudflare R2 Configuration
 	CloudflareR2BucketName string `mapstructure:"CLOUDFLARE_R2_BUCKET_NAME"`
 	CloudflareR2APIKey     string `mapstructure:"CLOUDFLARE_R2_API_KEY"`
 	CloudflareR2APISecret  string `mapstructure:"CLOUDFLARE_R2_API_SECRET"`
@@ -52,34 +49,24 @@ type Config struct {
 }
 
 func findRootDir() string {
-	// Start from the current working directory
 	dir, err := os.Getwd()
 	if err != nil {
 		return "."
 	}
 
-	// Walk up the directory tree until we find .env or reach the root
 	for {
-		// Check if .env exists in current directory
 		if _, err := os.Stat(filepath.Join(dir, ".env")); err == nil {
 			return dir
 		}
-
-		// Move up one directory
 		parent := filepath.Dir(dir)
 		if parent == dir {
-			// We've reached the root
 			return "."
 		}
 		dir = parent
 	}
 }
 
-func LoadConfig(path string) (*Config, error) {
-	viper.SetConfigFile(path)
-	viper.AutomaticEnv()
-
-	// Set default values
+func setDefaults() {
 	viper.SetDefault("APP_ENV", "development")
 	viper.SetDefault("APP_PORT", "8080")
 	viper.SetDefault("DATABASE_HOST", "localhost")
@@ -102,10 +89,15 @@ func LoadConfig(path string) (*Config, error) {
 	viper.SetDefault("CLOUDFLARE_R2_TOKEN", "")
 	viper.SetDefault("CLOUDFLARE_R2_ACCOUNT_ID", "")
 	viper.SetDefault("CLOUDFLARE_R2_PUBLIC_URL", "")
+}
+
+func LoadConfig(path string) (*Config, error) {
+	viper.SetConfigFile(path)
+	viper.AutomaticEnv()
+	setDefaults()
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			// Config file not found; ignore error if we want to use defaults
 			log.Printf("No config file found at %s, using defaults", path)
 		} else {
 			return nil, fmt.Errorf("error reading config file: %w", err)
@@ -117,10 +109,10 @@ func LoadConfig(path string) (*Config, error) {
 		return nil, fmt.Errorf("error unmarshaling config: %w", err)
 	}
 
-	// Load server config
-	port, err := strconv.Atoi(viper.GetString("PORT"))
+	// Convert APP_PORT to int if needed
+	port, err := strconv.Atoi(strings.TrimSpace(config.AppPort))
 	if err != nil {
-		return nil, fmt.Errorf("invalid port: %v", err)
+		return nil, fmt.Errorf("invalid APP_PORT: %v", err)
 	}
 	config.Server.Port = port
 
