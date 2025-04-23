@@ -16,6 +16,7 @@ func SetupRouter(
 	passwordResetHandler *handlers.PasswordResetHandler,
 	rateLimiter *middleware.RateLimiter,
 	jwtConfig *auth.JWTConfig,
+	dashboardHandler *handlers.DashboardHandler,
 ) *fiber.App {
 	app := fiber.New()
 
@@ -39,7 +40,22 @@ func SetupRouter(
 	protected.Use(middleware.AuthMiddleware(jwtConfig))
 	{
 		// Add protected routes here
+		protected.Get("/profile/:id", userHandler.GetProfile)
+		protected.Put("/profile/:id", middleware.ValidateRequest[models.UpdateProfileRequest](), userHandler.UpdateProfile)
+		protected.Get("/dashboard", dashboardHandler.GetDashboardStats)
 	}
 
 	return app
 }
+
+// {
+//         protected.GET("/users/:id", userHandler.GetProfile)
+//         protected.POST("/users/:id", userHandler.UpdateProfile)
+//         protected.GET("/dashboard", dashboardHandler.GetDashboardStats)
+//         protected.GET("/rooms", roomHandler.GetRooms)
+//         protected.GET("/rooms/:id/schedule", roomHandler.GetRoomSchedule)
+//         protected.GET("/snacks", snackHandler.GetSnacks)
+//         protected.POST("/reservation/calculation", reservationHandler.CalculateReservationCost)
+//         protected.POST("/reservation", reservationHandler.CreateReservation)
+//         protected.GET("/reservation/history", reservationHandler.GetReservationHistory)
+//     }

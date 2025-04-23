@@ -33,11 +33,13 @@ func NewServer(cfg *config.Config) *Server {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
+	dbSql := database.New(cfg)
 	// Initialize repositories
 	userRepo := repositories.NewUserRepository(db)
 	passwordResetRepo := repositories.NewPasswordResetRepository(db)
 
 	// Initialize JWT config
+	fmt.Println(cfg.JWT.TokenDuration, "======================")
 	jwtConfig := auth.NewJWTConfig(
 		cfg.JWT.SecretKey,
 		time.Duration(cfg.JWT.TokenDuration)*time.Hour,
@@ -58,10 +60,13 @@ func NewServer(cfg *config.Config) *Server {
 	)
 	userService := services.NewUserService(userRepo, jwtConfig)
 
+	dashboardDb := services.NewDashboardService(dbSql.DB())
+
 	// Initialize handlers
 	userHandler := handlers.NewUserHandler(userService)
 	healthHandler := handlers.NewHealthHandler("1.0.0")
 	passwordResetHandler := handlers.NewPasswordResetHandler(passwordResetService)
+	dashboardHandler := handlers.NewDashboardHandler(dashboardDb)
 
 	// Initialize rate limiter
 	rateLimiter := middleware.NewRateLimiter(100, time.Hour)
@@ -73,6 +78,7 @@ func NewServer(cfg *config.Config) *Server {
 		passwordResetHandler,
 		rateLimiter,
 		jwtConfig,
+		dashboardHandler,
 	)
 
 	return &Server{

@@ -6,7 +6,9 @@ import (
 	"e_metting/internal/models"
 	"e_metting/internal/repositories"
 	"errors"
+	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -14,6 +16,8 @@ import (
 type UserService interface {
 	Register(req models.RegisterRequest) (*models.User, error)
 	Login(req models.LoginRequest) (string, error)
+	GetProfile(userID string) (*models.UserProfileResponse, error)
+	UpdateProfile(userID string, req *models.UpdateProfileRequest) (*models.UserProfileResponse, error)
 }
 
 type userService struct {
@@ -91,4 +95,25 @@ func (s *userService) Login(req models.LoginRequest) (string, error) {
 	}
 
 	return token, nil
+}
+
+func (s *userService) GetProfile(userID string) (*models.UserProfileResponse, error) {
+	id, err := uuid.Parse(userID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid user ID format: %v", err)
+	}
+
+	profile, err := s.userRepo.GetProfile(context.Background(), id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user profile: %v", err)
+	}
+	return profile, nil
+}
+
+func (s *userService) UpdateProfile(userID string, req *models.UpdateProfileRequest) (*models.UserProfileResponse, error) {
+	profile, err := s.userRepo.UpdateProfile(context.Background(), userID, req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update user profile: %v", err)
+	}
+	return profile, nil
 }

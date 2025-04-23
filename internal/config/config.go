@@ -77,7 +77,6 @@ func setDefaults() {
 	viper.SetDefault("DATABASE_MAX_OPEN_CONNECTIONS", 25)
 	viper.SetDefault("DATABASE_MAX_IDLE_CONNECTIONS", 5)
 	viper.SetDefault("JWT_SECRET_KEY", "your-secret-key")
-	viper.SetDefault("JWT_TOKEN_DURATION", 24)
 	viper.SetDefault("SMTP_HOST", "smtp.gmail.com")
 	viper.SetDefault("SMTP_PORT", 587)
 	viper.SetDefault("SMTP_USERNAME", "your-email@gmail.com")
@@ -115,6 +114,7 @@ func LoadConfig(path string) (*Config, error) {
 		return nil, fmt.Errorf("invalid APP_PORT: %v", err)
 	}
 	config.Server.Port = port
+	config.JWT.TokenDuration = 24
 
 	return &config, nil
 }

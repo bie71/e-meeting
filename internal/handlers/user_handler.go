@@ -3,6 +3,8 @@ package handlers
 import (
 	"e_metting/internal/models"
 	"e_metting/internal/services"
+	"fmt"
+	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
@@ -49,4 +51,74 @@ func (h *UserHandler) Login(c *fiber.Ctx) error {
 	return c.JSON(models.LoginResponse{
 		Token: token,
 	})
+}
+
+func (h *UserHandler) GetProfile(c *fiber.Ctx) error {
+	// Get authenticated user ID from context
+	authUserID, _ := c.Locals("userID").(string)
+	requestedID := c.Params("id")
+
+	// Optional: Check if user is requesting their own profile or has admin rights
+	if authUserID != requestedID {
+		return c.Status(http.StatusForbidden).JSON(models.ErrorResponse{
+			Error: "Forbidden",
+		})
+	}
+
+	profile, err := h.userService.GetProfile(requestedID)
+	if err != nil {
+		switch err.Error() {
+		case "user not found":
+			return c.Status(http.StatusNotFound).JSON(models.ErrorResponse{
+				Error: "user not found",
+			})
+		case "invalid user ID format":
+			return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+				Error: "invalid user ID format",
+			})
+		default:
+			fmt.Printf("Error fetching user profile: %v\n", err)
+			return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
+				Error: "Failed to fetch user profile",
+			})
+		}
+	}
+
+	return c.Status(http.StatusOK).JSON(profile)
+}
+
+func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
+	// Get authenticated user ID from context
+	authUserID, _ := c.Locals("userID").(string)
+	requestedID := c.Params("id")
+
+	// Optional: Check if user is requesting their own profile or has admin rights
+	if authUserID != requestedID {
+		return c.Status(http.StatusForbidden).JSON(models.ErrorResponse{
+			Error: "Forbidden",
+		})
+	}
+
+	req := c.Locals("request").(models.UpdateProfileRequest)
+
+	profile, err := h.userService.UpdateProfile(requestedID, &req)
+	if err != nil {
+		switch err.Error() {
+		case "user not found":
+			return c.Status(http.StatusNotFound).JSON(models.ErrorResponse{
+				Error: "user not found",
+			})
+		case "invalid user ID format":
+			return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+				Error: "invalid user ID format",
+			})
+		default:
+			fmt.Printf("Error updating user profile: %v\n", err)
+			return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
+				Error: "Failed to update user profile",
+			})
+		}
+	}
+
+	return c.Status(http.StatusOK).JSON(profile)
 }

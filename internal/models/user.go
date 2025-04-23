@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -41,4 +42,30 @@ type RegisterRequest struct {
 type RegisterResponse struct {
 	Message string    `json:"message"`
 	UserID  uuid.UUID `json:"user_id"`
+}
+
+type UserProfileResponse struct {
+	ID        uuid.UUID `json:"id"`
+	Username  string    `json:"username"`
+	Email     string    `json:"email"`
+	Role      string    `json:"role"`
+	ProfPic   *string   `json:"prof_pic"`
+	Language  string    `json:"language"`
+	Status    bool      `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type Claims struct {
+	UserID   uuid.UUID `json:"user_id"`
+	Username string    `json:"username"`
+	Role     string    `json:"role"`
+	jwt.RegisteredClaims
+}
+
+type UpdateProfileRequest struct {
+	Email    string `json:"email" validate:"required,email"`
+	Username string `json:"username" validate:"required,min=3,max=50"`
+	Language string `json:"language"`
+	Password string `json:"password" validate:"omitempty,min=6"`
 }
