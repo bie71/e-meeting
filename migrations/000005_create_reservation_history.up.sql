@@ -5,5 +5,6 @@ CREATE TABLE IF NOT EXISTS reservation_history (
     reservation_id INTEGER NOT NULL REFERENCES reservations(id),
     status_change TIMESTAMP WITH TIME ZONE NOT NULL,
     status VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
 ); 
