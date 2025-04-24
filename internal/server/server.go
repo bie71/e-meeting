@@ -34,6 +34,10 @@ func NewServer(cfg *config.Config) *Server {
 	}
 
 	dbSql := database.New(cfg)
+	err = database.SeedUsers(dbSql.DB())
+	if err != nil {
+		log.Fatalf("Failed to seed users: %v", err)
+	}
 	// Initialize repositories
 	userRepo := repositories.NewUserRepository(db)
 	passwordResetRepo := repositories.NewPasswordResetRepository(db)
@@ -62,11 +66,17 @@ func NewServer(cfg *config.Config) *Server {
 
 	dashboardDb := services.NewDashboardService(dbSql.DB())
 
+	reservationService := services.NewReservationService(dbSql.DB())
+
+	roomService := services.NewRoomService(dbSql.DB())
+
 	// Initialize handlers
 	userHandler := handlers.NewUserHandler(userService)
 	healthHandler := handlers.NewHealthHandler("1.0.0")
 	passwordResetHandler := handlers.NewPasswordResetHandler(passwordResetService)
 	dashboardHandler := handlers.NewDashboardHandler(dashboardDb)
+	reservationHandler := handlers.NewReservationHandler(reservationService)
+	roomHandler := handlers.NewRoomHandler(roomService)
 
 	// Initialize rate limiter
 	rateLimiter := middleware.NewRateLimiter(100, time.Hour)
@@ -79,6 +89,8 @@ func NewServer(cfg *config.Config) *Server {
 		rateLimiter,
 		jwtConfig,
 		dashboardHandler,
+		reservationHandler,
+		roomHandler,
 	)
 
 	return &Server{

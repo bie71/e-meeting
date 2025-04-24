@@ -1,0 +1,61 @@
+package models
+
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
+type RoomInfo struct {
+	Capacity     int     `json:"capacity"`
+	PricePerHour float64 `json:"price_per_hour"`
+}
+
+type ReservationEvent struct {
+	ID            uuid.UUID `json:"id"`
+	RoomID        uuid.UUID `json:"room_id"`
+	RoomName      string    `json:"room_name"`
+	RoomDetails   RoomInfo  `json:"room_details"`
+	UserID        uuid.UUID `json:"user_id"`
+	Username      string    `json:"username"`
+	StartTime     time.Time `json:"start_time"`
+	EndTime       time.Time `json:"end_time"`
+	DurationHours float64   `json:"duration_hours"`
+	VisitorCount  int       `json:"visitor_count"`
+	Price         float64   `json:"price"`
+	Status        string    `json:"status"`
+}
+
+type ReservationHistoryQuery struct {
+	StartDatetime string `form:"start_datetime"`
+	EndDatetime   string `form:"end_datetime"`
+}
+
+type ReservationHistoryResponse struct {
+	StartDatetime time.Time          `json:"start_datetime"`
+	EndDatetime   time.Time          `json:"end_datetime"`
+	Events        []ReservationEvent `json:"events"`
+}
+
+type ReservationStatus string
+
+const (
+	ReservationStatusPending   ReservationStatus = "pending"
+	ReservationStatusConfirmed ReservationStatus = "confirmed"
+	ReservationStatusCancelled ReservationStatus = "cancelled"
+	ReservationStatusCompleted ReservationStatus = "completed"
+)
+
+func (s ReservationStatus) IsValid() bool {
+	switch s {
+	case ReservationStatusPending, ReservationStatusConfirmed,
+		ReservationStatusCancelled, ReservationStatusCompleted:
+		return true
+	}
+	return false
+}
+
+type UpdateReservationStatusRequest struct {
+	ReservationID uuid.UUID         `json:"reservation_id" validate:"required"`
+	Status        ReservationStatus `json:"status" validate:"required"`
+}

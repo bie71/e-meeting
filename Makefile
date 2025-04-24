@@ -93,4 +93,18 @@ migrate-version:
 	@echo "Current migration version:"
 	migrate -path migrations -database "postgres://$(DATABASE_USER):$(DATABASE_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?$(DB_PARAMS)" version
 
+# Database seeder
+db-seed:
+	@echo "Running database seeder..."
+	@if [ ! -f main ]; then \
+		echo "Building application first..."; \
+		go build -o main cmd/api/main.go; \
+	fi
+	@if [ -f .env ]; then \
+		source .env && ./main --seed-only; \
+	else \
+		echo "Error: .env file not found"; \
+		exit 1; \
+	fi
+
 .PHONY: all build run test clean watch docker-run docker-down itest migrate-up migrate-down migrate-force migrate-create migrate-version

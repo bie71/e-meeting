@@ -17,6 +17,8 @@ func SetupRouter(
 	rateLimiter *middleware.RateLimiter,
 	jwtConfig *auth.JWTConfig,
 	dashboardHandler *handlers.DashboardHandler,
+	reservatonsHanlder *handlers.ReservationHandler,
+	roomsHandler *handlers.RoomHandler,
 ) *fiber.App {
 	app := fiber.New()
 
@@ -42,20 +44,22 @@ func SetupRouter(
 		// Add protected routes here
 		protected.Get("/profile/:id", userHandler.GetProfile)
 		protected.Put("/profile/:id", middleware.ValidateRequest[models.UpdateProfileRequest](), userHandler.UpdateProfile)
-		protected.Get("/dashboard", dashboardHandler.GetDashboardStats)
+		protected.Get("/rooms", roomsHandler.GetRooms)
+
+	}
+
+	adminOnly := app.Group("/api/v1/admin")
+	adminOnly.Use(middleware.AdminOnlyMiddleware(jwtConfig.SecretKey))
+	{
+		// Add admin-only routes here
+		adminOnly.Get("/dashboard", dashboardHandler.GetDashboardStats)
+		adminOnly.Get("/reservations/history", reservatonsHanlder.GetReservationHistory)
+		adminOnly.Post("/reservation/status", reservatonsHanlder.UpdateReservationStatus)
+		adminOnly.Post("/rooms", roomsHandler.CreateRoom)    // Create room
+		adminOnly.Put("/rooms/:id", roomsHandler.UpdateRoom) // Update room
+		adminOnly.Delete("/rooms/:id", roomsHandler.DeleteRoom)
+
 	}
 
 	return app
 }
-
-// {
-//         protected.GET("/users/:id", userHandler.GetProfile)
-//         protected.POST("/users/:id", userHandler.UpdateProfile)
-//         protected.GET("/dashboard", dashboardHandler.GetDashboardStats)
-//         protected.GET("/rooms", roomHandler.GetRooms)
-//         protected.GET("/rooms/:id/schedule", roomHandler.GetRoomSchedule)
-//         protected.GET("/snacks", snackHandler.GetSnacks)
-//         protected.POST("/reservation/calculation", reservationHandler.CalculateReservationCost)
-//         protected.POST("/reservation", reservationHandler.CreateReservation)
-//         protected.GET("/reservation/history", reservationHandler.GetReservationHistory)
-//     }
