@@ -12,36 +12,36 @@ import (
 )
 
 type Config struct {
-	AppEnv  string `mapstructure:"APP_ENV"`
-	AppPort string `mapstructure:"APP_PORT"`
+	AppEnv  string
+	AppPort string
 
-	DBHost               string `mapstructure:"DATABASE_HOST"`
-	DBPort               int    `mapstructure:"DATABASE_PORT"`
-	DBUser               string `mapstructure:"DATABASE_USER"`
-	DBPassword           string `mapstructure:"DATABASE_PASSWORD"`
-	DBName               string `mapstructure:"DATABASE_NAME"`
-	DBMaxOpenConnections int    `mapstructure:"DATABASE_MAX_OPEN_CONNECTIONS"`
-	DBMaxIdleConnections int    `mapstructure:"DATABASE_MAX_IDLE_CONNECTIONS"`
+	DBHost               string
+	DBPort               int
+	DBUser               string
+	DBPassword           string
+	DBName               string
+	DBMaxOpenConnections int
+	DBMaxIdleConnections int
 
 	JWT struct {
-		SecretKey     string `mapstructure:"JWT_SECRET_KEY"`
-		TokenDuration int    `mapstructure:"JWT_TOKEN_DURATION"`
+		SecretKey     string
+		TokenDuration int
 	}
 
 	SMTP struct {
-		Host      string `mapstructure:"SMTP_HOST"`
-		Port      int    `mapstructure:"SMTP_PORT"`
-		Username  string `mapstructure:"SMTP_USERNAME"`
-		Password  string `mapstructure:"SMTP_PASSWORD"`
-		FromEmail string `mapstructure:"SMTP_FROM_EMAIL"`
+		Host      string
+		Port      int
+		Username  string
+		Password  string
+		FromEmail string
 	}
 
-	CloudflareR2BucketName string `mapstructure:"CLOUDFLARE_R2_BUCKET_NAME"`
-	CloudflareR2APIKey     string `mapstructure:"CLOUDFLARE_R2_API_KEY"`
-	CloudflareR2APISecret  string `mapstructure:"CLOUDFLARE_R2_API_SECRET"`
-	CloudflareR2Token      string `mapstructure:"CLOUDFLARE_R2_TOKEN"`
-	CloudflareR2AccountID  string `mapstructure:"CLOUDFLARE_R2_ACCOUNT_ID"`
-	CloudflareR2PublicURL  string `mapstructure:"CLOUDFLARE_R2_PUBLIC_URL"`
+	CloudflareR2BucketName string
+	CloudflareR2APIKey     string
+	CloudflareR2APISecret  string
+	CloudflareR2Token      string
+	CloudflareR2AccountID  string
+	CloudflareR2PublicURL  string
 
 	Server struct {
 		Port int
@@ -77,6 +77,7 @@ func setDefaults() {
 	viper.SetDefault("DATABASE_MAX_OPEN_CONNECTIONS", 25)
 	viper.SetDefault("DATABASE_MAX_IDLE_CONNECTIONS", 5)
 	viper.SetDefault("JWT_SECRET_KEY", "your-secret-key")
+	viper.SetDefault("JWT_TOKEN_DURATION", 24)
 	viper.SetDefault("SMTP_HOST", "smtp.gmail.com")
 	viper.SetDefault("SMTP_PORT", 587)
 	viper.SetDefault("SMTP_USERNAME", "your-email@gmail.com")
@@ -92,6 +93,7 @@ func setDefaults() {
 
 func LoadConfig(path string) (*Config, error) {
 	viper.SetConfigFile(path)
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 	setDefaults()
 
@@ -104,35 +106,44 @@ func LoadConfig(path string) (*Config, error) {
 	}
 
 	var config Config
-	if err := viper.Unmarshal(&config); err != nil {
-		return nil, fmt.Errorf("error unmarshaling config: %w", err)
-	}
 
-	// Convert APP_PORT to int if needed
+	config.AppEnv = viper.GetString("APP_ENV")
+	config.AppPort = viper.GetString("APP_PORT")
+
+	config.DBHost = viper.GetString("DATABASE_HOST")
+	config.DBPort = viper.GetInt("DATABASE_PORT")
+	config.DBUser = viper.GetString("DATABASE_USER")
+	config.DBPassword = viper.GetString("DATABASE_PASSWORD")
+	config.DBName = viper.GetString("DATABASE_NAME")
+	config.DBMaxOpenConnections = viper.GetInt("DATABASE_MAX_OPEN_CONNECTIONS")
+	config.DBMaxIdleConnections = viper.GetInt("DATABASE_MAX_IDLE_CONNECTIONS")
+
+	config.JWT.SecretKey = viper.GetString("JWT_SECRET_KEY")
+	config.JWT.TokenDuration = viper.GetInt("JWT_TOKEN_DURATION")
+
+	config.SMTP.Host = viper.GetString("SMTP_HOST")
+	config.SMTP.Port = viper.GetInt("SMTP_PORT")
+	config.SMTP.Username = viper.GetString("SMTP_USERNAME")
+	config.SMTP.Password = viper.GetString("SMTP_PASSWORD")
+	config.SMTP.FromEmail = viper.GetString("SMTP_FROM_EMAIL")
+
+	config.CloudflareR2BucketName = viper.GetString("CLOUDFLARE_R2_BUCKET_NAME")
+	config.CloudflareR2APIKey = viper.GetString("CLOUDFLARE_R2_API_KEY")
+	config.CloudflareR2APISecret = viper.GetString("CLOUDFLARE_R2_API_SECRET")
+	config.CloudflareR2Token = viper.GetString("CLOUDFLARE_R2_TOKEN")
+	config.CloudflareR2AccountID = viper.GetString("CLOUDFLARE_R2_ACCOUNT_ID")
+	config.CloudflareR2PublicURL = viper.GetString("CLOUDFLARE_R2_PUBLIC_URL")
+
 	port, err := strconv.Atoi(strings.TrimSpace(config.AppPort))
 	if err != nil {
 		return nil, fmt.Errorf("invalid APP_PORT: %v", err)
 	}
 	config.Server.Port = port
-	config.JWT.TokenDuration = 24
 
 	return &config, nil
 }
 
-func (c *Config) GetDatabaseDSN() string {
-	return fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		c.DBHost, c.DBPort, c.DBUser, c.DBPassword, c.DBName)
-}
-
-func (c *Config) GetAppPort() string {
-	return c.AppPort
-}
-
-func (c *Config) IsDevelopment() bool {
-	return c.AppEnv == "development"
-}
-
-func InitConfig() *Config {
+func NewConfig() *Config {
 	rootDir := findRootDir()
 	configPath := filepath.Join(rootDir, ".env")
 
@@ -144,6 +155,10 @@ func InitConfig() *Config {
 	return config
 }
 
-func NewConfig() *Config {
-	return InitConfig()
+func (c *Config) GetAppPort() string {
+	return c.AppPort
+}
+
+func (c *Config) IsDevelopment() bool {
+	return c.AppEnv == "development"
 }

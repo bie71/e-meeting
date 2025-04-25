@@ -47,16 +47,22 @@ func SeedUsers(db *sql.DB) error {
 	}
 	defer tx.Rollback()
 
-	// Delete related records first
-	_, err = tx.Exec("DELETE FROM password_reset_tokens")
+	row, err := tx.Query("SELECT count(*) FROM users WHERE username in ('admin', 'user1')")
+
 	if err != nil {
-		return fmt.Errorf("failed to clean password_reset_tokens table: %v", err)
+		return fmt.Errorf("failed to count users: %v", err)
 	}
 
-	// Then delete users
-	_, err = tx.Exec("DELETE FROM users")
-	if err != nil {
-		return fmt.Errorf("failed to clean users table: %v", err)
+	var count int
+	for row.Next() {
+		if err := row.Scan(&count); err != nil {
+			return fmt.Errorf("failed to scan count: %v", err)
+		}
+	}
+
+	if count > 0 {
+		log.Println("Users table already seeded")
+		return nil
 	}
 
 	// Insert users

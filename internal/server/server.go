@@ -22,25 +22,16 @@ type Server struct {
 
 func NewServer(cfg *config.Config) *Server {
 	// Initialize database
-	db, err := database.NewPostgresDB(
-		cfg.DBHost,
-		cfg.DBUser,
-		cfg.DBPassword,
-		cfg.DBName,
-		fmt.Sprintf("%d", cfg.DBPort),
-	)
-	if err != nil {
-		log.Fatalf("Failed to initialize database: %v", err)
-	}
 
-	dbSql := database.New(cfg)
-	err = database.SeedUsers(dbSql.DB())
+	db := database.New(cfg)
+
+	err := database.SeedUsers(db.DB())
 	if err != nil {
 		log.Fatalf("Failed to seed users: %v", err)
 	}
 	// Initialize repositories
-	userRepo := repositories.NewUserRepository(db)
-	passwordResetRepo := repositories.NewPasswordResetRepository(db)
+	userRepo := repositories.NewUserRepository(db.GormDB())
+	passwordResetRepo := repositories.NewPasswordResetRepository(db.GormDB())
 
 	// Initialize JWT config
 	fmt.Println(cfg.JWT.TokenDuration, "======================")
@@ -64,11 +55,11 @@ func NewServer(cfg *config.Config) *Server {
 	)
 	userService := services.NewUserService(userRepo, jwtConfig)
 
-	dashboardDb := services.NewDashboardService(dbSql.DB())
+	dashboardDb := services.NewDashboardService(db.DB())
 
-	reservationService := services.NewReservationService(dbSql.DB())
+	reservationService := services.NewReservationService(db.DB())
 
-	roomService := services.NewRoomService(dbSql.DB())
+	roomService := services.NewRoomService(db.DB())
 
 	// Initialize handlers
 	userHandler := handlers.NewUserHandler(userService)
