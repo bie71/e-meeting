@@ -1,11 +1,9 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
+-- Create snacks table
 CREATE TABLE IF NOT EXISTS snacks (
-    id SERIAL PRIMARY KEY,
-    snack_name VARCHAR(255) NOT NULL,
-    snack_category VARCHAR(50) NOT NULL,
-    price_per_unit DECIMAL(10,2) NOT NULL,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP
-); 
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

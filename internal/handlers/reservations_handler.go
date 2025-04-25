@@ -64,3 +64,34 @@ func (h *ReservationHandler) UpdateReservationStatus(c *fiber.Ctx) error {
 
 	return c.JSON(updatedReservation)
 }
+
+func (h *ReservationHandler) CalculateReservationCost(c *fiber.Ctx) error {
+	var req models.ReservationCalculationRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+			Error: "Invalid request body",
+		})
+	}
+
+	// Validate time range
+	if req.EndTime.Before(req.StartTime) {
+		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+			Error: "end_time cannot be before start_time",
+		})
+	}
+
+	// Calculate costs
+	response, err := h.service.CalculateReservationCost(&req)
+	if err != nil {
+		if err.Error() == "room not found or inactive" {
+			return c.Status(http.StatusNotFound).JSON(models.ErrorResponse{
+				Error: err.Error(),
+			})
+		}
+		return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
+			Error: "Failed to calculate reservation cost",
+		})
+	}
+
+	return c.JSON(response)
+}

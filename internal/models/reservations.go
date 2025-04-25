@@ -59,3 +59,32 @@ type UpdateReservationStatusRequest struct {
 	ReservationID uuid.UUID         `json:"reservation_id" validate:"required"`
 	Status        ReservationStatus `json:"status" validate:"required"`
 }
+
+type ReservationCalculationRequest struct {
+	RoomID uuid.UUID `json:"room_id" binding:"required"`
+	Snacks []struct {
+		SnackID  uuid.UUID `json:"snack_id" binding:"required"`
+		Quantity int       `json:"quantity" binding:"required,min=1"`
+	} `json:"snacks" binding:"required"`
+	StartTime time.Time `json:"start_time" binding:"required"`
+	EndTime   time.Time `json:"end_time" binding:"required"`
+}
+
+type ReservationCalculationResponse struct {
+	Room struct {
+		ID           uuid.UUID `json:"id"`
+		Name         string    `json:"name"`
+		PricePerHour float64   `json:"price_per_hour"`
+		TotalHours   float64   `json:"total_hours"`
+		TotalCost    float64   `json:"total_cost"`
+	} `json:"room"`
+	Snacks []struct {
+		ID       uuid.UUID `json:"id"`
+		Name     string    `json:"name"`
+		Category string    `json:"category"`
+		Price    float64   `json:"price"`
+		Quantity int       `json:"quantity"`
+		Subtotal float64   `json:"subtotal"`
+	} `json:"snacks"`
+	TotalCost float64 `json:"total_cost"`
+}

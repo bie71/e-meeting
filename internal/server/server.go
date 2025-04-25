@@ -54,12 +54,10 @@ func NewServer(cfg *config.Config) *Server {
 		emailService,
 	)
 	userService := services.NewUserService(userRepo, jwtConfig)
-
 	dashboardDb := services.NewDashboardService(db.DB())
-
 	reservationService := services.NewReservationService(db.DB())
-
 	roomService := services.NewRoomService(db.DB())
+	snackService := services.NewSnackService(db.DB())
 
 	// Initialize handlers
 	userHandler := handlers.NewUserHandler(userService)
@@ -68,6 +66,7 @@ func NewServer(cfg *config.Config) *Server {
 	dashboardHandler := handlers.NewDashboardHandler(dashboardDb)
 	reservationHandler := handlers.NewReservationHandler(reservationService)
 	roomHandler := handlers.NewRoomHandler(roomService)
+	snackHandler := handlers.NewSnackHandler(snackService)
 
 	// Initialize rate limiter
 	rateLimiter := middleware.NewRateLimiter(100, time.Hour)
@@ -82,6 +81,7 @@ func NewServer(cfg *config.Config) *Server {
 		dashboardHandler,
 		reservationHandler,
 		roomHandler,
+		snackHandler,
 	)
 
 	return &Server{

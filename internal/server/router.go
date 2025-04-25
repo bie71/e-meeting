@@ -19,6 +19,7 @@ func SetupRouter(
 	dashboardHandler *handlers.DashboardHandler,
 	reservatonsHanlder *handlers.ReservationHandler,
 	roomsHandler *handlers.RoomHandler,
+	snacksHandler *handlers.SnackHandler,
 ) *fiber.App {
 	app := fiber.New()
 
@@ -45,6 +46,9 @@ func SetupRouter(
 		protected.Get("/profile/:id", userHandler.GetProfile)
 		protected.Put("/profile/:id", middleware.ValidateRequest[models.UpdateProfileRequest](), userHandler.UpdateProfile)
 		protected.Get("/rooms", roomsHandler.GetRooms)
+		protected.Get("/rooms/:id/schedule", roomsHandler.GetRoomSchedule)
+		protected.Get("/snacks", snacksHandler.GetSnacks)
+		protected.Post("/reservation/calculation", reservatonsHanlder.CalculateReservationCost)
 
 	}
 

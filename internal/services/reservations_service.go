@@ -5,6 +5,9 @@ import (
 	"e_metting/internal/models"
 	"fmt"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 type ReservationService struct {
@@ -225,4 +228,143 @@ func (s *ReservationService) UpdateReservationStatus(req *models.UpdateReservati
 	}
 
 	return &event, nil
+}
+
+func (s *ReservationService) CalculateReservationCost(req *models.ReservationCalculationRequest) (*models.ReservationCalculationResponse, error) {
+	// Start transaction
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, fmt.Errorf("error starting transaction: %v", err)
+	}
+	defer tx.Rollback()
+
+	// Get room details
+	var room struct {
+		ID           uuid.UUID
+		Name         string
+		PricePerHour float64
+	}
+	err = tx.QueryRow(`
+		SELECT id, name, price_per_hour
+		FROM rooms_new
+		WHERE id = $1 AND status = 'active'
+	`, req.RoomID).Scan(&room.ID, &room.Name, &room.PricePerHour)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("room not found or inactive")
+		}
+		return nil, fmt.Errorf("error querying room: %v", err)
+	}
+
+	// Calculate room cost
+	duration := req.EndTime.Sub(req.StartTime)
+	hours := duration.Hours()
+	roomCost := room.PricePerHour * hours
+
+	// Get snack details and calculate costs
+	var snackIDs []uuid.UUID
+	for _, snack := range req.Snacks {
+		snackIDs = append(snackIDs, snack.SnackID)
+	}
+
+	rows, err := tx.Query(`
+		SELECT id, name, category, price
+		FROM snacks
+		WHERE id = ANY($1)
+	`, pq.Array(snackIDs))
+	if err != nil {
+		return nil, fmt.Errorf("error querying snacks: %v", err)
+	}
+	defer rows.Close()
+
+	var snacks []struct {
+		ID       uuid.UUID
+		Name     string
+		Category string
+		Price    float64
+		Quantity int
+	}
+
+	for rows.Next() {
+		var snack struct {
+			ID       uuid.UUID
+			Name     string
+			Category string
+			Price    float64
+		}
+		err := rows.Scan(&snack.ID, &snack.Name, &snack.Category, &snack.Price)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning snack: %v", err)
+		}
+
+		// Find quantity for this snack
+		for _, reqSnack := range req.Snacks {
+			if reqSnack.SnackID == snack.ID {
+				snacks = append(snacks, struct {
+					ID       uuid.UUID
+					Name     string
+					Category string
+					Price    float64
+					Quantity int
+				}{
+					ID:       snack.ID,
+					Name:     snack.Name,
+					Category: snack.Category,
+					Price:    snack.Price,
+					Quantity: reqSnack.Quantity,
+				})
+				break
+			}
+		}
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating snacks: %v", err)
+	}
+
+	// Calculate total cost
+	response := &models.ReservationCalculationResponse{
+		Room: struct {
+			ID           uuid.UUID `json:"id"`
+			Name         string    `json:"name"`
+			PricePerHour float64   `json:"price_per_hour"`
+			TotalHours   float64   `json:"total_hours"`
+			TotalCost    float64   `json:"total_cost"`
+		}{
+			ID:           room.ID,
+			Name:         room.Name,
+			PricePerHour: room.PricePerHour,
+			TotalHours:   hours,
+			TotalCost:    roomCost,
+		},
+		TotalCost: roomCost,
+	}
+
+	// Calculate snack costs
+	for _, snack := range snacks {
+		subtotal := snack.Price * float64(snack.Quantity)
+		response.Snacks = append(response.Snacks, struct {
+			ID       uuid.UUID `json:"id"`
+			Name     string    `json:"name"`
+			Category string    `json:"category"`
+			Price    float64   `json:"price"`
+			Quantity int       `json:"quantity"`
+			Subtotal float64   `json:"subtotal"`
+		}{
+			ID:       snack.ID,
+			Name:     snack.Name,
+			Category: snack.Category,
+			Price:    snack.Price,
+			Quantity: snack.Quantity,
+			Subtotal: subtotal,
+		})
+		response.TotalCost += subtotal
+	}
+
+	// Commit transaction
+	if err = tx.Commit(); err != nil {
+		return nil, fmt.Errorf("error committing transaction: %v", err)
+	}
+
+	return response, nil
 }

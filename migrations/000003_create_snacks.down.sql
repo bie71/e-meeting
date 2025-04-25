@@ -1,1 +1,3 @@
-DROP TABLE IF EXISTS snacks; 
+
+-- Drop table
+DROP TABLE IF EXISTS snacks;
