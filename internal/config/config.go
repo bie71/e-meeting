@@ -46,6 +46,8 @@ type Config struct {
 	Server struct {
 		Port int
 	}
+
+	FrontendURL string
 }
 
 func findRootDir() string {
@@ -89,6 +91,7 @@ func setDefaults() {
 	viper.SetDefault("CLOUDFLARE_R2_TOKEN", "")
 	viper.SetDefault("CLOUDFLARE_R2_ACCOUNT_ID", "")
 	viper.SetDefault("CLOUDFLARE_R2_PUBLIC_URL", "")
+	viper.SetDefault("FRONTEND_URL", "http://localhost:3000")
 }
 
 func LoadConfig(path string) (*Config, error) {
@@ -133,6 +136,8 @@ func LoadConfig(path string) (*Config, error) {
 	config.CloudflareR2Token = viper.GetString("CLOUDFLARE_R2_TOKEN")
 	config.CloudflareR2AccountID = viper.GetString("CLOUDFLARE_R2_ACCOUNT_ID")
 	config.CloudflareR2PublicURL = viper.GetString("CLOUDFLARE_R2_PUBLIC_URL")
+
+	config.FrontendURL = viper.GetString("FRONTEND_URL")
 
 	port, err := strconv.Atoi(strings.TrimSpace(config.AppPort))
 	if err != nil {

@@ -7,3 +7,7 @@ CREATE TABLE IF NOT EXISTS snacks (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+
+-- Create index on category for faster filtering
+CREATE INDEX IF NOT EXISTS idx_snacks_category ON snacks(category);

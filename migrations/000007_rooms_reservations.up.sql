@@ -1,5 +1,5 @@
 -- Create rooms table
-CREATE TABLE rooms_new (
+CREATE TABLE rooms (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL,
     capacity INT NOT NULL,
@@ -10,9 +10,9 @@ CREATE TABLE rooms_new (
 );
 
 -- Create reservations table
-CREATE TABLE reservations_new (
+CREATE TABLE reservations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    room_new_id UUID NOT NULL REFERENCES rooms_new(id),
+    room_id UUID NOT NULL REFERENCES rooms(id),
     user_id UUID NOT NULL REFERENCES users(id),
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE reservations_new (
 );
 
 -- Create indexes
-CREATE INDEX idx_reservations_room_id ON reservations_new(room_new_id);
-CREATE INDEX idx_reservations_user_id ON reservations_new(user_id);
-CREATE INDEX idx_reservations_status ON reservations_new(status);
-CREATE INDEX idx_reservations_time_range ON reservations_new(start_time, end_time);
+CREATE INDEX idx_reservations_room_id ON reservations(room_id);
+CREATE INDEX idx_reservations_user_id ON reservations(user_id);
+CREATE INDEX idx_reservations_status ON reservations(status);
+CREATE INDEX idx_reservations_time_range ON reservations(start_time, end_time);

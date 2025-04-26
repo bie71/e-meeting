@@ -59,7 +59,7 @@ func (s *ReservationService) GetReservationHistory(query *models.ReservationHist
 	rows, err := tx.Query(`
 		SELECT 
 			r.id,
-			r.room_new_id,
+			r.room_id,
 			rm.name as room_name,
 			r.user_id,
 			u.username,
@@ -70,8 +70,8 @@ func (s *ReservationService) GetReservationHistory(query *models.ReservationHist
 			r.status,
 			rm.capacity,
 			rm.price_per_hour
-		FROM reservations_new r
-		JOIN rooms_new rm ON r.room_new_id = rm.id
+		FROM reservations r
+		JOIN rooms rm ON r.room_id = rm.id
 		JOIN users u ON r.user_id = u.id
 		WHERE r.start_time >= $1 
 		AND r.end_time <= $2
@@ -152,7 +152,7 @@ func (s *ReservationService) UpdateReservationStatus(req *models.UpdateReservati
 
 	// Update reservation status
 	result, err := tx.Exec(`
-		UPDATE reservations_new
+		UPDATE reservations
 		SET status = $1, updated_at = NOW()
 		WHERE id = $2`,
 		req.Status,
@@ -178,7 +178,7 @@ func (s *ReservationService) UpdateReservationStatus(req *models.UpdateReservati
 	err = tx.QueryRow(`
 		SELECT 
 			r.id,
-			r.room_new_id,
+			r.room_id,
 			rm.name as room_name,
 			r.user_id,
 			u.username,
@@ -190,7 +190,7 @@ func (s *ReservationService) UpdateReservationStatus(req *models.UpdateReservati
 			rm.capacity,
 			rm.price_per_hour
 		FROM reservations r
-		JOIN rooms_new rm ON r.room_new_id = rm.id
+		JOIN rooms rm ON r.room_id = rm.id
 		JOIN users u ON r.user_id = u.id
 		WHERE r.id = $1`,
 		req.ReservationID,
@@ -246,7 +246,7 @@ func (s *ReservationService) CalculateReservationCost(req *models.ReservationCal
 	}
 	err = tx.QueryRow(`
 		SELECT id, name, price_per_hour
-		FROM rooms_new
+		FROM rooms
 		WHERE id = $1 AND status = 'active'
 	`, req.RoomID).Scan(&room.ID, &room.Name, &room.PricePerHour)
 	if err != nil {

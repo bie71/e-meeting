@@ -32,7 +32,7 @@ func (s *RoomService) CreateRoom(req *models.CreateRoomRequest) (*models.Room, e
 	}
 
 	err := s.db.QueryRow(`
-		INSERT INTO rooms_new (id, name, capacity, price_per_hour, status, created_at, updated_at)
+		INSERT INTO rooms (id, name, capacity, price_per_hour, status, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id, name, capacity, price_per_hour, status, created_at, updated_at`,
 		room.ID, room.Name, room.Capacity, room.PricePerHour, room.Status, room.CreatedAt, room.UpdatedAt,
@@ -57,7 +57,7 @@ func (s *RoomService) UpdateRoom(id uuid.UUID, req *models.UpdateRoomRequest) (*
 	var room models.Room
 	err = tx.QueryRow(`
 		SELECT id, name, capacity, price_per_hour, status, created_at, updated_at
-		FROM rooms_new WHERE id = $1`,
+		FROM rooms WHERE id = $1`,
 		id,
 	).Scan(&room.ID, &room.Name, &room.Capacity, &room.PricePerHour, &room.Status, &room.CreatedAt, &room.UpdatedAt)
 
@@ -85,7 +85,7 @@ func (s *RoomService) UpdateRoom(id uuid.UUID, req *models.UpdateRoomRequest) (*
 
 	// Update room
 	_, err = tx.Exec(`
-		UPDATE rooms_new 
+		UPDATE rooms 
 		SET name = $1, capacity = $2, price_per_hour = $3, status = $4, updated_at = $5
 		WHERE id = $6`,
 		room.Name, room.Capacity, room.PricePerHour, room.Status, room.UpdatedAt, room.ID,
@@ -114,7 +114,7 @@ func (s *RoomService) DeleteRoom(id uuid.UUID) error {
 	var hasReservations bool
 	err = tx.QueryRow(`
 		SELECT EXISTS(
-			SELECT 1 FROM reservations_new 
+			SELECT 1 FROM reservations
 			WHERE room_id = $1 
 			AND status NOT IN ('cancelled', 'completed')
 		)`,
@@ -130,7 +130,7 @@ func (s *RoomService) DeleteRoom(id uuid.UUID) error {
 	}
 
 	// Delete room
-	result, err := tx.Exec(`DELETE FROM rooms_new WHERE id = $1`, id)
+	result, err := tx.Exec(`DELETE FROM roomsWHERE id = $1`, id)
 	if err != nil {
 		return fmt.Errorf("error deleting room: %v", err)
 	}
@@ -213,7 +213,7 @@ func (s *RoomService) GetRooms(filter *models.RoomFilter, pagination *models.Pag
 	var totalCount int
 	countQuery := fmt.Sprintf(`
 		SELECT COUNT(*) 
-		FROM rooms_new 
+		FROM rooms
 		WHERE %s`,
 		strings.Join(conditions, " AND "),
 	)
@@ -228,7 +228,7 @@ func (s *RoomService) GetRooms(filter *models.RoomFilter, pagination *models.Pag
 	// Get rooms with pagination
 	query := fmt.Sprintf(`
 		SELECT id, name, capacity, price_per_hour, status, created_at, updated_at
-		FROM rooms_new 
+		FROM rooms 
 		WHERE %s
 		ORDER BY name ASC
 		LIMIT $%d OFFSET $%d`,
@@ -292,7 +292,7 @@ func (s *RoomService) GetRoomSchedule(roomID uuid.UUID, query *models.RoomSchedu
 
 	// First, check if room exists
 	var exists bool
-	err = tx.QueryRow(`SELECT EXISTS(SELECT 1 FROM rooms_new WHERE id = $1)`, roomID).Scan(&exists)
+	err = tx.QueryRow(`SELECT EXISTS(SELECT 1 FROM rooms WHERE id = $1)`, roomID).Scan(&exists)
 	if err != nil {
 		return nil, fmt.Errorf("error checking room existence: %v", err)
 	}
@@ -303,8 +303,8 @@ func (s *RoomService) GetRoomSchedule(roomID uuid.UUID, query *models.RoomSchedu
 	// Query reservations within the time range
 	rows, err := tx.Query(`
 		SELECT id, start_time, end_time, status, visitor_count
-		FROM reservations_new
-		WHERE room_new_id = $1
+		FROM reservations
+		WHERE room_id = $1
 		AND (
 			(start_time >= $2 AND start_time < $3)
 			OR (end_time > $2 AND end_time <= $3)

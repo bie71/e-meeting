@@ -2,8 +2,10 @@ package services
 
 import (
 	"context"
+	"e_metting/internal/config"
 	"e_metting/internal/models"
 	"e_metting/internal/repositories"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -23,17 +25,21 @@ type PasswordResetService struct {
 	userRepo    repositories.UserRepository
 	resetRepo   PasswordResetRepository
 	emailSender EmailService
+	cfg         *config.Config
 }
 
 func NewPasswordResetService(
 	userRepo repositories.UserRepository,
 	resetRepo PasswordResetRepository,
 	emailSender EmailService,
+	cfg *config.Config,
+
 ) *PasswordResetService {
 	return &PasswordResetService{
 		userRepo:    userRepo,
 		resetRepo:   resetRepo,
 		emailSender: emailSender,
+		cfg:         cfg,
 	}
 }
 
@@ -63,7 +69,7 @@ func (s *PasswordResetService) RequestReset(ctx context.Context, email string) (
 	}
 
 	// Send reset email
-	resetLink := "http://localhost:8080/api/v1/password/reset?token=" + token
+	resetLink := fmt.Sprintf("%s?token=%s", s.cfg.FrontendURL, token)
 	if err := s.emailSender.SendPasswordResetEmail(user.Email, resetLink); err != nil {
 		log.Error().Err(err).Msg("Failed to send reset email")
 		return "", err

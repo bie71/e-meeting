@@ -52,6 +52,7 @@ func NewServer(cfg *config.Config) *Server {
 		userRepo,
 		passwordResetRepo,
 		emailService,
+		cfg,
 	)
 	userService := services.NewUserService(userRepo, jwtConfig)
 	dashboardDb := services.NewDashboardService(db.DB())

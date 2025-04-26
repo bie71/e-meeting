@@ -54,8 +54,8 @@ func (s *DashboardService) GetDashboardStats(query *models.DashboardQuery) (*mod
 			COUNT(DISTINCT r.id) as total_reservations,
 			COALESCE(SUM(r.visitor_count), 0) as total_visitors,
 			COUNT(DISTINCT rm.id) as total_rooms
-		FROM rooms_new rm
-		LEFT JOIN reservations_new r ON r.room_new_id = rm.id
+		FROM rooms rm
+		LEFT JOIN reservations r ON r.room_id = rm.id
 		AND r.start_time >= $1 AND r.end_time <= $2
 		AND r.status = 'confirmed'`,
 		startDate, endDate,
@@ -76,7 +76,7 @@ func (s *DashboardService) GetDashboardStats(query *models.DashboardQuery) (*mod
 				COALESCE(SUM(EXTRACT(EPOCH FROM (r.end_time - r.start_time)) / 3600), 0) as total_hours,
 				COALESCE(SUM(r.price), 0) as revenue
 			FROM rooms_new rm
-			LEFT JOIN reservations_new r ON r.room_new_id = rm.id
+			LEFT JOIN reservations r ON r.room_id = rm.id
 				AND r.start_time >= $1 AND r.end_time <= $2
 				AND r.status = 'confirmed'
 			GROUP BY rm.id, rm.name

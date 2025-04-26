@@ -5,5 +5,5 @@ DROP INDEX IF EXISTS idx_reservations_user_id;
 DROP INDEX IF EXISTS idx_reservations_room_id;
 
 -- Drop tables
-DROP TABLE IF EXISTS reservations_new;
-DROP TABLE IF EXISTS rooms_new;
+DROP TABLE IF EXISTS reservations;
+DROP TABLE IF EXISTS rooms;
