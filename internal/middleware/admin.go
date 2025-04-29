@@ -59,6 +59,7 @@ func AdminOnlyMiddleware(secretKey string) fiber.Handler {
 		}
 
 		// If everything is ok, proceed
+		c.Locals("isAdmin", true)
 		return c.Next()
 	}
 }

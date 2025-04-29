@@ -80,10 +80,15 @@ func (r *userRepository) GetProfile(ctx context.Context, userID uuid.UUID) (*mod
 	}
 
 	return &models.UserProfileResponse{
-		ID:       user.ID,
-		Username: user.Username,
-		Email:    user.Email,
-		Role:     user.Role,
+		ID:        user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		Role:      user.Role,
+		ProfPic:   user.ProfPic,
+		Language:  user.Language,
+		Status:    user.Status,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}, nil
 }
 

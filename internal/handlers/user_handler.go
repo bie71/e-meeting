@@ -59,9 +59,10 @@ func (h *UserHandler) GetProfile(c *fiber.Ctx) error {
 	requestedID := c.Params("id")
 
 	// Optional: Check if user is requesting their own profile or has admin rights
-	if authUserID != requestedID {
+	isAdmin, _ := c.Locals("isAdmin").(bool)
+	if authUserID != requestedID && !isAdmin {
 		return c.Status(http.StatusForbidden).JSON(models.ErrorResponse{
-			Error: "Forbidden",
+			Error: "Forbidden, you can only access your own profile",
 		})
 	}
 
