@@ -49,6 +49,8 @@ func SetupRouter(
 		protected.Get("/rooms/:id/schedule", roomsHandler.GetRoomSchedule)
 		protected.Get("/snacks", snacksHandler.GetSnacks)
 		protected.Post("/reservation/calculation", reservatonsHanlder.CalculateReservationCost)
+		protected.Post("/reservation", reservatonsHanlder.CreateReservation)
+		protected.Get("/reservation/:id", reservatonsHanlder.GetReservationByID)
 
 	}
 

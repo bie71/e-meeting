@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type ReservationHandler struct {
@@ -94,4 +95,71 @@ func (h *ReservationHandler) CalculateReservationCost(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(response)
+}
+
+func (h *ReservationHandler) GetReservationByID(c *fiber.Ctx) error {
+	// Parse reservation ID from URL
+	reservationID, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+			Error: "Invalid reservation ID",
+		})
+
+	}
+
+	// Get reservation details from service
+	reservation, err := h.service.GetReservationByID(reservationID)
+	if err != nil {
+		if err.Error() == "reservation not found" {
+			return c.Status(http.StatusNotFound).JSON(models.ErrorResponse{
+				Error: err.Error(),
+			})
+		}
+		return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
+			Error: "Failed to fetch reservation details" + err.Error(),
+		})
+	}
+
+	return c.JSON(reservation)
+}
+
+func (h *ReservationHandler) CreateReservation(c *fiber.Ctx) error {
+	var req models.CreateReservationRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+			Error: "Invalid request body",
+		})
+	}
+
+	// Validate time range
+	if req.EndTime.Before(req.StartTime) {
+		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+			Error: "end_time cannot be before start_time",
+		})
+	}
+
+	// Create reservation
+	response, err := h.service.CreateReservation(&req)
+	if err != nil {
+		if err.Error() == "room not found or inactive" {
+			return c.Status(http.StatusNotFound).JSON(models.ErrorResponse{
+				Error: err.Error(),
+			})
+		}
+		if err.Error() == "visitor count exceeds room capacity" {
+			return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+				Error: err.Error(),
+			})
+		}
+		if err.Error() == "room is already booked for the selected time period" {
+			return c.Status(http.StatusConflict).JSON(models.ErrorResponse{
+				Error: err.Error(),
+			})
+		}
+		return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
+			Error: "Failed to create reservation",
+		})
+	}
+
+	return c.Status(http.StatusCreated).JSON(response)
 }

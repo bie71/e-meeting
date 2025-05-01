@@ -88,3 +88,22 @@ type ReservationCalculationResponse struct {
 	} `json:"snacks"`
 	TotalCost float64 `json:"total_cost"`
 }
+
+type CreateReservationRequest struct {
+	RoomID       uuid.UUID `json:"room_id" binding:"required"`
+	UserID       uuid.UUID `json:"user_id" binding:"required"`
+	StartTime    time.Time `json:"start_time" binding:"required"`
+	EndTime      time.Time `json:"end_time" binding:"required,gtfield=StartTime"`
+	VisitorCount int       `json:"visitor_count" binding:"required,min=1"`
+	Snacks       []struct {
+		SnackID  uuid.UUID `json:"snack_id" binding:"required"`
+		Quantity int       `json:"quantity" binding:"required,min=1"`
+	} `json:"snacks" binding:"required,dive"`
+}
+
+type CreateReservationResponse struct {
+	ReservationID uuid.UUID `json:"reservation_id"`
+	Status        string    `json:"status"`
+	TotalCost     float64   `json:"total_cost"`
+	CreatedAt     time.Time `json:"created_at"`
+}
