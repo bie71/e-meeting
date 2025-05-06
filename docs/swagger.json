@@ -107,25 +107,25 @@
         }
       }
     },
-    "/meetings": {
+    "/password/reset/request": {
       "post": {
-        "summary": "Buat meeting baru",
-        "description": "Membuat meeting baru",
+        "summary": "Request reset password",
+        "description": "Meminta reset password",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/MeetingRequest"
+              "$ref": "#/definitions/ResetPasswordRequest"
             }
           }
         ],
         "responses": {
           "201": {
-            "description": "Meeting berhasil dibuat",
+            "description": "Permintaan reset password berhasil",
             "schema": {
-              "$ref": "#/definitions/MeetingResponse"
+              "$ref": "#/definitions/ResetPasswordResponse"
             }
           },
           "400": {
@@ -138,61 +138,27 @@
             "description": "Format response tidak didukung"
           }
         }
-      },
-      "get": {
-        "summary": "Daftar meeting",
-        "description": "Mendapatkan daftar meeting",
-        "parameters": [
-          {
-            "name": "start_time",
-            "in": "query",
-            "type": "string",
-            "format": "date-time"
-          },
-          {
-            "name": "end_time",
-            "in": "query",
-            "type": "string",
-            "format": "date-time"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Daftar meeting berhasil didapatkan",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/MeetingResponse"
-              }
-            }
-          },
-          "401": {
-            "description": "Tidak terautentikasi"
-          },
-          "406": {
-            "description": "Format response tidak didukung"
-          }
-        }
       }
     },
-    "/meetings/{id}": {
+    "/password/reset": {
       "get": {
-        "summary": "Detail meeting",
-        "description": "Mendapatkan detail meeting",
+        "summary": "Reset password link",
+        "description": "Mendapatkan link reset password",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
+            "name": "body",
+            "in": "body",
             "required": true,
-            "type": "string",
-            "format": "uuid"
+           "schema": {
+              "$ref": "#/definitions/ResetPasswordLinkRequest"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "Detail meeting berhasil didapatkan",
             "schema": {
-              "$ref": "#/definitions/MeetingResponse"
+              "$ref": "#/definitions/ResetPasswordLinkResponse"
             }
           },
           "400": {
@@ -200,86 +166,6 @@
           },
           "401": {
             "description": "Tidak terautentikasi"
-          },
-          "404": {
-            "description": "Meeting tidak ditemukan"
-          },
-          "406": {
-            "description": "Format response tidak didukung"
-          }
-        }
-      },
-      "put": {
-        "summary": "Update meeting",
-        "description": "Mengupdate meeting",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "uuid"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/MeetingRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Meeting berhasil diupdate",
-            "schema": {
-              "$ref": "#/definitions/SuccessResponse"
-            }
-          },
-          "400": {
-            "description": "Request tidak valid"
-          },
-          "401": {
-            "description": "Tidak terautentikasi"
-          },
-          "403": {
-            "description": "Tidak memiliki akses"
-          },
-          "404": {
-            "description": "Meeting tidak ditemukan"
-          },
-          "406": {
-            "description": "Format response tidak didukung"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Hapus meeting",
-        "description": "Menghapus meeting",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "uuid"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Meeting berhasil dihapus",
-            "schema": {
-              "$ref": "#/definitions/SuccessResponse"
-            }
-          },
-          "400": {
-            "description": "ID meeting tidak valid"
-          },
-          "401": {
-            "description": "Tidak terautentikasi"
-          },
-          "403": {
-            "description": "Tidak memiliki akses"
           },
           "404": {
             "description": "Meeting tidak ditemukan"
@@ -290,20 +176,13 @@
         }
       }
     },
-    "/meetings/{id}/participants/{user_id}": {
-      "post": {
-        "summary": "Tambah peserta meeting",
-        "description": "Menambahkan peserta ke meeting",
+    "/profile/{id}": {
+      "get": {
+        "summary": "Detail profile user",
+        "description": "Mendapatkan detail profile user",
         "parameters": [
           {
             "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "uuid"
-          },
-          {
-            "name": "user_id",
             "in": "path",
             "required": true,
             "type": "string",
@@ -314,7 +193,7 @@
           "200": {
             "description": "Peserta berhasil ditambahkan",
             "schema": {
-              "$ref": "#/definitions/SuccessResponse"
+              "$ref": "#/definitions/UserProfileResponse"
             }
           },
           "400": {
@@ -327,16 +206,16 @@
             "description": "Tidak memiliki akses"
           },
           "404": {
-            "description": "Meeting atau user tidak ditemukan"
+            "description": "user tidak ditemukan"
           },
           "406": {
             "description": "Format response tidak didukung"
           }
         }
       },
-      "delete": {
-        "summary": "Hapus peserta meeting",
-        "description": "Menghapus peserta dari meeting",
+      "put": {
+        "summary": "Update profile user",
+        "description": "Mengupdate profile user",
         "parameters": [
           {
             "name": "id",
@@ -346,18 +225,19 @@
             "format": "uuid"
           },
           {
-            "name": "user_id",
-            "in": "path",
+            "name": "body",
+            "in": "body",
             "required": true,
-            "type": "string",
-            "format": "uuid"
+            "schema": {
+              "$ref": "#/definitions/UpdateUserProfileRequest"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "Peserta berhasil dihapus",
             "schema": {
-              "$ref": "#/definitions/SuccessResponse"
+              "$ref": "#/definitions/UserProfileResponse"
             }
           },
           "400": {
@@ -377,8 +257,554 @@
           }
         }
       }
-    }
+    },
+     "/rooms": {
+      "get": {
+        "summary": "Get Pagination room",
+        "description": "Mendapatkan Pagination room",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/RoomRequestFilterBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get Pagination room berhasil",
+            "schema": {
+              "$ref": "#/definitions/RoomListResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Room tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
   },
+  "/rooms/{id}/schedule": {
+      "get": {
+        "summary": "Get schedule room",
+        "description": "Mendapatkan schedule room",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "start_datetime",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "end_datetime",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get schedule room berhasil",
+            "schema": {
+              "$ref": "#/definitions/RoomScheduleResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Room tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+  },
+  "/snacks": {
+      "get": {
+        "summary": "Get snacks",
+        "description": "Mendapatkan daftar snack",
+        "responses": {
+          "200": {
+            "description": "Get snacks berhasil",
+            "schema": {
+              "$ref": "#/definitions/SnackListResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Snack tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
+    "/reservation/calculation": {
+      "post": {
+        "summary": "Calculate reservation",
+        "description": "Menghitung total biaya reservasi",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ReservationCalculationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perhitungan reservasi berhasil",
+            "schema": {
+              "$ref": "#/definitions/ReservationCalculationResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Room tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
+    "/reservation": {
+      "post": {
+        "summary": "Create reservation",
+        "description": "Membuat reservasi baru",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateReservationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Reservasi berhasil dibuat",
+            "schema": {
+              "$ref": "#/definitions/CreateReservationResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Room tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
+    "/reservation/{id}": {
+      "get": {
+        "summary": "Get reservation",
+        "description": "Mendapatkan detail reservasi",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail reservasi berhasil didapatkan",
+            "schema": {
+              "$ref": "#/definitions/ReservationDetailResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Reservasi tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
+    "/admin/dashboard":{
+      "get": {
+        "summary": "Get dashboard",
+        "description": "Mendapatkan data dashboard",
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data dashboard berhasil didapatkan",
+            "schema": {
+              "$ref": "#/definitions/DashboardResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Dashboard tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
+    "/admin/reservations/history": {
+      "get": {
+        "summary": "Get reservation history",
+        "description": "Mendapatkan daftar riwayat reservasi",
+        "parameters": [
+          {
+            "name": "start_datetime",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "end_datetime",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar riwayat reservasi berhasil didapatkan",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DashboardResponse"
+              }
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Reservasi tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
+    "/admin/reservation/status": {
+      "post": {
+        "summary": "Update reservation status",
+        "description": "Mengupdate status reservasi",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateReservationStatusRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status reservasi berhasil diupdate",
+            "schema": {
+              "$ref": "#/definitions/ReservationEvent"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Reservasi tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
+    "/admin/rooms": {
+      "post": {
+        "summary": "Create room",
+        "description": "Membuat room baru",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateRoomRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Room berhasil dibuat",
+            "schema": {
+              "$ref": "#/definitions/RoomResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Room tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
+    "/admin/rooms/{id}": {
+      "put": {
+        "summary": "Update room",
+        "description": "Mengupdate room",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateRoomRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Room berhasil diupdate",
+            "schema": {
+              "$ref": "#/definitions/RoomResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Room tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete room",
+        "description": "Menghapus room",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Room berhasil dihapus",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Room berhasil dihapus"
+              }
+            }
+          }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Room tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
+    "/admin/snacks": {
+      "post": {
+        "summary": "Create snack",
+        "description": "Membuat snack baru",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateSnackRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Snack berhasil dibuat",
+            "schema": {
+              "$ref": "#/definitions/CreateSnackResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Snack tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    }
+},
   "definitions": {
     "HealthResponse": {
       "type": "object",
@@ -456,72 +882,852 @@
         }
       }
     },
-    "MeetingRequest": {
+    "ResetPasswordRequest": {
       "type": "object",
-      "required": ["title", "description", "start_time", "end_time", "location"],
+      "required": ["email"],
       "properties": {
-        "title": {
+        "email": {
           "type": "string",
-          "minLength": 3,
+          "minLength": 5,
           "maxLength": 100
-        },
-        "description": {
-          "type": "string"
-        },
-        "start_time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "end_time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "location": {
-          "type": "string"
         }
       }
     },
-    "MeetingResponse": {
+    "ResetPasswordResponse": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "title": {
+        "message": {
           "type": "string"
         },
-        "description": {
+        "reset_link": {
           "type": "string"
-        },
-        "start_time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "end_time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "location": {
-          "type": "string"
-        },
-        "created_by": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
         }
       }
     },
-    "SuccessResponse": {
+     "ResetPasswordLinkRequest": {
+      "type": "object",
+      "required": ["token","new_password", "confirm_password"],
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 100
+        }, 
+        "confirm_password": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 100
+        }
+      }
+    },
+    "ResetPasswordLinkResponse": {
       "type": "object",
       "properties": {
         "message": {
           "type": "string"
         }
       }
+    },"UserProfileResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "role": {
+            "type": "string"
+          },
+          "prof_pic": {
+            "type": ["string", "null"],
+            "format": "uri"
+          },
+          "language": {
+            "type": "string"
+          },
+          "status": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "UpdateUserProfileRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "language": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "RoomRequestFilterBody": {
+           "type": "object",
+    "properties": {
+      "search": {
+        "type": "string",
+        "description": "Search by room name"
+      },
+      "room_type_id": {
+        "type": "string",
+        "format": "uuid",
+        "description": "Filter by Room Type ID"
+      },
+      "min_capacity": {
+        "type": "integer",
+        "description": "Minimum room capacity"
+      },
+      "max_capacity": {
+        "type": "integer",
+        "description": "Maximum room capacity"
+      },
+      "status": {
+        "type": "string",
+        "description": "Room status (active/inactive)",
+        "enum": ["active", "inactive"]
+      }
     }
+      },
+       "RoomResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "price_per_hour": {
+            "type": "number",
+            "format": "float",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive"]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RoomListResponse": {
+        "type": "object",
+        "properties": {
+          "rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/RoomResponse"
+            }
+          },
+          "total_count": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
+          },
+          "total_pages": {
+            "type": "integer"
+          }
+        }
+      },
+       "RoomScheduleBlock": {
+        "type": "object",
+        "properties": {
+          "reservation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string"
+          },
+          "visitor_count": {
+            "type": "integer"
+          }
+        }
+      },
+      "RoomScheduleResponse": {
+        "type": "object",
+        "properties": {
+          "room_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "schedules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/RoomScheduleBlock"
+            }
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Snack": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number",
+            "format": "float"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "SnackListResponse": {
+        "type": "object",
+        "properties": {
+          "snacks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Snack"
+            }
+          }
+        }
+      },
+      "ReservationSnackInput": {
+        "type": "object",
+        "properties": {
+          "snack_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": ["snack_id", "quantity"]
+      },
+      "ReservationCalculationRequest": {
+        "type": "object",
+        "properties": {
+          "room_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "snacks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ReservationSnackInput"
+            }
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["room_id", "snacks", "start_time", "end_time"]
+      },
+       "ReservationRoomCost": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "price_per_hour": {
+            "type": "number",
+            "format": "float"
+          },
+          "total_hours": {
+            "type": "number",
+            "format": "float"
+          },
+          "total_cost": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
+      "ReservationSnackCost": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number",
+            "format": "float"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "subtotal": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
+      "ReservationCalculationResponse": {
+        "type": "object",
+        "properties": {
+          "room": {
+            "$ref": "#/definitions/ReservationRoomCost"
+          },
+          "snacks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ReservationSnackCost"
+            }
+          },
+          "total_cost": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
+        "ReservationSnackRequest": {
+        "type": "object",
+        "properties": {
+          "snack_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": ["snack_id", "quantity"]
+      },
+      "CreateReservationRequest": {
+        "type": "object",
+        "properties": {
+          "room_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "visitor_count": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "snacks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ReservationSnackRequest"
+            }
+          }
+        },
+        "required": ["room_id", "user_id", "start_time", "end_time", "visitor_count", "snacks"]
+      },
+      "CreateReservationResponse": {
+        "type": "object",
+        "properties": {
+          "reservation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string"
+          },
+          "total_cost": {
+            "type": "number",
+            "format": "float"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["reservation_id", "status", "total_cost", "created_at"]
+      },
+       "ReservationRoomDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "capacity": {
+            "type": "integer"
+          },
+          "price_per_hour": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
+      "ReservationUserDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "ReservationSnackDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number",
+            "format": "float"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "subtotal": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
+      "ReservationDetailResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "visitor_count": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "number",
+            "format": "float"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "room": {
+            "$ref": "#/definitions/ReservationRoomDetail"
+          },
+          "user": {
+            "$ref": "#/definitions/ReservationUserDetail"
+          },
+          "snacks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ReservationSnackDetail"
+            }
+          },
+          "total_cost": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "required": [
+          "id", "status", "start_time", "end_time", "visitor_count",
+          "price", "created_at", "updated_at", "room", "user", "snacks", "total_cost"
+        ]
+      },
+       "RoomStats": {
+        "type": "object",
+        "properties": {
+          "room_id": {
+            "type": "string"
+          },
+          "room_name": {
+            "type": "string"
+          },
+          "total_bookings": {
+            "type": "integer"
+          },
+          "total_hours": {
+            "type": "number",
+            "format": "float"
+          },
+          "occupancy_rate": {
+            "type": "number",
+            "format": "float",
+            "description": "Percentage of time room was occupied"
+          },
+          "revenue": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "required": ["room_id", "room_name", "total_bookings", "total_hours", "occupancy_rate", "revenue"]
+      },
+      "DashboardResponse": {
+        "type": "object",
+        "properties": {
+          "start_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "total_omzet": {
+            "type": "number",
+            "format": "float"
+          },
+          "total_reservations": {
+            "type": "integer"
+          },
+          "total_visitors": {
+            "type": "integer"
+          },
+          "total_rooms": {
+            "type": "integer"
+          },
+          "room_stats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/RoomStats"
+            }
+          }
+        },
+        "required": [
+          "start_date", "end_date", "total_omzet", 
+          "total_reservations", "total_visitors", 
+          "total_rooms", "room_stats"
+        ]
+      },
+       "UpdateReservationStatusRequest": {
+        "type": "object",
+        "properties": {
+          "reservation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "confirmed",
+              "cancelled",
+              "completed"
+            ]
+          }
+        },
+        "required": ["reservation_id", "status"]
+      },
+      "CreateRoomRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "price_per_hour": {
+            "type": "number",
+            "format": "float",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ]
+          }
+        },
+        "required": ["name", "capacity", "price_per_hour", "status"]
+      },
+        "CreateRoomResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "price_per_hour": {
+            "type": "number",
+            "format": "float",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "name", "capacity", "price_per_hour", "status", "created_at", "updated_at"]
+      },
+        "RoomInfo": {
+        "type": "object",
+        "properties": {
+          "capacity": {
+            "type": "integer"
+          },
+          "price_per_hour": {
+            "type": "number",
+            "format": "float"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ]
+          }
+        }
+      },
+      "ReservationEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "room_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "room_name": {
+            "type": "string"
+          },
+          "room_details": {
+            "$ref": "#/definitions/RoomInfo"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "username": {
+            "type": "string"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration_hours": {
+            "type": "number",
+            "format": "float"
+          },
+          "visitor_count": {
+            "type": "integer"
+          },
+          "price": {
+            "type": "number",
+            "format": "float"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id", "room_id", "room_name", "room_details", 
+          "user_id", "username", "start_time", "end_time", 
+          "duration_hours", "visitor_count", "price", "status"
+        ]
+      },
+       "UpdateRoomRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "price_per_hour": {
+            "type": "number",
+            "format": "float",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateSnackRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nama snack"
+          },
+          "category": {
+            "type": "string",
+            "description": "Kategori snack"
+          },
+          "price": {
+            "type": "number",
+            "format": "float",
+            "minimum": 0,
+            "description": "Harga snack"
+          }
+        },
+        "required": ["name", "category", "price"]
+      },
+       "CreateSnackResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID unik snack"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nama snack"
+          },
+          "category": {
+            "type": "string",
+            "description": "Kategori snack"
+          },
+          "price": {
+            "type": "number",
+            "format": "float",
+            "description": "Harga snack"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Tanggal dan waktu snack dibuat"
+          }
+        },
+        "required": ["id", "name", "category", "price", "created_at"]
+      }
   }
 } 
