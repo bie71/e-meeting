@@ -12,6 +12,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -60,6 +61,8 @@ func NewServer(cfg *config.Config) *Server {
 	roomService := services.NewRoomService(db.DB())
 	snackService := services.NewSnackService(db.DB())
 
+	validator := validator.New()
+
 	// Initialize handlers
 	userHandler := handlers.NewUserHandler(userService)
 	healthHandler := handlers.NewHealthHandler("1.0.0")
@@ -67,7 +70,7 @@ func NewServer(cfg *config.Config) *Server {
 	dashboardHandler := handlers.NewDashboardHandler(dashboardDb)
 	reservationHandler := handlers.NewReservationHandler(reservationService)
 	roomHandler := handlers.NewRoomHandler(roomService)
-	snackHandler := handlers.NewSnackHandler(snackService)
+	snackHandler := handlers.NewSnackHandler(snackService, validator)
 
 	// Initialize rate limiter
 	rateLimiter := middleware.NewRateLimiter(100, time.Hour)

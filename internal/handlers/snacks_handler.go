@@ -5,16 +5,19 @@ import (
 	"e_metting/internal/services"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 )
 
 type SnackHandler struct {
-	service *services.SnackService
+	service   *services.SnackService
+	validator *validator.Validate
 }
 
-func NewSnackHandler(service *services.SnackService) *SnackHandler {
+func NewSnackHandler(service *services.SnackService, validator *validator.Validate) *SnackHandler {
 	return &SnackHandler{
-		service: service,
+		service:   service,
+		validator: validator,
 	}
 }
 
@@ -47,6 +50,13 @@ func (h *SnackHandler) CreateSnack(c *fiber.Ctx) error {
 	if req.Price <= 0 {
 		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
 			Error: "price must be positive",
+		})
+	}
+
+	// Validate request
+	if err := h.validator.Struct(req); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+			Error: err.Error(),
 		})
 	}
 
