@@ -27,6 +27,7 @@ func SetupRouter(
 	app.Use(recover.New())
 	app.Use(middleware.LoggerMiddleware())
 	app.Use(middleware.ErrorHandlerMiddleware())
+	app.Static("/swagger", "./public/swagger")
 	// app.Use(rateLimiter.RateLimit())
 
 	// Public routes
