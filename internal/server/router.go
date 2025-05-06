@@ -64,6 +64,8 @@ func SetupRouter(
 		adminOnly.Post("/rooms", roomsHandler.CreateRoom)    // Create room
 		adminOnly.Put("/rooms/:id", roomsHandler.UpdateRoom) // Update room
 		adminOnly.Delete("/rooms/:id", roomsHandler.DeleteRoom)
+		// Snack management
+		adminOnly.Post("/snacks", snacksHandler.CreateSnack) // Create snack
 
 	}
 

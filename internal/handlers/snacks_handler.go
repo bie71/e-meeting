@@ -34,3 +34,29 @@ func (h *SnackHandler) GetSnacks(c *fiber.Ctx) error {
 
 	return c.JSON(response)
 }
+
+func (h *SnackHandler) CreateSnack(c *fiber.Ctx) error {
+	var req models.CreateSnackRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+			Error: "invalid request body " + err.Error(),
+		})
+	}
+
+	// Validate price is positive
+	if req.Price <= 0 {
+		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+			Error: "price must be positive",
+		})
+	}
+
+	// Create snack
+	response, err := h.service.CreateSnack(&req)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
+			Error: err.Error(),
+		})
+	}
+
+	return c.Status(http.StatusCreated).JSON(response)
+}
