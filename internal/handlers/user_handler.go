@@ -40,7 +40,7 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 func (h *UserHandler) Login(c *fiber.Ctx) error {
 	req := c.Locals("request").(models.LoginRequest)
 
-	token, err := h.userService.Login(req)
+	token, userId, err := h.userService.Login(req)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to login")
 		return c.Status(fiber.StatusUnauthorized).JSON(models.ErrorResponse{
@@ -49,7 +49,8 @@ func (h *UserHandler) Login(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(models.LoginResponse{
-		Token: token,
+		UserID: userId,
+		Token:  token,
 	})
 }
 

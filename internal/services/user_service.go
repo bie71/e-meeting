@@ -15,7 +15,7 @@ import (
 
 type UserService interface {
 	Register(req models.RegisterRequest) (*models.User, error)
-	Login(req models.LoginRequest) (string, error)
+	Login(req models.LoginRequest) (string, string, error)
 	GetProfile(userID string) (*models.UserProfileResponse, error)
 	UpdateProfile(userID string, req *models.UpdateProfileRequest) (*models.UserProfileResponse, error)
 }
@@ -70,31 +70,31 @@ func (s *userService) Register(req models.RegisterRequest) (*models.User, error)
 	return user, nil
 }
 
-func (s *userService) Login(req models.LoginRequest) (string, error) {
+func (s *userService) Login(req models.LoginRequest) (string, string, error) {
 	// Get user by username
 	user, err := s.userRepo.GetUserByUsername(context.Background(), req.Username)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get user by username")
-		return "", err
+		return "", "", err
 	}
 	if user == nil {
-		return "", errors.New("invalid credentials, user not found")
+		return "", "", errors.New("invalid credentials, user not found")
 	}
 
 	// Check password
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
 		log.Error().Err(err).Msg("Failed to compare password")
-		return "", errors.New("invalid credentials, password doesn't match")
+		return "", "", errors.New("invalid credentials, password doesn't match")
 	}
 
 	// Generate JWT token
 	token, err := s.jwtConfig.GenerateToken(user.ID.String(), user.Username, user.Role)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to generate token")
-		return "", errors.New("failed to generate token")
+		return "", "", errors.New("failed to generate token")
 	}
 
-	return token, nil
+	return token, user.ID.String(), nil
 }
 
 func (s *userService) GetProfile(userID string) (*models.UserProfileResponse, error) {

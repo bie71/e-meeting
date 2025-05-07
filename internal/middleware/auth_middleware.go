@@ -18,7 +18,6 @@ func AuthMiddleware(jwtConfig *auth.JWTConfig) fiber.Handler {
 				"error": "Unauthorized",
 			})
 		}
-
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
 			log.Warn().Msg("Invalid authorization header format")

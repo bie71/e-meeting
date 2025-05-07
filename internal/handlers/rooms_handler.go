@@ -118,7 +118,6 @@ func (h *RoomHandler) GetRooms(c *fiber.Ctx) error {
 			})
 		}
 	}
-
 	// Get rooms with filter and pagination
 	response, err := h.service.GetRooms(&filter, &pagination)
 	if err != nil {
