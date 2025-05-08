@@ -130,7 +130,7 @@ func (s *RoomService) DeleteRoom(id uuid.UUID) error {
 	}
 
 	// Delete room
-	result, err := tx.Exec(`DELETE FROM roomsWHERE id = $1`, id)
+	result, err := tx.Exec(`DELETE FROM rooms WHERE id = $1`, id)
 	if err != nil {
 		return fmt.Errorf("error deleting room: %v", err)
 	}
