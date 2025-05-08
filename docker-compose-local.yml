@@ -15,11 +15,11 @@ services:
       APP_ENV: ${APP_ENV}
       PORT: ${PORT}
 
-      DATABASE_HOST: ${DATABASE_HOST}
-      DATABASE_PORT: ${DATABASE_PORT}
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_USER: ${DATABASE_USER}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_HOST: postgres-database-1
+      DATABASE_PORT: "5432"
+      DATABASE_NAME: postgres
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: sinau123
       DATABASE_MAX_OPEN_CONNECTIONS: ${DATABASE_MAX_OPEN_CONNECTIONS}
       DATABASE_MAX_IDLE_CONNECTIONS: ${DATABASE_MAX_IDLE_CONNECTIONS}
 
@@ -38,29 +38,5 @@ services:
 
     networks:
       - blueprint
-
-#   psql_bp:
-#     image: postgres:latest
-#     restart: unless-stopped
-#     ports:
-#       - "${DATABASE_PORT}:5432"
-#     environment:
-#       POSTGRES_DB: ${DATABASE_NAME}
-#       POSTGRES_USER: ${DATABASE_USER}
-#       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-#     volumes:
-#       - psql_volume_bp:/var/lib/postgresql/data
-#     healthcheck:
-#       test: ["CMD-SHELL", "sh -c 'pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}'"]
-#       interval: 5s
-#       timeout: 5s
-#       retries: 3
-#       start_period: 15s
-#     networks:
-#       - blueprint
-
-# volumes:
-#   psql_volume_bp:
-
 networks:
   blueprint:
