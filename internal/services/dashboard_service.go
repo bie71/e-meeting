@@ -75,7 +75,7 @@ func (s *DashboardService) GetDashboardStats(query *models.DashboardQuery) (*mod
 				COUNT(r.id) as total_bookings,
 				COALESCE(SUM(EXTRACT(EPOCH FROM (r.end_time - r.start_time)) / 3600), 0) as total_hours,
 				COALESCE(SUM(r.price), 0) as revenue
-			FROM rooms_new rm
+			FROM rooms rm
 			LEFT JOIN reservations r ON r.room_id = rm.id
 				AND r.start_time >= $1 AND r.end_time <= $2
 				AND r.status = 'confirmed'
