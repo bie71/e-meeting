@@ -37,7 +37,8 @@ services:
       FRONTEND_URL: ${FRONTEND_URL}
 
     networks:
-      - blueprint
+      - emeeting
+      - postgres_postgres-network
 
 #   psql_bp:
 #     image: postgres:latest
@@ -57,10 +58,12 @@ services:
 #       retries: 3
 #       start_period: 15s
 #     networks:
-#       - blueprint
+#       - emeeting
 
 # volumes:
 #   psql_volume_bp:
 
 networks:
-  blueprint:
+  emeeting:
+  postgres_postgres-network:
+    external: true

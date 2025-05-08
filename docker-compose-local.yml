@@ -37,6 +37,9 @@ services:
       FRONTEND_URL: ${FRONTEND_URL}
 
     networks:
-      - blueprint
+      - emeeting
+      - postgres_postgres-network
 networks:
-  blueprint:
+  emeeting:
+  postgres_postgres-network:
+    external: true
