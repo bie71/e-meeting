@@ -7,11 +7,16 @@ RUN go mod download
 
 COPY . .
 
+# Make sure .env file is copied
+COPY .env .env
+
+
 RUN go build -o main cmd/api/main.go
 
 FROM alpine:3.20.1 AS prod
 WORKDIR /app
 COPY --from=build /app/main /app/main
+COPY --from=build /app/.env /app/.env 
 EXPOSE ${APP_PORT}
 CMD ["./main"]
 
