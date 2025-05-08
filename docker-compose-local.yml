@@ -8,12 +8,12 @@ services:
       target: prod
     restart: unless-stopped
     ports:
-      - "${PORT}:${PORT}"
+      - "${APP_PORT}:${APP_PORT}"
     env_file:
       - .env
     environment:
       APP_ENV: ${APP_ENV}
-      PORT: ${PORT}
+      PORT: ${APP_PORT}
 
       DATABASE_HOST: postgres-database-1
       DATABASE_PORT: "5432"

@@ -8,12 +8,12 @@ services:
       target: prod
     restart: unless-stopped
     ports:
-      - "${PORT}:${PORT}"
+      - "${APP_PORT}:${APP_PORT}"
     env_file:
       - .env
     environment:
       APP_ENV: ${APP_ENV}
-      PORT: ${PORT}
+      PORT: ${APP_PORT}
 
       DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_PORT: ${DATABASE_PORT}
