@@ -17,6 +17,8 @@ FROM alpine:3.20.1 AS prod
 WORKDIR /app
 COPY --from=build /app/main /app/main
 COPY --from=build /app/.env /app/.env 
+# ✅ Copy folder public
+COPY --from=build /app/public ./public
 EXPOSE ${APP_PORT}
 CMD ["./main"]
 
