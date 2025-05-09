@@ -6,7 +6,7 @@
     "version": "1.0.0"
   },
   "basePath": "/api/v1",
-  "schemes": ["http"],
+  "schemes": ["http", "https"],
   "securityDefinitions": {
     "Bearer": {
       "type": "apiKey",
@@ -879,6 +879,10 @@
     "LoginResponse": {
       "type": "object",
       "properties": {
+        "user_id": {
+          "type": "string",
+          "format": "uuid"
+        },
         "token": {
           "type": "string"
         }
