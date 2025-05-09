@@ -161,16 +161,16 @@
       This is the eMeeting application, providing you with a reliable and easy-to-use room booking system. 
       The backend API of this app is available for you to integrate and build powerful meeting booking experiences.
     </p>
-    <div class="btn-group">
-      <button class="cta" id="exploreApiBtn">Explore the API</button>
-      <a href="https://github.com/bie71/e-meeting" class="button-link" target="_blank" rel="noopener noreferrer">View on GitHub</a>
-      <a href="https://docs.google.com/presentation/d/14Tb8hUgHihUgHy0M6Xj2_kVWdWNjDl1WLRPUiBy9dHw/edit?usp=sharing" class="button-link" target="_blank" rel="noopener noreferrer">View PPT</a>
-    </div>
+   <div class="btn-group">
+  <a href="/swagger/" class="cta button-link" target="_blank" rel="noopener noreferrer">Explore the API</a>
+  <a href="https://github.com/bie71/e-meeting" class="button-link" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+  <a href="https://docs.google.com/presentation/d/14Tb8hUgHihUgHy0M6Xj2_kVWdWNjDl1WLRPUiBy9dHw/edit?usp=sharing" class="button-link" target="_blank" rel="noopener noreferrer">View PPT</a>
+</div>
   </div>
   <script>
     document.getElementById('exploreApiBtn').addEventListener('click', function() {
-      const apiUrl = window.location.origin + '/swagger/';
-      window.location.href = apiUrl;
+     const apiUrl = window.location.origin + '/swagger/';
+    window.open(apiUrl, '_blank');
     });
   </script>
 </body>
