@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>eMeeting - Room Booking API</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><circle fill=%222980b9%22 cx=%2232%22 cy=%2232%22 r=%2232%22/><text x=%2232%22 y=%2242%22 font-size=%2232%22 font-family=%22Poppins,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>eM</text></svg>" type="image/svg+xml"/>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    padding: 20px;
+    font-family: 'Poppins', sans-serif;
+    /* Enhanced layered gradient background */
+    background:
+      linear-gradient(120deg, #1e3c72 0%, #2a5298 40%, #6dd5fa 80%, #2980b9 100%);
+    color: #fff;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* subtle overlay radial gradient for depth */
+  body::before {
+    content: "";
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .content-wrapper {
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 3.4rem;
+    margin-bottom: 0.2em;
+    font-weight: 700;
+    text-shadow: 0 3px 8px rgba(0,0,0,0.35);
+    z-index: 1;
+  }
+  p.subtitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0 0 1.2em;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 1;
+  }
+  p.description {
+    font-size: 1rem;
+    line-height: 1.35;
+    margin: 0 auto 2.5em;
+    color: #e0f0ff;
+    z-index: 1;
+  }
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: -10px;
+  }
+  button, a.button-link {
+    font-size: 1.1rem;
+    padding: 16px 36px;
+    background: #ffffffcc;
+    color: #1e3c72;
+    border: none;
+    border-radius: 9999px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.6);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    text-decoration: none;
+    text-align: center;
+    z-index: 1;
+    display: inline-block;
+  }
+  button:hover, a.button-link:hover {
+    background: #fff;
+    box-shadow: 0 12px 28px rgba(255, 255, 255, 0.85);
+  }
+
+  .logo {
+    position: fixed;
+    top: -40px;
+    left: -80px;
+    width: 400px;
+    height: 200px;
+    user-select: none;
+    z-index: 10;
+    cursor: default;
+  }
+  .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+   opacity: 0.85;
+    filter: drop-shadow(0 0 6px rgba(124, 195, 253, 0.8));
+    transition: opacity 0.3s ease;
+  }
+  .logo img:hover {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(168, 215, 253, 0.95));
+  }
+
+  @media (max-width: 360px) {
+    body {
+      padding: 20px 15px;
+    }
+    h1 {
+      font-size: 3rem;
+    }
+    p.subtitle {
+      font-size: 1.1rem;
+    }
+    p.description {
+      max-width: 260px;
+      font-size: 0.95rem;
+      margin-bottom: 2em;
+    }
+    button, a.button-link {
+      font-size: 1rem;
+      padding: 14px 28px;
+    }
+    .logo {
+      width: 50px;
+      height: 50px;
+      top: 10px;
+      left: 10px;
+    }
+  }
+</style>
+</head>
+<body>
+    <div class="logo" aria-label="eMeeting logo">
+    <img src="sinau.svg" alt="eMeeting Logo" />
+  </div>
+  <div class="content-wrapper">
+    <h1>eMeeting</h1>
+    <p class="subtitle">Room Booking Made Simple</p>
+    <p class="description">
+      This is the eMeeting application, providing you with a reliable and easy-to-use room booking system. 
+      The backend API of this app is available for you to integrate and build powerful meeting booking experiences.
+    </p>
+    <div class="btn-group">
+      <button class="cta" id="exploreApiBtn">Explore the API</button>
+      <a href="https://github.com/bie71/e-meeting" class="button-link" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+      <a href="https://docs.google.com/presentation/d/14Tb8hUgHihUgHy0M6Xj2_kVWdWNjDl1WLRPUiBy9dHw/edit?usp=sharing" class="button-link" target="_blank" rel="noopener noreferrer">View PPT</a>
+    </div>
+  </div>
+  <script>
+    document.getElementById('exploreApiBtn').addEventListener('click', function() {
+      const apiUrl = window.location.origin + '/swagger/';
+      window.location.href = apiUrl;
+    });
+  </script>
+</body>
+</html>
+

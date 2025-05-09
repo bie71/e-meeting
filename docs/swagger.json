@@ -5,7 +5,6 @@
     "description": "API untuk aplikasi E-Meeting",
     "version": "1.0.0"
   },
-  "host": "localhost:8081",
   "basePath": "/api/v1",
   "schemes": ["http"],
   "securityDefinitions": {
