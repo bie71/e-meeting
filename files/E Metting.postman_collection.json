@@ -1,0 +1,1856 @@
+{
+	"info": {
+		"_postman_id": "ba91c33b-0673-419a-ba28-f6afbf5cfbaf",
+		"name": "E Metting",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23412501"
+	},
+	"item": [
+		{
+			"name": "Public",
+			"item": [
+				{
+					"name": "Cek App Health",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{Address}}/api/v1/health",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"health"
+							]
+						},
+						"description": "Generated from cURL: curl -X 'GET' \\\n  'http://invitation-ltd-station-screensavers.trycloudflare.com/api/v1/health' \\\n  -H 'accept: application/json'"
+					},
+					"response": []
+				},
+				{
+					"name": "Login [ Jouney Auth ]",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"jhonwick\",\n    \"password\": \"test123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Address}}/api/v1/auth/login",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register [ Journey Auth ]",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"jhonwick\",\n    \"email\": \"bie7.habibi@gmail.com\",\n    \"password\": \"secret123\",\n    \"confirm_password\": \"secret123\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Address}}/api/v1/auth/register",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST http://localhost:8080/api/auth/register \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"username\": \"johndoe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"secret123\",\n    \"confirm_password\": \"secret123\"\n  }'"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Request [ Journey Auth ]",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"bie7.habibi@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Address}}/api/v1/password/reset/request",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"password",
+								"reset",
+								"request"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST http://localhost:8081/password/reset_request \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\":\"user@example.com\"}'"
+					},
+					"response": []
+				},
+				{
+					"name": "Password reset link [ Journey Auth ]",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"3cb83ff1-66b9-41bc-a3f7-4dcf77c5bf62\",\n    \"new_password\": \"newpassword123\",\n    \"confirm_password\": \"newpassword123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Address}}/api/v1/password/reset",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"password",
+								"reset"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show Profile [ Journey User ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY5NzU0OTQsInJvbGUiOiJ1c2VyIiwidXNlcl9pZCI6IjVhYTJlYjRlLWFmMzYtNDFjZS05NDE3LWVlYWRjNjYyYjI2ZiIsInVzZXJuYW1lIjoiamhvbndpY2sifQ.XZckWRhbPognWMWaCcxmkmBd-zELzTBoajupMTdEHIE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Address}}/api/v1/profile/:id",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								":id"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5aa2eb4e-af36-41ce-9417-eeadc662b26f"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile [ Journey User ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDU1MDE1NjMsInJvbGUiOiJ1c2VyIiwidXNlcl9pZCI6IjIxZTc0MjIzLWNkY2MtNDk5NC1iYTRiLTYzYzk4NDIyZGIwNSIsInVzZXJuYW1lIjoiamhvbndpY2sifQ.EI6F-fuEm68--PHfVdGGy2pzMYgKYH7qA-WwRvUMv-o",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"newemail@example.com\",\n    \"username\": \"jhonwick\",\n    \"language\": \"en\",\n    \"password\": \"test12345\"  // Optional\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Address}}/api/v1/profile/:id",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "21e74223-cdcc-4994-ba4b-63c98422db05"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rooms [ Journey User ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{Address}}/api/v1/rooms",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"rooms"
+							]
+						},
+						"description": "Generated from cURL: curl -X GET http://localhost:8080/rooms \\\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rooms With Pagination [ Journey User ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_JWT_TOKEN"
+							}
+						],
+						"url": {
+							"raw": "{{Address}}/api/v1/rooms?page=2&page_size=20",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"rooms"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "page_size",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Generated from cURL: curl -X GET \"http://localhost:8080/rooms?page=2&page_size=20\" \\\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rooms 3 With Filter [ Journey User ]",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_JWT_TOKEN"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"search\": \"conference\",\n    \"min_capacity\": 30,\n    \"status\": \"active\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Address}}/api/v1/rooms",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"rooms"
+							]
+						},
+						"description": "Generated from cURL: curl -X GET http://localhost:8080/rooms \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\" \\\n  -d '{\n    \"search\": \"conference\",\n    \"min_capacity\": 10,\n    \"status\": \"active\"\n  }'"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rooms Schedule [ Journey User ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Address}}/api/v1/rooms/:id/schedule?start_datetime=2024-03-20T00:00:00Z&end_datetime=2024-03-21T00:00:00Z",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"rooms",
+								":id",
+								"schedule"
+							],
+							"query": [
+								{
+									"key": "start_datetime",
+									"value": "2024-03-20T00:00:00Z"
+								},
+								{
+									"key": "end_datetime",
+									"value": "2024-03-21T00:00:00Z"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "992b56c8-98b3-415b-82f8-5d4da92d0ce6"
+								}
+							]
+						},
+						"description": "Generated from cURL: curl -X GET 'http://localhost:8080/rooms/123e4567-e89b-12d3-a456-426614174000/schedule?start_datetime=2024-03-20T00:00:00Z&end_datetime=2024-03-21T00:00:00Z' \\\n-H 'Authorization: Bearer your_jwt_token'"
+					},
+					"response": []
+				},
+				{
+					"name": "Reservation Calculation [ Journey User ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer your_jwt_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"room_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"snacks\": [\n        {\n            \"snack_id\": \"456e4567-e89b-12d3-a456-426614174001\",\n            \"quantity\": 2\n        },\n        {\n            \"snack_id\": \"789e4567-e89b-12d3-a456-426614174002\",\n            \"quantity\": 3\n        }\n    ],\n    \"start_time\": \"2024-03-20T09:00:00Z\",\n    \"end_time\": \"2024-03-20T11:00:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Address}}/api/v1/reservation/calculation",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reservation",
+								"calculation"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST 'http://localhost:8080/reservation/calculation' \\\n-H 'Authorization: Bearer your_jwt_token' \\\n-H 'Content-Type: application/json' \\\n-d '{\n  \"room_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"snacks\": [\n    {\n      \"snack_id\": \"456e4567-e89b-12d3-a456-426614174001\",\n      \"quantity\": 2\n    },\n    {\n      \"snack_id\": \"789e4567-e89b-12d3-a456-426614174002\",\n      \"quantity\": 3\n    }\n  ],\n  \"start_time\": \"2024-03-20T09:00:00Z\",\n  \"end_time\": \"2024-03-20T11:00:00Z\"\n}'"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Snacks [ Journey User ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer your_jwt_token"
+							}
+						],
+						"url": {
+							"raw": "{{Address}}/api/v1/snacks",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"snacks"
+							]
+						},
+						"description": "Generated from cURL: curl -X GET 'http://localhost:8080/snacks' \\\n-H 'Authorization: Bearer your_jwt_token'"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reservations [ Journey User ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Address}}/api/v1/reservation/:id",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reservation",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "992b56c8-98b3-415b-82f8-5d4da92d0ce6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Reservation [ Journey User ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"room_id\": \"b3b7c5d2-e6a1-4c59-9b1e-29e9a24f39e8\",\n    \"user_id\": \"e2d2c4b5-7d56-4f97-8d90-9123f7b1d66f\",\n    \"start_time\": \"2025-04-30T09:00:00Z\",\n    \"end_time\": \"2025-04-30T11:00:00Z\",\n    \"visitor_count\": 5,\n    \"snacks\": [\n        {\n            \"snack_id\": \"c1f8a2e4-3c48-4b88-9aa3-9b6bd1fd1540\",\n            \"quantity\": 2\n        },\n        {\n            \"snack_id\": \"8b8a9b9f-12a7-4d67-8dfb-8c6d0a1e2b8f\",\n            \"quantity\": 3\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Address}}/api/v1/reservation",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reservation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Snack [ Journey Admin ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer your_jwt_token"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Keripik Pisang\",\n    \"category\": \"Camilan Manis\",\n    \"price\": 8500\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Address}}/api/v1/admin/snacks",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"snacks"
+							]
+						},
+						"description": "Generated from cURL: curl -X GET 'http://localhost:8080/snacks' \\\n-H 'Authorization: Bearer your_jwt_token'"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Dashboard statistic  [ Journey Admin ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_JWT_TOKEN"
+							}
+						],
+						"url": {
+							"raw": "{{Address}}/api/v1/admin/dashboard?start_date=2024-04-01&end_date=2024-04-19",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"dashboard"
+							],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2024-04-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2024-04-19"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reservation History  [ Journey Admin ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Address}}/api/v1/admin/reservations/history?start_datetime=2024-04-01 00:00:00&end_datetime=2024-04-24 19:59:59",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"reservations",
+								"history"
+							],
+							"query": [
+								{
+									"key": "start_datetime",
+									"value": "2024-04-01 00:00:00"
+								},
+								{
+									"key": "end_datetime",
+									"value": "2024-04-24 19:59:59"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reservation Status  [ Journey Admin ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDU1ODc3MjcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJlYWU3YmI1YS02NDNlLTQ5OTktODk0MC0zNTE2YzI3YmFmNzMiLCJ1c2VybmFtZSI6ImFkbWluIn0.WyOe-e_hPnVe2cnSC5ycVwB85H37GG6IMUH4ZgFjgzY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_JWT_TOKEN"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reservation_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"status\": \"confirmed\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Address}}/api/v1/admin/reservation/status",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"reservation",
+								"status"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST http://localhost:8080/admin/reservation/status \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\" \\\n  -d '{\n    \"reservation_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"status\": \"confirmed\"\n  }'"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Rooms  [ Journey Admin ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Conference Room test\",\n    \"capacity\": 200,\n    \"price_per_hour\": 100.00,\n    \"status\": \"active\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Address}}/api/v1/admin/rooms",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"rooms"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST http://localhost:8080/admin/rooms \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer YOUR_ADMIN_TOKEN\" \\\n  -d '{\n    \"name\": \"Conference Room A\",\n    \"capacity\": 20,\n    \"price_per_hour\": 100.00,\n    \"status\": \"active\"\n  }'"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Rooms  [ Journey Admin ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_ADMIN_TOKEN"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"capacity\": 25,\n    \"price_per_hour\": 12000.00\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Address}}/api/v1/admin/rooms/54b3fca9-3d59-463b-9350-922193bdd88b",
+							"host": [
+								"{{Address}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"rooms",
+								"54b3fca9-3d59-463b-9350-922193bdd88b"
+							]
+						},
+						"description": "Generated from cURL: curl -X PUT http://localhost:8080/admin/rooms/123e4567-e89b-12d3-a456-426614174000 \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer YOUR_ADMIN_TOKEN\" \\\n  -d '{\n    \"capacity\": 25,\n    \"price_per_hour\": 120.00\n  }'"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Rooms  [ Journey Admin ]",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_ADMIN_TOKEN"
+							}
+						],
+						"url": {
+							"raw": "{{Address}}api/v1/admin/rooms/123e4567-e89b-12d3-a456-426614174000",
+							"host": [
+								"{{Address}}api"
+							],
+							"path": [
+								"v1",
+								"admin",
+								"rooms",
+								"123e4567-e89b-12d3-a456-426614174000"
+							]
+						},
+						"description": "Generated from cURL: curl -X DELETE http://localhost:8080/admin/rooms/123e4567-e89b-12d3-a456-426614174000 \\\n  -H \"Authorization: Bearer YOUR_ADMIN_TOKEN\""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Local",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"jhonwick\",\n    \"password\": \"test123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/auth/login",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"jhonwick\",\n    \"email\": \"bie7.habibi@gmail.com\",\n    \"password\": \"secret123\",\n    \"confirm_password\": \"secret123\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:{{port}}/api/v1/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST http://localhost:8080/api/auth/register \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"username\": \"johndoe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"secret123\",\n    \"confirm_password\": \"secret123\"\n  }'"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"bie7.habibi@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/password/reset/request",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"password",
+								"reset",
+								"request"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST http://localhost:8081/password/reset_request \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\":\"user@example.com\"}'"
+					},
+					"response": []
+				},
+				{
+					"name": "Password reset link",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"3cb83ff1-66b9-41bc-a3f7-4dcf77c5bf62\",\n    \"new_password\": \"newpassword123\",\n    \"confirm_password\": \"newpassword123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/password/reset",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"password",
+								"reset"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY5NzU0OTQsInJvbGUiOiJ1c2VyIiwidXNlcl9pZCI6IjVhYTJlYjRlLWFmMzYtNDFjZS05NDE3LWVlYWRjNjYyYjI2ZiIsInVzZXJuYW1lIjoiamhvbndpY2sifQ.XZckWRhbPognWMWaCcxmkmBd-zELzTBoajupMTdEHIE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/profile/:id",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								":id"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5aa2eb4e-af36-41ce-9417-eeadc662b26f"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDU1MDE1NjMsInJvbGUiOiJ1c2VyIiwidXNlcl9pZCI6IjIxZTc0MjIzLWNkY2MtNDk5NC1iYTRiLTYzYzk4NDIyZGIwNSIsInVzZXJuYW1lIjoiamhvbndpY2sifQ.EI6F-fuEm68--PHfVdGGy2pzMYgKYH7qA-WwRvUMv-o",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"newemail@example.com\",\n    \"username\": \"jhonwick\",\n    \"language\": \"en\",\n    \"password\": \"test12345\"  // Optional\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:{{port}}/api/v1/profile/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "21e74223-cdcc-4994-ba4b-63c98422db05"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Dashboard statistic",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_JWT_TOKEN"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/admin/dashboard?start_date=2024-04-01&end_date=2024-04-19",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"dashboard"
+							],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2024-04-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2024-04-19"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reservation History",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/admin/reservations/history?start_datetime=2024-04-01 00:00:00&end_datetime=2024-04-24 19:59:59",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"reservations",
+								"history"
+							],
+							"query": [
+								{
+									"key": "start_datetime",
+									"value": "2024-04-01 00:00:00"
+								},
+								{
+									"key": "end_datetime",
+									"value": "2024-04-24 19:59:59"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reservation Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDU1ODc3MjcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJlYWU3YmI1YS02NDNlLTQ5OTktODk0MC0zNTE2YzI3YmFmNzMiLCJ1c2VybmFtZSI6ImFkbWluIn0.WyOe-e_hPnVe2cnSC5ycVwB85H37GG6IMUH4ZgFjgzY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_JWT_TOKEN"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reservation_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"status\": \"confirmed\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/admin/reservation/status",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"reservation",
+								"status"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST http://localhost:8080/admin/reservation/status \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\" \\\n  -d '{\n    \"reservation_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"status\": \"confirmed\"\n  }'"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Rooms",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Conference Room test\",\n    \"capacity\": 200,\n    \"price_per_hour\": 100.00,\n    \"status\": \"active\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/admin/rooms",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"rooms"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST http://localhost:8080/admin/rooms \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer YOUR_ADMIN_TOKEN\" \\\n  -d '{\n    \"name\": \"Conference Room A\",\n    \"capacity\": 20,\n    \"price_per_hour\": 100.00,\n    \"status\": \"active\"\n  }'"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Rooms",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_ADMIN_TOKEN"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"capacity\": 25,\n    \"price_per_hour\": 12000.00\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/admin/rooms/54b3fca9-3d59-463b-9350-922193bdd88b",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"rooms",
+								"54b3fca9-3d59-463b-9350-922193bdd88b"
+							]
+						},
+						"description": "Generated from cURL: curl -X PUT http://localhost:8080/admin/rooms/123e4567-e89b-12d3-a456-426614174000 \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer YOUR_ADMIN_TOKEN\" \\\n  -d '{\n    \"capacity\": 25,\n    \"price_per_hour\": 120.00\n  }'"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Rooms",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_ADMIN_TOKEN"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/admin/rooms/123e4567-e89b-12d3-a456-426614174000",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"rooms",
+								"123e4567-e89b-12d3-a456-426614174000"
+							]
+						},
+						"description": "Generated from cURL: curl -X DELETE http://localhost:8080/admin/rooms/123e4567-e89b-12d3-a456-426614174000 \\\n  -H \"Authorization: Bearer YOUR_ADMIN_TOKEN\""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rooms",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/rooms",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"rooms"
+							]
+						},
+						"description": "Generated from cURL: curl -X GET http://localhost:8080/rooms \\\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rooms 2",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_JWT_TOKEN"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/rooms?page=2&page_size=20",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"rooms"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "page_size",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Generated from cURL: curl -X GET \"http://localhost:8080/rooms?page=2&page_size=20\" \\\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rooms 3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_JWT_TOKEN"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"search\": \"conference\",\n    \"min_capacity\": 30,\n    \"status\": \"active\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/rooms",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"rooms"
+							]
+						},
+						"description": "Generated from cURL: curl -X GET http://localhost:8080/rooms \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer YOUR_JWT_TOKEN\" \\\n  -d '{\n    \"search\": \"conference\",\n    \"min_capacity\": 10,\n    \"status\": \"active\"\n  }'"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rooms Schedule",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/rooms/:id/schedule?start_datetime=2024-03-20T00:00:00Z&end_datetime=2024-03-21T00:00:00Z",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"rooms",
+								":id",
+								"schedule"
+							],
+							"query": [
+								{
+									"key": "start_datetime",
+									"value": "2024-03-20T00:00:00Z"
+								},
+								{
+									"key": "end_datetime",
+									"value": "2024-03-21T00:00:00Z"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "992b56c8-98b3-415b-82f8-5d4da92d0ce6"
+								}
+							]
+						},
+						"description": "Generated from cURL: curl -X GET 'http://localhost:8080/rooms/123e4567-e89b-12d3-a456-426614174000/schedule?start_datetime=2024-03-20T00:00:00Z&end_datetime=2024-03-21T00:00:00Z' \\\n-H 'Authorization: Bearer your_jwt_token'"
+					},
+					"response": []
+				},
+				{
+					"name": "Reservation Calculation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer your_jwt_token"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"room_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"snacks\": [\n        {\n            \"snack_id\": \"456e4567-e89b-12d3-a456-426614174001\",\n            \"quantity\": 2\n        },\n        {\n            \"snack_id\": \"789e4567-e89b-12d3-a456-426614174002\",\n            \"quantity\": 3\n        }\n    ],\n    \"start_time\": \"2024-03-20T09:00:00Z\",\n    \"end_time\": \"2024-03-20T11:00:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/reservation/calculation",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"reservation",
+								"calculation"
+							]
+						},
+						"description": "Generated from cURL: curl -X POST 'http://localhost:8080/reservation/calculation' \\\n-H 'Authorization: Bearer your_jwt_token' \\\n-H 'Content-Type: application/json' \\\n-d '{\n  \"room_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"snacks\": [\n    {\n      \"snack_id\": \"456e4567-e89b-12d3-a456-426614174001\",\n      \"quantity\": 2\n    },\n    {\n      \"snack_id\": \"789e4567-e89b-12d3-a456-426614174002\",\n      \"quantity\": 3\n    }\n  ],\n  \"start_time\": \"2024-03-20T09:00:00Z\",\n  \"end_time\": \"2024-03-20T11:00:00Z\"\n}'"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Snacks",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer your_jwt_token"
+							}
+						],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/snacks",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"snacks"
+							]
+						},
+						"description": "Generated from cURL: curl -X GET 'http://localhost:8080/snacks' \\\n-H 'Authorization: Bearer your_jwt_token'"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Snack",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer your_jwt_token"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Keripik Pisang\",\n    \"category\": \"Camilan Manis\",\n    \"price\": 8500\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/admin/snacks",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"snacks"
+							]
+						},
+						"description": "Generated from cURL: curl -X GET 'http://localhost:8080/snacks' \\\n-H 'Authorization: Bearer your_jwt_token'"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reservations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/reservation/:id",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"reservation",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "992b56c8-98b3-415b-82f8-5d4da92d0ce6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Reservation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4MDczNDcsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOiJjMjE0OGZlNC1iNWI2LTRiNmYtYWU2Ni1kODFlYThiOTZkM2IiLCJ1c2VybmFtZSI6ImFkbWluIn0.BNZNYnWabV4xTzRhf5v8zS3EFcRVwVNI-vi2xx7_Apw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"room_id\": \"b3b7c5d2-e6a1-4c59-9b1e-29e9a24f39e8\",\n    \"user_id\": \"e2d2c4b5-7d56-4f97-8d90-9123f7b1d66f\",\n    \"start_time\": \"2025-04-30T09:00:00Z\",\n    \"end_time\": \"2025-04-30T11:00:00Z\",\n    \"visitor_count\": 5,\n    \"snacks\": [\n        {\n            \"snack_id\": \"c1f8a2e4-3c48-4b88-9aa3-9b6bd1fd1540\",\n            \"quantity\": 2\n        },\n        {\n            \"snack_id\": \"8b8a9b9f-12a7-4d67-8dfb-8c6d0a1e2b8f\",\n            \"quantity\": 3\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/reservation",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"reservation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cek App Health",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "https://military-workers-builds-baskets.trycloudflare.com/api/v1/health",
+							"protocol": "https",
+							"host": [
+								"military-workers-builds-baskets",
+								"trycloudflare",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"health"
+							]
+						},
+						"description": "Generated from cURL: curl -X 'GET' \\\n  'http://invitation-ltd-station-screensavers.trycloudflare.com/api/v1/health' \\\n  -H 'accept: application/json'"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

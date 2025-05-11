@@ -39,6 +39,7 @@ func SetupRouter(
 	public.Post("/auth/login", middleware.ValidateRequest[models.LoginRequest](), userHandler.Login)
 	public.Post("/password/reset/request", middleware.ValidateRequest[models.ResetPasswordRequest](), passwordResetHandler.RequestReset)
 	public.Post("/password/reset", passwordResetHandler.ResetPassword)
+	public.Get("/download/collection", handlers.DownloadFile) // Download Postman collection
 
 	// Protected routes
 	protected := app.Group("/api/v1")
