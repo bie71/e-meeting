@@ -30,7 +30,7 @@ type emailService struct {
 	useTLS             bool
 }
 
-func NewEmailService(smtpHost string, smtpPort, timeOutDuration int, smtpUsername, smtpPassword, fromEmail, templatePath, logoURL string, insecureSkipVerify bool) EmailService {
+func NewEmailService(smtpHost string, smtpPort, timeOutDuration int, smtpUsername, smtpPassword, fromEmail, templatePath, logoURL string, insecureSkipVerify, useTLS bool) EmailService {
 	return &emailService{
 		smtpHost:           smtpHost,
 		smtpPort:           smtpPort,
@@ -40,7 +40,7 @@ func NewEmailService(smtpHost string, smtpPort, timeOutDuration int, smtpUsernam
 		templatePath:       templatePath,
 		logoURL:            logoURL,
 		timeOutDuration:    timeOutDuration,
-		useTLS:             smtpPort == 465,    // Use TLS if port is 465
+		useTLS:             useTLS,             // Use TLS if port is 465
 		insecureSkipVerify: insecureSkipVerify, // Set to true if you want to skip TLS verification
 	}
 }

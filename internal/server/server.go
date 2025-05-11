@@ -52,6 +52,7 @@ func NewServer(cfg *config.Config) *Server {
 		cfg.SMTP.TemplatePath,
 		cfg.SMTP.TemplateLogoURL,
 		cfg.SMTP.InsecureSkipVerify,
+		cfg.SMTP.UseTLS,
 	)
 	passwordResetService := services.NewPasswordResetService(
 		userRepo,

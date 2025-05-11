@@ -38,6 +38,7 @@ type Config struct {
 		TemplateLogoURL    string
 		TimeoutDuration    int
 		InsecureSkipVerify bool
+		UseTLS             bool
 	}
 
 	CloudflareR2BucketName string
@@ -92,6 +93,7 @@ func setDefaults() {
 	viper.SetDefault("TEMPLATE_LOGO_URL", "https://example.com/logo.png")
 	viper.SetDefault("SMTP_TIMEOUT_DURATION", 10)
 	viper.SetDefault("SMTP_INSECURE_SKIP_VERIFY", false)
+	viper.SetDefault("SMTP_USE_TLS", true)
 
 	viper.SetDefault("CLOUDFLARE_R2_BUCKET_NAME", "")
 	viper.SetDefault("CLOUDFLARE_R2_API_KEY", "")
@@ -140,6 +142,7 @@ func LoadConfig(path string) (*Config, error) {
 	config.SMTP.TemplateLogoURL = viper.GetString("TEMPLATE_LOGO_URL")
 	config.SMTP.TimeoutDuration = viper.GetInt("SMTP_TIMEOUT_DURATION")
 	config.SMTP.InsecureSkipVerify = viper.GetBool("SMTP_INSECURE_SKIP_VERIFY")
+	config.SMTP.UseTLS = viper.GetBool("SMTP_USE_TLS")
 
 	config.CloudflareR2BucketName = viper.GetString("CLOUDFLARE_R2_BUCKET_NAME")
 	config.CloudflareR2APIKey = viper.GetString("CLOUDFLARE_R2_API_KEY")
