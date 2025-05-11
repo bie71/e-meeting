@@ -61,49 +61,15 @@ func (s *emailService) SendPasswordResetEmail(toEmail, resetLink string) error {
 			"MIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n%s",
 		s.fromEmail, toEmail, subject, htmlBody)
 
-	// Set timeout
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(s.timeOutDuration)*time.Second)
 	defer cancel()
 
-	var conn net.Conn
-
-	address := fmt.Sprintf("%s:%d", s.smtpHost, s.smtpPort)
-
-	if s.useTLS {
-		// Pakai TLS untuk port 465
-		log.Println("Connecting via TLS (port 465)")
-		tlsConfig := &tls.Config{
-			InsecureSkipVerify: s.insecureSkipVerify,
-			ServerName:         s.smtpHost,
-		}
-
-		conn, err = tls.Dial("tcp", address, tlsConfig)
-		if err != nil {
-			log.Printf("TLS Dial error: %v", err)
-			return err
-		}
-		log.Println("Connected via TLS (port 465)")
-	} else {
-		// Gunakan context + Dialer (port 587/2525)
-		dialer := &net.Dialer{}
-		log.Println("Connecting via plain (STARTTLS route)")
-		conn, err = dialer.DialContext(ctx, "tcp", address)
-		if err != nil {
-			log.Printf("DialContext error: %v", err)
-			return err
-		}
-		log.Println("Connected via plain (STARTTLS route)")
-	}
-
-	// Create new SMTP client
-	client, err := smtp.NewClient(conn, s.smtpHost)
+	client, err := s.connectSMTP(ctx)
 	if err != nil {
-		log.Printf("SMTP client error: %v", err)
 		return err
 	}
 	defer client.Quit()
 
-	// Auth
 	auth := smtp.PlainAuth("", s.smtpUsername, s.smtpPassword, s.smtpHost)
 	if err := client.Auth(auth); err != nil {
 		log.Printf("Auth error: %v", err)
@@ -126,6 +92,53 @@ func (s *emailService) SendPasswordResetEmail(toEmail, resetLink string) error {
 		return err
 	}
 	return w.Close()
+}
+
+func (s *emailService) connectSMTP(ctx context.Context) (*smtp.Client, error) {
+	address := fmt.Sprintf("%s:%d", s.smtpHost, s.smtpPort)
+
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: s.insecureSkipVerify,
+		ServerName:         s.smtpHost,
+	}
+
+	var conn net.Conn
+	var err error
+
+	if s.useTLS {
+		log.Println("Connecting via TLS (port 465)")
+		conn, err = tls.Dial("tcp", address, tlsConfig)
+		if err != nil {
+			log.Printf("TLS Dial error: %v", err)
+			return nil, err
+		}
+		log.Println("Connected via TLS (port 465)")
+	} else {
+		dialer := &net.Dialer{}
+		log.Println("Connecting via plain (STARTTLS route)")
+		conn, err = dialer.DialContext(ctx, "tcp", address)
+		if err != nil {
+			log.Printf("DialContext error: %v", err)
+			return nil, err
+		}
+		log.Println("Connected via plain (STARTTLS route)")
+	}
+
+	client, err := smtp.NewClient(conn, s.smtpHost)
+	if err != nil {
+		log.Printf("SMTP client error: %v", err)
+		return nil, err
+	}
+
+	if !s.useTLS {
+		if err := client.StartTLS(tlsConfig); err != nil {
+			log.Printf("StartTLS error: %v", err)
+			return nil, err
+		}
+		log.Println("Upgraded to TLS via STARTTLS")
+	}
+
+	return client, nil
 }
 
 func (s *emailService) renderEmailTemplate(resetLink string) (string, error) {
