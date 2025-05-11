@@ -29,11 +29,15 @@ type Config struct {
 	}
 
 	SMTP struct {
-		Host      string
-		Port      int
-		Username  string
-		Password  string
-		FromEmail string
+		Host               string
+		Port               int
+		Username           string
+		Password           string
+		FromEmail          string
+		TemplatePath       string
+		TemplateLogoURL    string
+		TimeoutDuration    int
+		InsecureSkipVerify bool
 	}
 
 	CloudflareR2BucketName string
@@ -46,8 +50,6 @@ type Config struct {
 	Server struct {
 		Port int
 	}
-
-	FrontendURL string
 }
 
 func findRootDir() string {
@@ -80,18 +82,23 @@ func setDefaults() {
 	viper.SetDefault("DATABASE_MAX_IDLE_CONNECTIONS", 5)
 	viper.SetDefault("JWT_SECRET_KEY", "your-secret-key")
 	viper.SetDefault("JWT_TOKEN_DURATION", 24)
+
 	viper.SetDefault("SMTP_HOST", "smtp.gmail.com")
 	viper.SetDefault("SMTP_PORT", 587)
 	viper.SetDefault("SMTP_USERNAME", "your-email@gmail.com")
 	viper.SetDefault("SMTP_PASSWORD", "your-password")
 	viper.SetDefault("SMTP_FROM_EMAIL", "your-email@gmail.com")
+	viper.SetDefault("TEMPLATE_PATH", "templates/reset_password_email.html")
+	viper.SetDefault("TEMPLATE_LOGO_URL", "https://example.com/logo.png")
+	viper.SetDefault("SMTP_TIMEOUT_DURATION", 10)
+	viper.SetDefault("SMTP_INSECURE_SKIP_VERIFY", false)
+
 	viper.SetDefault("CLOUDFLARE_R2_BUCKET_NAME", "")
 	viper.SetDefault("CLOUDFLARE_R2_API_KEY", "")
 	viper.SetDefault("CLOUDFLARE_R2_API_SECRET", "")
 	viper.SetDefault("CLOUDFLARE_R2_TOKEN", "")
 	viper.SetDefault("CLOUDFLARE_R2_ACCOUNT_ID", "")
 	viper.SetDefault("CLOUDFLARE_R2_PUBLIC_URL", "")
-	viper.SetDefault("FRONTEND_URL", "http://localhost:3000")
 }
 
 func LoadConfig(path string) (*Config, error) {
@@ -129,6 +136,10 @@ func LoadConfig(path string) (*Config, error) {
 	config.SMTP.Username = viper.GetString("SMTP_USERNAME")
 	config.SMTP.Password = viper.GetString("SMTP_PASSWORD")
 	config.SMTP.FromEmail = viper.GetString("SMTP_FROM_EMAIL")
+	config.SMTP.TemplatePath = viper.GetString("TEMPLATE_PATH")
+	config.SMTP.TemplateLogoURL = viper.GetString("TEMPLATE_LOGO_URL")
+	config.SMTP.TimeoutDuration = viper.GetInt("SMTP_TIMEOUT_DURATION")
+	config.SMTP.InsecureSkipVerify = viper.GetBool("SMTP_INSECURE_SKIP_VERIFY")
 
 	config.CloudflareR2BucketName = viper.GetString("CLOUDFLARE_R2_BUCKET_NAME")
 	config.CloudflareR2APIKey = viper.GetString("CLOUDFLARE_R2_API_KEY")
@@ -136,8 +147,6 @@ func LoadConfig(path string) (*Config, error) {
 	config.CloudflareR2Token = viper.GetString("CLOUDFLARE_R2_TOKEN")
 	config.CloudflareR2AccountID = viper.GetString("CLOUDFLARE_R2_ACCOUNT_ID")
 	config.CloudflareR2PublicURL = viper.GetString("CLOUDFLARE_R2_PUBLIC_URL")
-
-	config.FrontendURL = viper.GetString("FRONTEND_URL")
 
 	port, err := strconv.Atoi(strings.TrimSpace(config.AppPort))
 	if err != nil {

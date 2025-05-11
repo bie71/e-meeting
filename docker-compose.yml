@@ -8,12 +8,12 @@ services:
       target: prod
     restart: unless-stopped
     ports:
-      - "${APP_PORT}:${APP_PORT}"
+      - "${APP_PORT_CLOUD}:${APP_PORT_CLOUD}"
     env_file:
       - .env
     environment:
       APP_ENV: ${APP_ENV}
-      PORT: ${APP_PORT}
+      PORT: ${APP_PORT_CLOUD}
 
       DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_PORT: ${DATABASE_PORT}
@@ -35,6 +35,16 @@ services:
       CLOUDFLARE_R2_PUBLIC_URL: ${CLOUDFLARE_R2_PUBLIC_URL}
 
       FRONTEND_URL: ${FRONTEND_URL}
+
+      
+      SMTP_HOST:  ${SMTP_HOST}
+      SMTP_PORT:  ${SMTP_PORT}
+      SMTP_USERNAME:  ${SMTP_USERNAME}
+      SMTP_PASSWORD:  ${SMTP_PASSWORD}
+      SMTP_FROM_EMAIL:  ${SMTP_FROM_EMAIL}
+      TEMPLATE_PATH:  ${TEMPLATE_PATH}
+      TEMPLATE_LOGO_URL:  ${TEMPLATE_LOGO_URL}
+      SMTP_TIMEOUT_DURATION:  ${SMTP_TIMEOUT_DURATION}
 
     networks:
       - emeeting

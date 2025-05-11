@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/bcrypt"
@@ -43,7 +44,7 @@ func NewPasswordResetService(
 	}
 }
 
-func (s *PasswordResetService) RequestReset(ctx context.Context, email string) (string, error) {
+func (s *PasswordResetService) RequestReset(ctx context.Context, email string, c *fiber.Ctx) (string, error) {
 	// Check if user exists
 	user, err := s.userRepo.GetByEmail(ctx, email)
 	if err != nil {
@@ -68,12 +69,20 @@ func (s *PasswordResetService) RequestReset(ctx context.Context, email string) (
 		return "", err
 	}
 
-	// Send reset email
-	resetLink := fmt.Sprintf("%s?token=%s", s.cfg.FrontendURL, token)
-	if err := s.emailSender.SendPasswordResetEmail(user.Email, resetLink); err != nil {
-		log.Error().Err(err).Msg("Failed to send reset email")
-		return "", err
+	scheme := "http"
+	if c.Protocol() == "https" {
+		scheme = "https"
 	}
+	host := c.Hostname() // tanpa scheme, misalnya: localhost:3000 atau yourdomain.com
+	baseURL := fmt.Sprintf("%s://%s", scheme, host)
+
+	resetLink := fmt.Sprintf("%s/api/v1/password/reset?token=%s", baseURL, token)
+
+	go func(email string, resetLink string) {
+		if err := s.emailSender.SendPasswordResetEmail(email, resetLink); err != nil {
+			log.Error().Err(err).Msg("Failed to send reset email")
+		}
+	}(user.Email, resetLink)
 
 	return resetLink, nil
 }

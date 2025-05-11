@@ -38,7 +38,7 @@ func SetupRouter(
 	public.Post("/auth/register", middleware.ValidateRequest[models.RegisterRequest](), userHandler.Register)
 	public.Post("/auth/login", middleware.ValidateRequest[models.LoginRequest](), userHandler.Login)
 	public.Post("/password/reset/request", middleware.ValidateRequest[models.ResetPasswordRequest](), passwordResetHandler.RequestReset)
-	public.Post("/password/reset", middleware.ValidateRequest[models.ResetPasswordConfirmRequest](), passwordResetHandler.ResetPassword)
+	public.Post("/password/reset", passwordResetHandler.ResetPassword)
 
 	// Protected routes
 	protected := app.Group("/api/v1")

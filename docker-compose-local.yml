@@ -36,6 +36,15 @@ services:
 
       FRONTEND_URL: ${FRONTEND_URL}
 
+      SMTP_HOST:  ${SMTP_HOST}
+      SMTP_PORT:  ${SMTP_PORT}
+      SMTP_USERNAME:  ${SMTP_USERNAME}
+      SMTP_PASSWORD:  ${SMTP_PASSWORD}
+      SMTP_FROM_EMAIL:  ${SMTP_FROM_EMAIL}
+      TEMPLATE_PATH:  ${TEMPLATE_PATH}
+      TEMPLATE_LOGO_URL:  ${TEMPLATE_LOGO_URL}
+      SMTP_TIMEOUT_DURATION:  ${SMTP_TIMEOUT_DURATION}
+
     networks:
       - emeeting
       - postgres_postgres-network

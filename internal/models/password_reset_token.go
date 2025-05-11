@@ -8,7 +8,7 @@ import (
 )
 
 type PasswordResetToken struct {
-	ID        uuid.UUID      `gorm:"type:uuid;primary_key;default:uuid_generate_v4()" json:"id"`
+	ID        uint64         `gorm:"type:serial;primary_key;not null" json:"id"`
 	UserID    uuid.UUID      `gorm:"type:uuid;not null" json:"user_id"`
 	Token     string         `gorm:"size:255;not null;unique" json:"token"`
 	ExpiresAt time.Time      `gorm:"not null" json:"expires_at"`
@@ -23,6 +23,6 @@ type ResetPasswordRequest struct {
 
 type ResetPasswordConfirmRequest struct {
 	Token           string `json:"token" validate:"required"`
-	NewPassword     string `json:"new_password" validate:"required,min=8"`
+	NewPassword     string `json:"new_password" validate:"required,min=6"`
 	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=NewPassword"`
 }

@@ -45,9 +45,13 @@ func NewServer(cfg *config.Config) *Server {
 	emailService := services.NewEmailService(
 		cfg.SMTP.Host,
 		cfg.SMTP.Port,
+		cfg.SMTP.TimeoutDuration,
 		cfg.SMTP.Username,
 		cfg.SMTP.Password,
 		cfg.SMTP.FromEmail,
+		cfg.SMTP.TemplatePath,
+		cfg.SMTP.TemplateLogoURL,
+		cfg.SMTP.InsecureSkipVerify,
 	)
 	passwordResetService := services.NewPasswordResetService(
 		userRepo,
