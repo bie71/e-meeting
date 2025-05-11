@@ -20,6 +20,7 @@ COPY --from=build /app/.env /app/.env
 # ✅ Copy folder public
 COPY --from=build /app/public ./public
 COPY --from=build /app/docs ./docs
+COPY --from=build /app/templates ./templates
 EXPOSE ${APP_PORT}
 CMD ["./main"]
 
