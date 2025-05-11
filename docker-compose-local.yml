@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   app:
+    container_name: e-meeting-app-local
     build:
       context: .
       dockerfile: Dockerfile
