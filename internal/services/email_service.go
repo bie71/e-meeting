@@ -91,7 +91,12 @@ func (s *emailService) SendPasswordResetEmail(toEmail, resetLink string) error {
 	if err != nil {
 		return err
 	}
-	return w.Close()
+	if err := w.Close(); err != nil {
+		log.Printf("Close error: %v", err)
+		return err
+	}
+	log.Printf("Password reset email successfully sent to %s", toEmail)
+	return nil
 }
 
 func (s *emailService) connectSMTP(ctx context.Context) (*smtp.Client, error) {
