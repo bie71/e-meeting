@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"e_metting/internal/models"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -19,14 +20,15 @@ func NewReservationService(db *sql.DB) *ReservationService {
 		db: db,
 	}
 }
-
 func (s *ReservationService) GetReservationHistory(query *models.ReservationHistoryQuery) (*models.ReservationHistoryResponse, error) {
-	// Parse dates with default values (last 7 days if not specified)
 	endDatetime := time.Now()
 	startDatetime := endDatetime.AddDate(0, 0, -7)
 	var err error
 
-	// Parse provided dates if they exist
+	loc, _ := time.LoadLocation("Asia/Jakarta")
+	startDatetime = startDatetime.In(loc)
+	endDatetime = endDatetime.In(loc)
+
 	if query != nil {
 		if query.StartDatetime != "" {
 			startDatetime, err = time.Parse("2006-01-02 15:04:05", query.StartDatetime)
@@ -34,7 +36,6 @@ func (s *ReservationService) GetReservationHistory(query *models.ReservationHist
 				return nil, fmt.Errorf("invalid start_datetime format (required: YYYY-MM-DD HH:mm:ss): %v", err)
 			}
 		}
-
 		if query.EndDatetime != "" {
 			endDatetime, err = time.Parse("2006-01-02 15:04:05", query.EndDatetime)
 			if err != nil {
@@ -43,20 +44,18 @@ func (s *ReservationService) GetReservationHistory(query *models.ReservationHist
 		}
 	}
 
-	// Validate date range
 	if endDatetime.Before(startDatetime) {
 		return nil, fmt.Errorf("end_datetime cannot be before start_datetime")
 	}
 
-	// Start transaction
 	tx, err := s.db.Begin()
 	if err != nil {
 		return nil, fmt.Errorf("error starting transaction: %v", err)
 	}
 	defer tx.Rollback()
 
-	// Query reservations with room and user details
-	rows, err := tx.Query(`
+	// Query string & args dinamis
+	queryStr := `
 		SELECT 
 			r.id,
 			r.room_id,
@@ -73,12 +72,18 @@ func (s *ReservationService) GetReservationHistory(query *models.ReservationHist
 		FROM reservations r
 		JOIN rooms rm ON r.room_id = rm.id
 		JOIN users u ON r.user_id = u.id
-		WHERE r.start_time >= $1 
-		AND r.end_time <= $2
-		ORDER BY r.start_time ASC, rm.name ASC`,
-		startDatetime,
-		endDatetime,
-	)
+		WHERE r.start_time <= $2 AND r.end_time >= $1`
+	args := []interface{}{startDatetime, endDatetime}
+
+	// Tambahkan filter user_id jika bukan admin
+	if query != nil && !query.IsAdmin {
+		queryStr += " AND r.user_id = $3"
+		args = append(args, query.UserID)
+	}
+
+	queryStr += " ORDER BY r.start_time ASC, rm.name ASC"
+
+	rows, err := tx.Query(queryStr, args...)
 	if err != nil {
 		return nil, fmt.Errorf("error querying reservations: %v", err)
 	}
@@ -108,16 +113,11 @@ func (s *ReservationService) GetReservationHistory(query *models.ReservationHist
 			return nil, fmt.Errorf("error scanning reservation: %v", err)
 		}
 
-		// Add room details to event
 		event.RoomDetails = models.RoomInfo{
 			Capacity:     roomCapacity,
 			PricePerHour: pricePerHour,
 		}
-
-		// Calculate duration in hours
-		duration := event.EndTime.Sub(event.StartTime).Hours()
-		event.DurationHours = duration
-
+		event.DurationHours = event.EndTime.Sub(event.StartTime).Hours()
 		events = append(events, event)
 	}
 
@@ -125,9 +125,15 @@ func (s *ReservationService) GetReservationHistory(query *models.ReservationHist
 		return nil, fmt.Errorf("error iterating reservations: %v", err)
 	}
 
-	// Commit transaction
 	if err = tx.Commit(); err != nil {
 		return nil, fmt.Errorf("error committing transaction: %v", err)
+	}
+
+	if len(events) == 0 {
+		log.Println("No reservation found in range", startDatetime, endDatetime)
+		if query != nil && !query.IsAdmin {
+			log.Println("Filtered by user_id:", query.UserID)
+		}
 	}
 
 	return &models.ReservationHistoryResponse{
@@ -507,7 +513,7 @@ func (s *ReservationService) CreateReservation(req *models.CreateReservationRequ
 	err = tx.QueryRow(`
 		SELECT capacity, price_per_hour
 		FROM rooms
-		WHERE id = $1 AND status = 'available'
+		WHERE id = $1 AND status = 'active'
 	`, req.RoomID).Scan(&roomCapacity, &pricePerHour)
 	if err != nil {
 		if err == sql.ErrNoRows {

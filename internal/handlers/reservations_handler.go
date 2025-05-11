@@ -3,6 +3,7 @@ package handlers
 import (
 	"e_metting/internal/models"
 	"e_metting/internal/services"
+	"log"
 	"net/http"
 	"strings"
 
@@ -22,10 +23,21 @@ func NewReservationHandler(service *services.ReservationService) *ReservationHan
 
 func (h *ReservationHandler) GetReservationHistory(c *fiber.Ctx) error {
 	var query models.ReservationHistoryQuery
+
 	if err := c.QueryParser(&query); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
 			Error: "Invalid query parameters",
 		})
+	}
+	log.Printf("Querying history from %s to %s", query.StartDatetime, query.EndDatetime)
+
+	isAdmin, _ := c.Locals("isAdmin").(bool)
+	query.IsAdmin = isAdmin
+	if !isAdmin {
+		authUserID, _ := c.Locals("userID").(string)
+		query.UserID = uuid.MustParse(authUserID)
+
+		log.Println("User ID from context:", query.UserID)
 	}
 
 	response, err := h.service.GetReservationHistory(&query)
@@ -141,23 +153,8 @@ func (h *ReservationHandler) CreateReservation(c *fiber.Ctx) error {
 	// Create reservation
 	response, err := h.service.CreateReservation(&req)
 	if err != nil {
-		if err.Error() == "room not found or inactive" {
-			return c.Status(http.StatusNotFound).JSON(models.ErrorResponse{
-				Error: err.Error(),
-			})
-		}
-		if err.Error() == "visitor count exceeds room capacity" {
-			return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
-				Error: err.Error(),
-			})
-		}
-		if err.Error() == "room is already booked for the selected time period" {
-			return c.Status(http.StatusConflict).JSON(models.ErrorResponse{
-				Error: err.Error(),
-			})
-		}
 		return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
-			Error: "Failed to create reservation",
+			Error: "Failed to create reservation " + err.Error(),
 		})
 	}
 

@@ -27,8 +27,10 @@ type ReservationEvent struct {
 }
 
 type ReservationHistoryQuery struct {
-	StartDatetime string `form:"start_datetime"`
-	EndDatetime   string `form:"end_datetime"`
+	StartDatetime string    `query:"start_datetime"`
+	EndDatetime   string    `query:"end_datetime"`
+	IsAdmin       bool      `json:"-"`
+	UserID        uuid.UUID `json:"-"`
 }
 
 type ReservationHistoryResponse struct {
@@ -61,13 +63,13 @@ type UpdateReservationStatusRequest struct {
 }
 
 type ReservationCalculationRequest struct {
-	RoomID uuid.UUID `json:"room_id" binding:"required"`
+	RoomID uuid.UUID `json:"room_id" validate:"required"`
 	Snacks []struct {
-		SnackID  uuid.UUID `json:"snack_id" binding:"required"`
-		Quantity int       `json:"quantity" binding:"required,min=1"`
-	} `json:"snacks" binding:"required"`
-	StartTime time.Time `json:"start_time" binding:"required"`
-	EndTime   time.Time `json:"end_time" binding:"required"`
+		SnackID  uuid.UUID `json:"snack_id" validate:"required"`
+		Quantity int       `json:"quantity" validate:"required,min=1"`
+	} `json:"snacks" validate:"required"`
+	StartTime time.Time `json:"start_time" validate:"required"`
+	EndTime   time.Time `json:"end_time" validate:"required"`
 }
 
 type ReservationCalculationResponse struct {
@@ -90,15 +92,15 @@ type ReservationCalculationResponse struct {
 }
 
 type CreateReservationRequest struct {
-	RoomID       uuid.UUID `json:"room_id" binding:"required"`
-	UserID       uuid.UUID `json:"user_id" binding:"required"`
-	StartTime    time.Time `json:"start_time" binding:"required"`
-	EndTime      time.Time `json:"end_time" binding:"required,gtfield=StartTime"`
-	VisitorCount int       `json:"visitor_count" binding:"required,min=1"`
+	RoomID       uuid.UUID `json:"room_id" validate:"required"`
+	UserID       uuid.UUID `json:"user_id" validate:"required"`
+	StartTime    time.Time `json:"start_time" validate:"required"`
+	EndTime      time.Time `json:"end_time" validate:"required,gtfield=StartTime"`
+	VisitorCount int       `json:"visitor_count" validate:"required,min=1"`
 	Snacks       []struct {
-		SnackID  uuid.UUID `json:"snack_id" binding:"required"`
-		Quantity int       `json:"quantity" binding:"required,min=1"`
-	} `json:"snacks" binding:"required,dive"`
+		SnackID  uuid.UUID `json:"snack_id" validate:"required"`
+		Quantity int       `json:"quantity" validate:"required,min=1"`
+	} `json:"snacks" validate:"required,dive"`
 }
 
 type CreateReservationResponse struct {

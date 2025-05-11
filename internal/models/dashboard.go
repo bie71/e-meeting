@@ -22,6 +22,6 @@ type DashboardResponse struct {
 }
 
 type DashboardQuery struct {
-	StartDate string `form:"start_date"` // Format: YYYY-MM-DD
-	EndDate   string `form:"end_date"`   // Format: YYYY-MM-DD
+	StartDate string `query:"start_date"` // Format: YYYY-MM-DD
+	EndDate   string `query:"end_date"`   // Format: YYYY-MM-DD
 }

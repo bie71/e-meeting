@@ -49,11 +49,12 @@ func SetupRouter(
 		protected.Get("/profile/:id", userHandler.GetProfile)
 		protected.Put("/profile/:id", middleware.ValidateRequest[models.UpdateProfileRequest](), userHandler.UpdateProfile)
 		protected.Get("/rooms", roomsHandler.GetRooms)
-		protected.Get("/rooms/:id/schedule", roomsHandler.GetRoomSchedule)
+		protected.Get("/rooms/:id/schedule", middleware.ValidateRequest[models.RoomScheduleQuery](), roomsHandler.GetRoomSchedule)
 		protected.Get("/snacks", snacksHandler.GetSnacks)
-		protected.Post("/reservation/calculation", reservatonsHanlder.CalculateReservationCost)
-		protected.Post("/reservation", reservatonsHanlder.CreateReservation)
+		protected.Post("/reservation/calculation", middleware.ValidateRequest[models.ReservationCalculationRequest](), reservatonsHanlder.CalculateReservationCost)
+		protected.Post("/reservation", middleware.ValidateRequest[models.CreateReservationRequest](), reservatonsHanlder.CreateReservation)
 		protected.Get("/reservation/:id", reservatonsHanlder.GetReservationByID)
+		protected.Get("/reservations/history", reservatonsHanlder.GetReservationHistory)
 
 	}
 
@@ -64,8 +65,8 @@ func SetupRouter(
 		adminOnly.Get("/dashboard", dashboardHandler.GetDashboardStats)
 		adminOnly.Get("/reservations/history", reservatonsHanlder.GetReservationHistory)
 		adminOnly.Post("/reservation/status", reservatonsHanlder.UpdateReservationStatus)
-		adminOnly.Post("/rooms", roomsHandler.CreateRoom)    // Create room
-		adminOnly.Put("/rooms/:id", roomsHandler.UpdateRoom) // Update room
+		adminOnly.Post("/rooms", middleware.ValidateRequest[models.CreateRoomRequest](), roomsHandler.CreateRoom)    // Create room
+		adminOnly.Put("/rooms/:id", middleware.ValidateRequest[models.UpdateRoomRequest](), roomsHandler.UpdateRoom) // Update room
 		adminOnly.Delete("/rooms/:id", roomsHandler.DeleteRoom)
 		// Snack management
 		adminOnly.Post("/snacks", snacksHandler.CreateSnack) // Create snack
