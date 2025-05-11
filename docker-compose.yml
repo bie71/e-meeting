@@ -9,7 +9,7 @@ services:
       target: prod
     restart: unless-stopped
     ports:
-      - "${APP_PORT}:${APP_PORT_CLOUD}"
+      - "${APP_PORT_CLOUD}:${APP_PORT}"
     env_file:
       - .env
     environment:
