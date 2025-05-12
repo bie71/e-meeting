@@ -43,7 +43,7 @@ func (h *ReservationHandler) GetReservationHistory(c *fiber.Ctx) error {
 	response, err := h.service.GetReservationHistory(&query)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
-			Error: "Failed to fetch reservation history",
+			Error: "Failed to fetch reservation history " + err.Error(),
 		})
 	}
 

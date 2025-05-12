@@ -76,7 +76,7 @@ func (s *PasswordResetService) RequestReset(ctx context.Context, email string, c
 	host := c.Hostname() // tanpa scheme, misalnya: localhost:3000 atau yourdomain.com
 	baseURL := fmt.Sprintf("%s://%s", scheme, host)
 
-	resetLink := fmt.Sprintf("%s/api/v1/password/reset?token=%s", baseURL, token)
+	resetLink := fmt.Sprintf("%s/api/v1/recover-password?token=%s", baseURL, token)
 
 	go func(email string, resetLink string) {
 		if err := s.emailSender.SendPasswordResetEmail(email, resetLink); err != nil {

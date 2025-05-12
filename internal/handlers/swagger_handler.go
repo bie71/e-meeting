@@ -21,3 +21,15 @@ func SwaggerUI(c *fiber.Ctx) error {
 	c.Set("Content-Type", "application/json")
 	return c.Send(swaggerFile)
 }
+
+func RecoverPassword(c *fiber.Ctx) error {
+	// Implement the logic to handle password recovery
+	token := c.Query("token")
+
+	return c.SendFile("./public/recover-password.html?token="+token, true) // Serve the password recovery page
+}
+
+func Login(c *fiber.Ctx) error {
+	// Implement the logic to handle login
+	return c.SendFile("./public/login.html", true) // Serve the login page
+}
