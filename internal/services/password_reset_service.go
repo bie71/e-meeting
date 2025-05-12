@@ -50,7 +50,7 @@ func (s *PasswordResetService) RequestReset(ctx context.Context, email string, c
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get user by email")
 		// Return success even if user doesn't exist (security through obscurity)
-		return "", nil
+		return "", err
 	}
 
 	// Generate reset token
