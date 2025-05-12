@@ -161,11 +161,29 @@
     }
 
     function copyToken() {
-      const token = document.getElementById("token").textContent;
-      navigator.clipboard.writeText(token)
-        .then(() => alert("Token berhasil disalin!"))
-        .catch(() => alert("Gagal menyalin token"));
-    }
+  const token = document.getElementById("token").textContent;
+  
+  // Buat elemen sementara untuk menyalin teks
+  const textArea = document.createElement("textarea");
+  textArea.value = token;
+  document.body.appendChild(textArea);
+  
+  // Pilih dan salin teks
+  textArea.select();
+  textArea.setSelectionRange(0, 99999); // Untuk mobile
+  
+  try {
+    const successful = document.execCommand('copy');
+    const msg = successful ? 'Token berhasil disalin!' : 'Gagal menyalin token';
+    alert(msg);
+  } catch (err) {
+    alert("Gagal menyalin token.");
+  }
+  
+  // Hapus elemen sementara
+  document.body.removeChild(textArea);
+}
+
   </script>
 </body>
 </html>
