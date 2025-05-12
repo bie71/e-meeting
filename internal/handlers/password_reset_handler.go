@@ -41,6 +41,11 @@ func (h *PasswordResetHandler) RequestReset(c *fiber.Ctx) error {
 	link, err := h.passwordResetService.RequestReset(c.Context(), req.Email, c)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to process password reset request")
+		if err.Error() == "user not found" {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to process password reset request",
 		})
