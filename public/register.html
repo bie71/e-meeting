@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><circle fill=%222980b9%22 cx=%2232%22 cy=%2232%22 r=%2232%22/><text x=%2232%22 y=%2242%22 font-size=%2232%22 font-family=%22Poppins,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>eM</text></svg>" type="image/svg+xml"/>
+  <title>Register - eMeeting</title>
+  <style>
+   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to bottom right, #00aaff, #0047ab);
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
+
+.register-container {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px 30px;
+  border-radius: 16px;
+  max-width: 550px;
+  width: 100%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 28px;
+  color: #0047ab;
+  font-size: 1.9rem;
+  font-weight: 700;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #0047ab;
+  }
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: none;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  background: #fff;
+  color: #0a0a0a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s;
+}
+
+input:focus {
+outline: none;
+  border: 2px solid #2980b9;
+  box-shadow: 0 0 8px rgba(41, 128, 185, 0.4);
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background-color: #0047ab;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.6);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 16px;
+}
+
+button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 12px 28px rgba(255, 255, 255, 0.85);
+}
+
+.message {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #27ae60;
+}
+
+a.button-link {
+  font-size: 1rem;
+  padding: 12px 24px;
+  background-color: #0047ab;
+  color: white;
+  border-radius: 9999px;
+  font-weight: 700;
+  display: inline-block;
+  margin-top: 10px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.6);
+}
+
+a.button-link:hover {
+background-color: #0056b3;
+  box-shadow: 0 12px 28px rgba(255, 255, 255, 0.85);
+}
+.input-group {
+  position: relative;
+}
+
+.toggle-visibility {
+  position: absolute;
+  right: 14px;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  fill: #666;
+  cursor: pointer;
+  display: block;
+  pointer-events: auto;
+  top: 60%;
+}
+
+
+
+
+
+.toggle-visibility:hover {
+  fill: #2980b9;
+}
+.back-to-home {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  font-size: 0.95rem;
+  background-color: #0047ab;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(255, 255, 255, 0.4);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  z-index: 99;
+}
+
+.back-to-home:hover {
+  background-color: #0056b3;
+  box-shadow: 0 10px 24px rgba(255, 255, 255, 0.6);
+}
+
+  </style>
+</head>
+<body>
+<a href="/" class="back-to-home">🔙 Back To Home</a>
+  <div class="register-container">
+    <h2>Create an account eMeeting</h2>
+    <form id="registerForm">
+    
+      <label for="username">Username</label>  
+      <input type="text" id="username" name="username" class="input-text" required />
+
+        <label for="email">Email</label>
+      <input type="email" id="email" name="email" class="input-text" required />
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password"  class="input-text" required />
+        <svg class="toggle-visibility" id="togglePassword" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 5C7 5 2.73 8.11 1 12s6 7 11 7 9.27-3.11 11-7-6-7-11-7z"/>
+          <circle cx="12" cy="12" r="2.5"/>
+        </svg>
+      </div>
+      
+      <div class="input-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" class="input-text" required />
+        <svg class="toggle-visibility" id="toggleConfirm" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 5C7 5 2.73 8.11 1 12s6 7 11 7 9.27-3.11 11-7-6-7-11-7z"/>
+          <circle cx="12" cy="12" r="2.5"/>
+        </svg>
+      </div>
+      
+      <button type="submit">Register</button>
+      <div class="message" id="message"></div>
+      <!-- Tambahkan di dalam .register-container, tepat setelah <div class="message" id="message"></div> -->
+      <div style="text-align: center; margin-top: 20px;">
+        <span>Have an account?</span><br />
+        <a href="/api/v1/login" class="button-link" style="margin-top: 10px; display: inline-block;">Login</a>
+      </div>
+      
+    </form>
+  </div>
+
+  <script>
+
+function toggleVisibility(iconId, inputId) {
+  const icon = document.getElementById(iconId);
+  const input = document.getElementById(inputId);
+  let visible = false;
+
+  icon.addEventListener("click", () => {
+    visible = !visible;
+    input.type = visible ? "text" : "password";
+    icon.style.fill = visible ? "#2980b9" : "#666";
+  });
+
+  icon.addEventListener("keydown", (e) => {
+    if (["Enter", " "].includes(e.key)) {
+      e.preventDefault();
+      icon.click();
+    }
+  });
+}
+
+toggleVisibility("togglePassword", "password");
+toggleVisibility("toggleConfirm", "confirmPassword");
+
+
+
+    const form = document.getElementById('registerForm');
+    const messageDiv = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        confirm_password: document.getElementById('confirmPassword').value
+      };
+
+      try {
+        const response = await fetch('/api/v1/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          messageDiv.style.color = 'lightgreen';
+          messageDiv.textContent = 'Registration Successful! please login.';
+            form.reset();
+        } else {
+          messageDiv.style.color = 'red';
+          messageDiv.textContent = data.error || 'Registration failed.';
+        }
+      } catch (err) {
+        messageDiv.style.color = 'red';
+        messageDiv.textContent = 'An error occurred. Please try again later.';
+      }
+    });
+  </script>
+</body>
+</html>

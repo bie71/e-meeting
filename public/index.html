@@ -148,9 +148,33 @@
       left: 10px;
     }
   }
+
+  .top-right-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 20;
+}
+
+@media (max-width: 360px) {
+  .top-right-button {
+    top: 12px;
+    right: 12px;
+  }
+
+  .top-right-button .button-link {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+}
+
 </style>
 </head>
 <body>
+  <div class="top-right-button">
+    <a href="/register.html" class="button-link">Create Account</a>
+  </div>
+  
     <div class="logo" aria-label="eMeeting logo">
     <img src="sinau.svg" alt="eMeeting Logo" />
   </div>

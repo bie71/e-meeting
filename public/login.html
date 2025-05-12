@@ -16,7 +16,7 @@
     margin: 0;
     padding: 20px;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #2980b9, #6dd5fa);
+    background: linear-gradient(to bottom right, #00aaff, #0047ab);
     color: #333;
     display: flex;
     justify-content: center;
@@ -35,7 +35,7 @@
 
   h2 {
     margin: 0 0 24px;
-    color: #2980b9;
+    color: #0047ab;
     font-weight: 700;
     font-size: 1.9rem;
     text-align: center;
@@ -46,7 +46,7 @@
     margin-bottom: 8px;
     font-weight: 600;
     font-size: 1rem;
-    color: #34495e;
+    color: #0047ab;
   }
 
   .input-group {
@@ -104,17 +104,12 @@ input.input-text:focus {
     outline: none;
   }
 
-  .error-message {
-    color: #e74c3c;
-    font-size: 0.9rem;
-    margin-top: -18px;
-    margin-bottom: 16px;
-    display: none;
-  }
+  
 
   button {
+    margin: 16px 0 16px 0;
     width: 100%;
-    background-color: #2980b9;
+    background-color: #0047ab;
     color: white;
     border: none;
     border-radius: 10px;
@@ -131,7 +126,7 @@ input.input-text:focus {
   }
 
   button:hover:not(:disabled) {
-    background-color: #1f618d;
+    background-color: #0056b3;
   }
 
   .success-message {
@@ -139,11 +134,59 @@ input.input-text:focus {
     text-align: center;
     font-weight: 600;
     color: #27ae60;
+    text-align: center;
   }
+
+  .error-message {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    margin-top: 16px;
+    display: none;
+    text-align: center;
+  }
+
+  .back-to-home {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  font-size: 0.95rem;
+  background-color: #0047ab;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(255, 255, 255, 0.4);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  z-index: 99;
+}
+
+.back-to-home:hover {
+  background-color: #0056b3;
+  box-shadow: 0 10px 24px rgba(255, 255, 255, 0.6);
+}
+a.button-link {
+  font-size: 1rem;
+  padding: 12px 24px;
+  background-color: #0047ab;
+  color: white;
+  border-radius: 9999px;
+  font-weight: 700;
+  display: inline-block;
+  text-decoration: none;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.6);
+}
+
+a.button-link:hover {
+  background-color: #0056b3;
+  box-shadow: 0 12px 28px rgba(255, 255, 255, 0.85);
+}
+
 </style>
 </head>
 <body>
-
+ <a href="/" class="back-to-home">🔙 Back To Home</a>
 <div class="container" role="main" aria-label="Login form">
   <h2>Login</h2>
   <form id="loginForm" novalidate>
@@ -163,8 +206,13 @@ input.input-text:focus {
         </svg>
       </div>
     </div>
-    <div class="error-message" id="errorMsg" role="alert"></div>
     <button type="submit" id="submitBtn">Login</button>
+    <div class="error-message" id="errorMsg" role="alert"></div>
+    <div style="text-align: center; margin-top: 20px;">
+      <span>Not have an account?</span><br />
+      <a href="/register.html" class="button-link" style="margin-top: 10px; display: inline-block;">Create Account</a>
+    </div>
+    
   </form>
 </div>
 

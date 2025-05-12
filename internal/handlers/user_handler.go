@@ -27,7 +27,7 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to register user")
 		return c.Status(fiber.StatusInternalServerError).JSON(models.ErrorResponse{
-			Error: "Failed to register user",
+			Error: "Failed to register user " + err.Error(),
 		})
 	}
 
