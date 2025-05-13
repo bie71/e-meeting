@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"e_metting/internal/models"
 	"fmt"
+	"log"
 	"math"
 	"time"
 )
@@ -20,13 +21,12 @@ func NewDashboardService(db *sql.DB) *DashboardService {
 
 func (s *DashboardService) GetDashboardStats(query *models.DashboardQuery) (*models.DashboardResponse, error) {
 	// Parse dates
-	startDate := time.Now().AddDate(0, 0, -30) // Default to last 30 days
-	endDate := time.Now()
-	var err error
-
-	loc, _ := time.LoadLocation("Asia/Jakarta")
-	startDate = startDate.In(loc)
-	endDate = endDate.In(loc)
+	loc, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		log.Fatalf("Failed to load location: %v", err)
+	}
+	endDate := time.Now().In(loc)
+	startDate := endDate.AddDate(0, 0, -30)
 
 	if query.StartDate != "" {
 		startDate, err = time.Parse("2006-01-02", query.StartDate)
