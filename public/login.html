@@ -80,7 +80,7 @@ input.input-text:focus {
 
   .toggle-visibility {
     position: absolute;
-    top: 50%;
+    top: 30%;
     right: 14px;
     width: 24px;  /* Menjaga ukuran ikon tetap konsisten */
     height: 24px; /* Menjaga ukuran ikon tetap konsisten */
@@ -199,10 +199,17 @@ a.button-link:hover {
       <label for="password">Password</label>
       <div class="input-wrapper">
         <input type="password" id="password" name="password" class="input-text" required autocomplete="current-password" />
+        <div style="text-align: left; margin-top: 5px;">
+        <a href="/reset-password.html" 
+          style="font-size: 14px; text-decoration: none; color: #007bff;"
+            onmouseover="this.style.color='#0047ab'; this.style.textDecoration='underline'"
+            onmouseout="this.style.textDecoration='none'; this.style.color='#007bff'">Forgot password?</a>
+        </div>
 
         <svg class="toggle-visibility" id="togglePwd" aria-label="Toggle Password visibility" role="button" tabindex="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" >
           <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" />
           <circle cx="12" cy="12" r="2.5" />
+
         </svg>
       </div>
     </div>
