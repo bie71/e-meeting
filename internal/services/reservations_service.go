@@ -21,13 +21,10 @@ func NewReservationService(db *sql.DB) *ReservationService {
 	}
 }
 func (s *ReservationService) GetReservationHistory(query *models.ReservationHistoryQuery) (*models.ReservationHistoryResponse, error) {
-	loc, err := time.LoadLocation("Asia/Jakarta")
-	if err != nil {
-		log.Fatalf("Failed to load location: %v", err)
-	}
 
-	endDatetime := time.Now().In(loc)
+	endDatetime := time.Now().Local()
 	startDatetime := endDatetime.AddDate(0, 0, -7)
+	var err error
 
 	if query != nil {
 		if query.StartDatetime != "" {
