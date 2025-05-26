@@ -2,8 +2,9 @@ FROM golang:1.23-alpine AS build
 
 RUN apk add --no-cache tzdata
 
-# Optional: set timezone lingkungan agar default juga WIB
+# Set timezone ke Asia/Jakarta
 ENV TZ=Asia/Jakarta
+RUN cp /usr/share/zoneinfo/Asia/Jakarta /etc/localtime && echo "Asia/Jakarta" > /etc/timezone
 
 WORKDIR /app
 
