@@ -261,5 +261,8 @@ func (r *userRepository) GetUsers(ctx context.Context, userFilter *models.UserFi
 }
 
 func (r *userRepository) DeleteUser(ctx context.Context, userID uuid.UUID) error {
+	if err := r.db.Unscoped().Delete(&models.PasswordResetToken{}, "user_id = ?", userID).Error; err != nil {
+		return fmt.Errorf("failed to delete password reset tokens for user %s: %v", userID, err)
+	}
 	return r.db.WithContext(ctx).Unscoped().Delete(&models.User{}, "id = ?", userID).Error
 }

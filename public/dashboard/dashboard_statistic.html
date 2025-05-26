@@ -328,19 +328,26 @@
       // Kosongkan dulu tabel
       tbody.innerHTML = "";
 
-      // Isi tabel room stats
+        // Cek apakah room_stats ada dan array tidak kosong
+    if (data.room_stats && data.room_stats.length > 0) {
       data.room_stats.forEach(room => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${room.room_id}</td>
           <td>${room.room_name}</td>
           <td>${room.total_bookings}</td>
-          <td>${room.total_hours.toFixed(0)}</td>
-          <td>${room.occupancy_rate.toFixed(2)}</td>
-          <td>${Number(room.revenue).toLocaleString()}</td>
+          <td>${room.total_hours ? room.total_hours.toFixed(0) : 0}</td>
+          <td>${room.occupancy_rate ? room.occupancy_rate.toFixed(2) : "0.00"}</td>
+          <td>${room.revenue ? Number(room.revenue).toLocaleString() : "0"}</td>
         `;
         tbody.appendChild(tr);
       });
+    } else {
+      // Jika data kosong, tampilkan row kosong / info
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="6" class="text-center text-gray-500">Tidak ada data ruangan</td>`;
+      tbody.appendChild(tr);
+    }
 
       function formatDateTime(isoDateString) {
             const d = new Date(isoDateString);
@@ -352,81 +359,85 @@
 
 
 
-      // Siapkan data untuk chart
-      const labels = data.room_stats.map(r => r.room_name);
-      const bookingsData = data.room_stats.map(r => r.total_bookings);
-      const revenueData = data.room_stats.map(r => r.revenue);
+     // Pastikan data.room_stats ada dan merupakan array, kalau tidak pakai array kosong
+const roomStats = Array.isArray(data.room_stats) ? data.room_stats : [];
 
-      // Render chart Total Bookings (Bar)
-      if (bookingsChart) bookingsChart.destroy();
-      const ctxBookings = document.getElementById("bookingsChart").getContext("2d");
-      bookingsChart = new Chart(ctxBookings, {
-        type: "bar",
-        data: {
-          labels,
-          datasets: [{
-            label: "Total Bookings",
-            data: bookingsData,
-            backgroundColor: "rgba(54, 162, 235, 0.7)",
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { labels: { font: { size: 14 } } }
-          },
-          scales: {
-            y: { 
-              beginAtZero: true,
-              ticks: { 
-                font: { size: 13 },
-             }
-            },
-            x: {
-              ticks: { font: { size: 13 } }
-            }
-          }
-        }
-      });
+// Siapkan data untuk chart dengan fallback array kosong
+const labels = roomStats.map(r => r.room_name || "Unknown");
+const bookingsData = roomStats.map(r => r.total_bookings || 0);
+const revenueData = roomStats.map(r => r.revenue || 0);
 
-      // Render chart Revenue (Line)
-      if (revenueChart) revenueChart.destroy();
-      const ctxRevenue = document.getElementById("revenueChart").getContext("2d");
-      revenueChart = new Chart(ctxRevenue, {
-        type: "line",
-        data: {
-          labels,
-          datasets: [{
-            label: "Revenue (Rp)",
-            data: revenueData,
-            fill: false,
-            borderColor: "rgba(255, 99, 132, 0.8)",
-            tension: 0.2,
-            pointBackgroundColor: "rgba(255, 99, 132, 1)",
-            borderWidth: 3,
-            pointRadius: 5
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { labels: { font: { size: 14 } } }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: val => val.toLocaleString(),
-                font: { size: 13 }
-              }
-            },
-            x: {
-              ticks: { font: { size: 13 } }
-            }
-          }
+// Render chart Total Bookings (Bar)
+if (bookingsChart) bookingsChart.destroy();
+const ctxBookings = document.getElementById("bookingsChart").getContext("2d");
+bookingsChart = new Chart(ctxBookings, {
+  type: "bar",
+  data: {
+    labels,
+    datasets: [{
+      label: "Total Bookings",
+      data: bookingsData,
+      backgroundColor: "rgba(54, 162, 235, 0.7)",
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { font: { size: 14 } } }
+    },
+    scales: {
+      y: { 
+        beginAtZero: true,
+        ticks: { 
+          font: { size: 13 },
         }
-      });
+      },
+      x: {
+        ticks: { font: { size: 13 } }
+      }
+    }
+  }
+});
+
+// Render chart Revenue (Line)
+if (revenueChart) revenueChart.destroy();
+const ctxRevenue = document.getElementById("revenueChart").getContext("2d");
+revenueChart = new Chart(ctxRevenue, {
+  type: "line",
+  data: {
+    labels,
+    datasets: [{
+      label: "Revenue (Rp)",
+      data: revenueData,
+      fill: false,
+      borderColor: "rgba(255, 99, 132, 0.8)",
+      tension: 0.2,
+      pointBackgroundColor: "rgba(255, 99, 132, 1)",
+      borderWidth: 3,
+      pointRadius: 5
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { font: { size: 14 } } }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: val => val.toLocaleString(),
+          font: { size: 13 }
+        }
+      },
+      x: {
+        ticks: { font: { size: 13 } }
+      }
+    }
+  }
+});
+
 
       statusDiv.textContent = "";
       statusDiv.className = "";
