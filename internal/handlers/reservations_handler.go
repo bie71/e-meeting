@@ -16,6 +16,8 @@ const (
 	layoutTime = "2006-01-02 15:04"
 )
 
+var loc, _ = time.LoadLocation("Asia/Jakarta")
+
 type ReservationHandler struct {
 	service *services.ReservationService
 }
@@ -159,8 +161,8 @@ func (h *ReservationHandler) CreateReservation(c *fiber.Ctx) error {
 		})
 	}
 
-	startTime, errStart := time.Parse(layoutTime, req.StartTimeRaw)
-	endTime, errEnd := time.Parse(layoutTime, req.EndTimeRaw)
+	startTime, errStart := time.ParseInLocation(layoutTime, req.StartTimeRaw, loc)
+	endTime, errEnd := time.ParseInLocation(layoutTime, req.EndTimeRaw, loc)
 
 	if errStart != nil || errEnd != nil {
 		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
@@ -169,6 +171,8 @@ func (h *ReservationHandler) CreateReservation(c *fiber.Ctx) error {
 	}
 	req.StartTime = startTime
 	req.EndTime = endTime
+
+	log.Printf("Creating reservation from start time %s to end time %s", req.StartTime, req.EndTime)
 
 	// Validate time range
 	if req.EndTime.Before(req.StartTime) {

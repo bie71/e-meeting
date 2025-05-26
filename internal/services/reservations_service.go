@@ -21,7 +21,7 @@ func NewReservationService(db *sql.DB) *ReservationService {
 	}
 }
 func (s *ReservationService) GetReservationHistory(query *models.ReservationHistoryQuery) (*models.ReservationHistoryResponse, error) {
-	endDatetime := time.Now()
+	endDatetime := time.Now().Local()
 	startDatetime := endDatetime.AddDate(0, 0, -7)
 	var err error
 
@@ -478,6 +478,9 @@ func (s *ReservationService) GetReservationByID(id uuid.UUID) (*models.Reservati
 
 func (s *ReservationService) CreateReservation(req *models.CreateReservationRequest) (*models.CreateReservationResponse, error) {
 	now := time.Now()
+
+	log.Println("time now: ", now)
+	log.Println("req.StartTime: ", req.StartTime)
 	// Ensure start time is in the future
 	if req.StartTime.Before(now) {
 		return nil, fmt.Errorf("reservation start time must be in the future")
