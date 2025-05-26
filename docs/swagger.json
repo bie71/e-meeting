@@ -28,6 +28,7 @@
         "security": [],
         "summary": "Health check endpoint",
         "description": "Mengecek status kesehatan aplikasi",
+        "tags": ["Tools"],
         "responses": {
           "200": {
             "description": "Aplikasi sehat",
@@ -46,6 +47,7 @@
         "security": [],
         "summary": "Register user baru",
         "description": "Mendaftarkan user baru ke sistem",
+        "tags": ["Users"],
         "parameters": [
           {
             "name": "body",
@@ -80,6 +82,7 @@
         "security": [],
         "summary": "Login user",
         "description": "Login user ke sistem",
+        "tags": ["Users"],
         "parameters": [
           {
             "name": "body",
@@ -113,6 +116,7 @@
       "post": {
         "summary": "Request reset password",
         "description": "Meminta reset password",
+        "tags": ["Users"],
         "parameters": [
           {
             "name": "body",
@@ -146,6 +150,7 @@
       "get": {
         "summary": "Reset password link",
         "description": "Mendapatkan link reset password",
+        "tags": ["Users"],
         "parameters": [
           {
             "name": "body",
@@ -182,6 +187,7 @@
       "get": {
         "summary": "Detail profile user",
         "description": "Mendapatkan detail profile user",
+        "tags": ["Users"],
         "parameters": [
           {
             "name": "id",
@@ -218,6 +224,7 @@
       "put": {
         "summary": "Update profile user",
         "description": "Mengupdate profile user",
+        "tags": ["Users"],
         "parameters": [
           {
             "name": "id",
@@ -264,6 +271,49 @@
       "get": {
         "summary": "Get Pagination room",
         "description": "Mendapatkan Pagination room",
+        "tags": ["Rooms"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get Pagination room berhasil",
+            "schema": {
+              "$ref": "#/definitions/RoomListResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Room tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      },
+      "post": {
+        "summary": "Get Pagination room with filter",
+        "description": "Mendapatkan Pagination room dengan filter",
+        "tags": ["Rooms"],
         "parameters": [
           {
             "name": "page",
@@ -315,6 +365,7 @@
       "get": {
         "summary": "Get schedule room",
         "description": "Mendapatkan schedule room",
+        "tags": ["Rooms"],
         "parameters": [
           {
             "name": "id",
@@ -366,7 +417,58 @@
   "/snacks": {
       "get": {
         "summary": "Get snacks",
-        "description": "Mendapatkan daftar snack",
+        "description": "Mendapatkan daftar snack dengan filter, pencarian, dan pagination",
+        "produces": ["application/json"],
+        "tags": ["Snacks"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Halaman yang diminta",
+            "required": false,
+            "type": "integer",
+            "default": 1,
+            "minimum": 1
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "Jumlah item per halaman",
+            "required": false,
+            "type": "integer",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 100
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Pencarian berdasarkan nama snack",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "Kategori snack",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "min_price",
+            "in": "query",
+            "description": "Harga minimum",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "max_price",
+            "in": "query",
+            "description": "Harga maksimum",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get snacks berhasil",
@@ -396,6 +498,7 @@
       "post": {
         "summary": "Calculate reservation",
         "description": "Menghitung total biaya reservasi",
+        "tags": ["Reservation"],
         "parameters": [
           {
             "name": "body",
@@ -435,6 +538,7 @@
       "post": {
         "summary": "Create reservation",
         "description": "Membuat reservasi baru",
+        "tags": ["Reservation"],
         "parameters": [
           {
             "name": "body",
@@ -474,6 +578,7 @@
       "get": {
         "summary": "Get reservation",
         "description": "Mendapatkan detail reservasi",
+        "tags": ["Reservation"],
         "parameters": [
           {
             "name": "id",
@@ -508,10 +613,57 @@
         }
       }
     },
+    "/reservations/history": {
+      "get": {
+        "summary": "Get reservation history",
+        "description": "Mendapatkan daftar riwayat reservasi",
+        "tags": ["Reservation"],
+        "parameters": [
+          {
+            "name": "start_datetime",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "end_datetime",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "responses": {
+         "200": {
+          "description": "Daftar riwayat reservasi berhasil didapatkan",
+          "schema": {
+            "$ref": "#/definitions/ReservationHistoryResponse"
+          }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Reservasi tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
+      }
+    },
 "/upload-image": {
   "post": {
     "summary": "Upload file ke Supabase Storage",
     "consumes": ["multipart/form-data"],
+    "tags": ["Upload"],
     "parameters": [
       {
         "name": "file",
@@ -574,6 +726,7 @@
       "get": {
         "summary": "Get dashboard",
         "description": "Mendapatkan data dashboard",
+        "tags": ["Dashboard"],
         "parameters": [
           {
             "name": "start_date",
@@ -619,6 +772,7 @@
       "get": {
         "summary": "Get reservation history",
         "description": "Mendapatkan daftar riwayat reservasi",
+        "tags": ["Reservation"],
         "parameters": [
           {
             "name": "start_datetime",
@@ -636,14 +790,11 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Daftar riwayat reservasi berhasil didapatkan",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/DashboardResponse"
-              }
-            }
+         "200": {
+          "description": "Daftar riwayat reservasi berhasil didapatkan",
+          "schema": {
+            "$ref": "#/definitions/ReservationHistoryResponse"
+          }
           },
           "400": {
             "description": "ID tidak valid"
@@ -667,6 +818,7 @@
       "post": {
         "summary": "Update reservation status",
         "description": "Mengupdate status reservasi",
+        "tags": ["Reservation"],
         "parameters": [
           {
             "name": "body",
@@ -702,10 +854,54 @@
         }
       }
     },
+    "/admin/reservation/{id}": {
+      "delete": {
+        "summary": "Hapus Reservasi",
+        "description": "Menghapus reservasi berdasarkan ID",
+        "tags": ["Reservation"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "UUID dari reservasi yang ingin dihapus",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reservasi berhasil dihapus",
+            "schema": {
+              "$ref": "#/definitions/SuccessResponse"
+            }
+          },
+          "400": {
+            "description": "ID reservasi tidak valid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponseReservation"
+            }
+          },
+          "404": {
+            "description": "Reservasi tidak ditemukan",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponseReservation"
+            }
+          },
+          "500": {
+            "description": "Terjadi kesalahan pada server",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponseReservation"
+            }
+          }
+        }
+      }
+    },
     "/admin/rooms": {
       "post": {
         "summary": "Create room",
         "description": "Membuat room baru",
+        "tags": ["Rooms"],
         "parameters": [
           {
             "name": "body",
@@ -745,6 +941,7 @@
       "put": {
         "summary": "Update room",
         "description": "Mengupdate room",
+        "tags": ["Rooms"],
         "parameters": [
           {
             "name": "id",
@@ -789,6 +986,7 @@
       "delete": {
         "summary": "Delete room",
         "description": "Menghapus room",
+        "tags": ["Rooms"],
         "parameters": [
           {
             "name": "id",
@@ -827,12 +1025,50 @@
             "description": "Format response tidak didukung"
           }
         }
+      },
+      "get": {
+        "summary": "Get room",
+        "description": "Mendapatkan room",
+        "tags": ["Rooms"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Room berhasil didapatkan",
+            "schema": {
+              "$ref": "#/definitions/RoomResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Room tidak ditemukan"
+          },
+          "406": {
+            "description": "Format response tidak didukung"
+          }
+        }
       }
     },
     "/admin/snacks": {
       "post": {
         "summary": "Create snack",
         "description": "Membuat snack baru",
+        "tags": ["Snacks"],
         "parameters": [
           {
             "name": "body",
@@ -866,8 +1102,272 @@
             "description": "Format response tidak didukung"
           }
         }
+      },
+      "put": {
+        "summary": "Update snack",
+        "description": "Mengupdate snack",
+        "tags": ["Snacks"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateSnackRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Snack berhasil diupdate",
+            "schema": {
+              "$ref": "#/definitions/CreateSnackResponse"
+            }
+          },
+          "400": {
+            "description": "ID tidak valid"
+          },
+          "401": {
+            "description": "Tidak terautentikasi"
+          },
+          "403": {
+            "description": "Tidak memiliki akses"
+          },
+          "404": {
+            "description": "Snack tidak ditemukan"
+          }
+        }
+    },
+    "delete": {
+      "summary": "Delete snack",
+      "description": "Menghapus snack",
+      "tags": ["Snacks"],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "format": "uuid"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Snack berhasil dihapus",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Snack berhasil dihapus"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "ID tidak valid"
+        },
+        "401": {
+          "description": "Tidak terautentikasi"
+        },
+        "403": {
+          "description": "Tidak memiliki akses"
+        },
+        "404": {
+          "description": "Snack tidak ditemukan"
+        },
+        "406": {
+          "description": "Format response tidak didukung"
+        }
+      }
+    },
+    "get": {
+      "summary": "Get snacks",
+      "description": "Mendapatkan snack",
+      "tags": ["Snacks"],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "format": "uuid"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Snack berhasil didapatkan",
+          "schema": {
+            "$ref": "#/definitions/CreateSnackResponse"
+          }
+        },
+        "401": {
+          "description": "Tidak terautentikasi"
+        },
+        "403": {
+          "description": "Tidak memiliki akses"
+        },
+        "404": {
+          "description": "Snack tidak ditemukan"
+        },
+        "406": {
+          "description": "Format response tidak didukung"
+        }
       }
     }
+  },
+  "/admin/users": {
+  "get": {
+    "summary": "List Pengguna (Tanpa Filter)",
+    "description": "Mengambil daftar pengguna dengan dukungan pagination.",
+    "tags": ["Users"],
+    "parameters": [
+      {
+        "name": "page",
+        "in": "query",
+        "type": "integer",
+        "default": 1,
+        "minimum": 1
+      },
+      {
+        "name": "page_size",
+        "in": "query",
+        "type": "integer",
+        "default": 10,
+        "minimum": 1,
+        "maximum": 100
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Daftar pengguna berhasil diambil",
+        "schema": {
+          "$ref": "#/definitions/UsersResponse"
+        }
+      },
+      "400": {
+        "description": "Permintaan tidak valid"
+      }
+    }
+  },
+  "post": {
+    "summary": "List Pengguna (Dengan Filter)",
+    "description": "Mengambil daftar pengguna berdasarkan filter dan pagination.",
+    "tags": ["Users"],
+    "parameters": [
+      {
+        "name": "page",
+        "in": "query",
+        "type": "integer",
+        "default": 1,
+        "minimum": 1
+      },
+      {
+        "name": "page_size",
+        "in": "query",
+        "type": "integer",
+        "default": 10,
+        "minimum": 1,
+        "maximum": 100
+      },
+      {
+        "in": "body",
+        "name": "filter",
+        "required": false,
+        "schema": {
+          "$ref": "#/definitions/UserFilter"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Daftar pengguna berhasil difilter",
+        "schema": {
+          "$ref": "#/definitions/UsersResponse"
+        }
+      },
+      "400": {
+        "description": "Permintaan tidak valid"
+      }
+    }
+  },
+  "delete": {
+    "summary": "Hapus Pengguna",
+    "description": "Menghapus pengguna berdasarkan ID.",
+    "tags": ["Users"],
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "type": "string",
+        "format": "uuid"
+      }
+    ],
+    "responses": {
+      "200": {
+      "description": "Pengguna berhasil dihapus",
+       "schema": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "User berhasil dihapus"
+              }
+            }
+          }
+      },
+      "400": {
+        "description": "ID tidak valid"
+      },
+      "401": {
+        "description": "Tidak terautentikasi"
+      },
+      "403": {
+        "description": "Tidak memiliki akses"
+      },
+      "404": {
+        "description": "Pengguna tidak ditemukan"
+      }
+    }
+}
+  },
+  "/admin/register/users": {
+    "post": {
+      "security": [],
+      "summary": "Register user baru",
+      "description": "Mendaftarkan user baru ke sistem",
+      "tags": ["Users"],
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/RegisterRequestAdmin"
+          }
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "User berhasil didaftarkan",
+          "schema": {
+            "$ref": "#/definitions/RegisterResponse"
+          }
+        },
+        "400": {
+          "description": "Request tidak valid"
+        },
+        "406": {
+          "description": "Format response tidak didukung"
+        },
+        "409": {
+          "description": "Username sudah digunakan"
+        }
+      }
+    }
+  }
+
 },
   "definitions": {
     "HealthResponse": {
@@ -1055,30 +1555,30 @@
       },
       "RoomRequestFilterBody": {
            "type": "object",
-    "properties": {
-      "search": {
-        "type": "string",
-        "description": "Search by room name"
-      },
-      "room_type_id": {
-        "type": "string",
-        "format": "uuid",
-        "description": "Filter by Room Type ID"
-      },
-      "min_capacity": {
-        "type": "integer",
-        "description": "Minimum room capacity"
-      },
-      "max_capacity": {
-        "type": "integer",
-        "description": "Maximum room capacity"
-      },
-      "status": {
-        "type": "string",
-        "description": "Room status (active/inactive)",
-        "enum": ["active", "inactive"]
-      }
-    }
+            "properties": {
+              "search": {
+                "type": "string",
+                "description": "Search by room name"
+              },
+              "room_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Filter by Room Type ID"
+              },
+              "min_capacity": {
+                "type": "integer",
+                "description": "Minimum room capacity"
+              },
+              "max_capacity": {
+                "type": "integer",
+                "description": "Maximum room capacity"
+              },
+              "status": {
+                "type": "string",
+                "description": "Room status (active/inactive)",
+                "enum": ["active", "inactive"]
+              }
+            }
       },
        "RoomResponse": {
         "type": "object",
@@ -1102,6 +1602,10 @@
           "status": {
             "type": "string",
             "enum": ["active", "inactive"]
+          },
+          "url_room_pic": {
+            "type": "string",
+            "format": "url"
           },
           "created_at": {
             "type": "string",
@@ -1610,6 +2114,10 @@
               "active",
               "inactive"
             ]
+          },
+          "url_room_pic": {
+            "type": "string",
+            "format": "url"
           }
         },
         "required": ["name", "capacity", "price_per_hour", "status"]
@@ -1640,6 +2148,10 @@
               "inactive"
             ]
           },
+          "url_room_pic": {
+            "type": "string",
+            "format": "url"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time"
@@ -1660,13 +2172,6 @@
           "price_per_hour": {
             "type": "number",
             "format": "float"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "active",
-              "inactive"
-            ]
           }
         }
       },
@@ -1744,7 +2249,12 @@
               "active",
               "inactive"
             ]
-          }
+          },
+          "url_room_pic": {
+              "type": "string",
+              "format": "url",
+              "example": "https://example.com/room.jpg"
+            }
         },
         "additionalProperties": false
       },
@@ -1797,6 +2307,30 @@
         },
         "required": ["id", "name", "category", "price", "created_at"]
       },
+      "UpdateSnackRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID unik snack"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nama snack"
+          },
+          "category": {
+            "type": "string",
+            "description": "Kategori snack"
+          },
+          "price": {
+            "type": "number",
+            "format": "float",
+            "description": "Harga snack"
+          }
+        },
+        "required": ["id", "name", "category", "price"]
+      },
       "ErrorResponse": {
         "type": "object",
         "properties": {
@@ -1805,6 +2339,227 @@
             "example": "file is required"
           }
         }
+      },
+  "ReservationHistoryResponse": {
+  "type": "object",
+  "properties": {
+    "start_datetime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end_datetime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ReservationEventHistory"
       }
+    }
+  }
+},
+    "ReservationEventHistory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "room_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "room_name": {
+          "type": "string"
+        },
+        "room_details": {
+          "$ref": "#/definitions/RoomInfoHistory"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "username": {
+          "type": "string"
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "duration_hours": {
+          "type": "number",
+          "format": "float"
+        },
+        "visitor_count": {
+          "type": "integer"
+        },
+        "price": {
+          "type": "number",
+          "format": "float"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "RoomInfoHistory": {
+      "type": "object",
+      "properties": {
+        "capacity": {
+          "type": "integer"
+        },
+        "price_per_hour": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "SuccessResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "Reservation deleted successfully"
+        }
+      }
+    },
+    "ErrorResponseReservation": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string",
+          "example": "Invalid reservation ID"
+        }
+      }
+    },
+
+    "UserFilter": {
+      "type": "object",
+      "properties": {
+        "search": {
+          "type": "string",
+          "description": "Cari berdasarkan nama"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "type": "boolean",
+          "description": "true = aktif, false = tidak aktif"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["user", "admin"]
+        }
+      }
+    },
+    "UsersResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
+        },
+        "total_count": {
+          "type": "integer"
+        },
+        "page": {
+          "type": "integer"
+        },
+        "page_size": {
+          "type": "integer"
+        },
+        "total_pages": {
+          "type": "integer"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["user", "admin"]
+        },
+        "prof_pic": {
+          "type": "string",
+          "format": "url"
+        },
+        "language": {
+          "type": "string",
+          "enum": ["id", "en"]
+        },
+        "status": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "RegisterRequestAdmin": {
+      "type": "object",
+      "required": ["username", "email", "password", "confirm_password", "language"],
+      "properties": {
+        "username": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 50
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string",
+          "minLength": 6
+        },
+        "confirm_password": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string",
+          "enum": ["id", "en"]
+        },
+        "role": {
+          "type": "string",
+          "enum": ["user", "admin"]
+        },
+        "status": {
+          "type": "boolean",
+          "description": "true = aktif, false = tidak aktif"
+        },
+        "url_prof_pic": {
+          "type": "string",
+          "format": "url",
+          "description": "URL gambar profil"
+        }
+      }
+    }
+
   }
 } 

@@ -82,11 +82,11 @@ func (h *RoomHandler) DeleteRoom(c *fiber.Ctx) error {
 		switch err.Error() {
 		case "room not found":
 			return c.Status(http.StatusNotFound).JSON(models.ErrorResponse{
-				Error: "room not found " + err.Error(),
+				Error: err.Error(),
 			})
 		case "cannot delete room with active reservations":
 			return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
-				Error: "cannot delete room with active reservations " + err.Error(),
+				Error: err.Error(),
 			})
 		default:
 			return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
