@@ -7,6 +7,7 @@
   <title>Update Profile</title>
   <script src="../tailwind/tailwindcss.js"></script>
   <script src="../axios/axios.min.js"></script>
+  <script src="js/jwtUtils.js"></script>
 </head>
 <body class="bg-gradient-to-br from-cyan-400 to-blue-800 min-h-screen flex items-center justify-center p-4">
   <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg">
@@ -55,8 +56,10 @@
 
     <div class="mt-6 text-center space-y-2">
       <a href="/success.html" class="inline-block text-blue-800 hover:underline font-medium">🏠 Kembali ke Dashboard</a>
+      <br id="adminButtons" />
+      <a href="/users/management_users.html" id="adminButtons2" class=" inline-block text-blue-800 hover:underline font-medium">👥 Manajemen Pengguna</a>
       <br />
-      <a href="/users/management_users.html" class="inline-block text-blue-800 hover:underline font-medium">👥 Manajemen Pengguna</a>
+      <a href="/rooms/list_room.html" class="inline-block text-blue-800 hover:underline font-medium">🏢 View Rooms List</a>
     </div>
   </div>
 
@@ -67,6 +70,11 @@
       window.location.href = "/login.html";
     }
 
+   const role = parseJwt(loginData.token).role;
+    if (role !== "admin") {
+      document.getElementById("adminButtons").classList.add("hidden");
+      document.getElementById("adminButtons2").classList.add("hidden");
+    }
 
     function getQueryParam(name) {
       const params = new URLSearchParams(window.location.search);
