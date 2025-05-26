@@ -84,7 +84,7 @@ async function loadSnacks(filters = {}) {
           <h3 class="snack-name">${snack.name}</h3>
           <div class="snack-details">
             <span>Category: ${snack.category}</span>
-            <span>Price: $${snack.price.toFixed(2)}</span>
+            <span>Price: Rp.${snack.price.toFixed(2)}</span>
           </div>
         </div>
        <div class="action-buttons">
