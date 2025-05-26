@@ -56,8 +56,8 @@
 
     <div class="mt-6 text-center space-y-2">
       <a href="/success.html" class="inline-block text-blue-800 hover:underline font-medium">🏠 Kembali ke Dashboard</a>
-      <br id="adminButtons" />
-      <a href="/users/management_users.html" id="adminButtons2" class=" inline-block text-blue-800 hover:underline font-medium">👥 Manajemen Pengguna</a>
+      <br id="adminButtons" class="hidden" />
+      <a href="/users/management_users.html" id="adminButtons2" class=" inline-block text-blue-800 hover:underline font-medium hidden">👥 Manajemen Pengguna</a>
       <br />
       <a href="/rooms/list_room.html" class="inline-block text-blue-800 hover:underline font-medium">🏢 View Rooms List</a>
     </div>
@@ -71,9 +71,9 @@
     }
 
    const role = parseJwt(loginData.token).role;
-    if (role !== "admin") {
-      document.getElementById("adminButtons").classList.add("hidden");
-      document.getElementById("adminButtons2").classList.add("hidden");
+    if (role == "admin") {
+      document.getElementById("adminButtons").classList.remove("hidden");
+      document.getElementById("adminButtons2").classList.remove("hidden");
     }
 
     function getQueryParam(name) {
