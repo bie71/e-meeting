@@ -7,6 +7,7 @@ import (
 	"e_metting/internal/repositories"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
@@ -18,6 +19,8 @@ type UserService interface {
 	Login(req models.LoginRequest) (string, string, error)
 	GetProfile(userID string) (*models.UserProfileResponse, error)
 	UpdateProfile(userID string, req *models.UpdateProfileRequest) (*models.UserProfileResponse, error)
+	GetUsers(userFilter *models.UserFilter, pagination *models.PaginationQuery) (*models.UsersResponse, error)
+	DeleteUser(userID string) error
 }
 
 type userService struct {
@@ -54,13 +57,32 @@ func (s *userService) Register(req models.RegisterRequest) (*models.User, error)
 	if req.Language == "" {
 		req.Language = "id"
 	}
+
+	status := true
+	if req.Status != "" && strings.EqualFold(req.Status, "active") {
+		status = true
+	} else if req.Status != "" && strings.EqualFold(req.Status, "inactive") {
+		status = false
+	}
+
+	log.Info().Msg("Req Status: " + fmt.Sprint(req.Status))
+	log.Info().Msg("Status: " + fmt.Sprint(status))
+
+	role := "user"
+	if req.Role != "" && strings.EqualFold(req.Role, "admin") {
+		req.Role = "admin"
+	} else if req.Role != "" && strings.EqualFold(req.Role, "user") {
+		req.Role = "user"
+	}
+
 	user := &models.User{
 		Username: req.Username,
 		Email:    req.Email,
 		Password: string(hashedPassword),
-		Role:     "user",
+		Role:     role,
 		Language: req.Language,
-		Status:   true,
+		Status:   status,
+		ProfPic:  req.UrlProfPic,
 	}
 
 	if err := s.userRepo.CreateUser(context.Background(), user); err != nil {
@@ -116,4 +138,26 @@ func (s *userService) UpdateProfile(userID string, req *models.UpdateProfileRequ
 		return nil, fmt.Errorf("failed to update user profile: %v", err)
 	}
 	return profile, nil
+}
+
+func (s *userService) GetUsers(userFilter *models.UserFilter, pagination *models.PaginationQuery) (*models.UsersResponse, error) {
+
+	users, err := s.userRepo.GetUsers(context.Background(), userFilter, pagination)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get users: %v", err)
+	}
+	return users, nil
+}
+
+func (s *userService) DeleteUser(userID string) error {
+	id, err := uuid.Parse(userID)
+	if err != nil {
+		return fmt.Errorf("invalid user ID format: %v", err)
+	}
+
+	err = s.userRepo.DeleteUser(context.Background(), id)
+	if err != nil {
+		return fmt.Errorf("failed to delete user: %v", err)
+	}
+	return nil
 }

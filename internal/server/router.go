@@ -20,8 +20,11 @@ func SetupRouter(
 	reservatonsHanlder *handlers.ReservationHandler,
 	roomsHandler *handlers.RoomHandler,
 	snacksHandler *handlers.SnackHandler,
+	uploadHandler *handlers.UploadHandler,
 ) *fiber.App {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 2 * 1024 * 1024, // 2MB
+	})
 
 	// Middleware
 	app.Use(recover.New())
@@ -51,12 +54,14 @@ func SetupRouter(
 		protected.Get("/profile/:id", userHandler.GetProfile)
 		protected.Put("/profile/:id", middleware.ValidateRequest[models.UpdateProfileRequest](), userHandler.UpdateProfile)
 		protected.Get("/rooms", roomsHandler.GetRooms)
-		protected.Get("/rooms/:id/schedule", middleware.ValidateRequest[models.RoomScheduleQuery](), roomsHandler.GetRoomSchedule)
+		protected.Post("/rooms", roomsHandler.GetRooms)
+		protected.Get("/rooms/:id/schedule", roomsHandler.GetRoomSchedule)
 		protected.Get("/snacks", snacksHandler.GetSnacks)
 		protected.Post("/reservation/calculation", middleware.ValidateRequest[models.ReservationCalculationRequest](), reservatonsHanlder.CalculateReservationCost)
 		protected.Post("/reservation", middleware.ValidateRequest[models.CreateReservationRequest](), reservatonsHanlder.CreateReservation)
 		protected.Get("/reservation/:id", reservatonsHanlder.GetReservationByID)
 		protected.Get("/reservations/history", reservatonsHanlder.GetReservationHistory)
+		protected.Post("/upload-image", uploadHandler.UploadHandler)
 
 	}
 
@@ -67,11 +72,21 @@ func SetupRouter(
 		adminOnly.Get("/dashboard", dashboardHandler.GetDashboardStats)
 		adminOnly.Get("/reservations/history", reservatonsHanlder.GetReservationHistory)
 		adminOnly.Post("/reservation/status", reservatonsHanlder.UpdateReservationStatus)
+		adminOnly.Delete("/reservation/:id", reservatonsHanlder.DeleteReservation)
 		adminOnly.Post("/rooms", middleware.ValidateRequest[models.CreateRoomRequest](), roomsHandler.CreateRoom)    // Create room
 		adminOnly.Put("/rooms/:id", middleware.ValidateRequest[models.UpdateRoomRequest](), roomsHandler.UpdateRoom) // Update room
 		adminOnly.Delete("/rooms/:id", roomsHandler.DeleteRoom)
+		adminOnly.Get("/rooms/:id", roomsHandler.GetRoomByID)
 		// Snack management
 		adminOnly.Post("/snacks", snacksHandler.CreateSnack) // Create snack
+		adminOnly.Put("/snacks", snacksHandler.UpdateSnack)  // Update snack
+		adminOnly.Delete("/snacks/:id", snacksHandler.DeleteSnack)
+		adminOnly.Get("/snacks/:id", snacksHandler.GetSnackByID)
+		// user management
+		adminOnly.Get("/users", userHandler.GetAllUsers)
+		adminOnly.Post("/users", userHandler.GetAllUsers)
+		adminOnly.Delete("/users/:id", userHandler.DeleteUser)
+		adminOnly.Post("/register/users", middleware.ValidateRequest[models.RegisterRequest](), userHandler.Register)
 
 	}
 

@@ -5,6 +5,7 @@ import (
 	"e_metting/internal/models"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -19,6 +20,8 @@ type UserRepository interface {
 	UpdatePassword(ctx context.Context, userID uuid.UUID, hashedPassword string) error
 	GetProfile(ctx context.Context, userID uuid.UUID) (*models.UserProfileResponse, error)
 	UpdateProfile(ctx context.Context, userID string, req *models.UpdateProfileRequest) (*models.UserProfileResponse, error)
+	GetUsers(ctx context.Context, userFilter *models.UserFilter, pagination *models.PaginationQuery) (*models.UsersResponse, error)
+	DeleteUser(ctx context.Context, userID uuid.UUID) error
 }
 
 type userRepository struct {
@@ -150,6 +153,17 @@ func (r *userRepository) UpdateProfile(ctx context.Context, userID string, req *
 
 	argCount := 5
 
+	// Add status update if provided
+	if req.Status != "" {
+		var status bool
+		if strings.EqualFold(req.Status, "active") {
+			status = true
+		}
+		query += fmt.Sprintf(", status = $%d", argCount)
+		args = append(args, status)
+		argCount++
+	}
+
 	// Add password update if provided
 	if req.Password != "" {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -158,6 +172,13 @@ func (r *userRepository) UpdateProfile(ctx context.Context, userID string, req *
 		}
 		query += fmt.Sprintf(", password = $%d", argCount)
 		args = append(args, hashedPassword)
+		argCount++
+	}
+
+	// Add prof_pic update if provided
+	if req.UrlProfPic != "" {
+		query += fmt.Sprintf(", prof_pic = $%d", argCount)
+		args = append(args, req.UrlProfPic)
 		argCount++
 	}
 
@@ -181,4 +202,64 @@ func (r *userRepository) UpdateProfile(ctx context.Context, userID string, req *
 		return nil, fmt.Errorf("error committing transaction: %v", err)
 	}
 	return &profile, nil
+}
+func (r *userRepository) GetUsers(ctx context.Context, userFilter *models.UserFilter, pagination *models.PaginationQuery) (*models.UsersResponse, error) {
+	var users []models.User
+	var totalCount int64
+
+	if pagination.Page < 1 {
+		pagination.Page = 1
+	}
+
+	if pagination.PageSize < 1 {
+		pagination.PageSize = 10
+	}
+
+	db := r.db.WithContext(ctx).Model(&models.User{})
+
+	// Apply filters
+	if userFilter != nil {
+		if userFilter.Status != nil {
+			db = db.Where("status = ?", *userFilter.Status)
+		}
+		if userFilter.UserId != nil {
+			db = db.Where("id = ?", *userFilter.UserId)
+		}
+		if userFilter.Role != nil {
+			db = db.Where("role = ?", *userFilter.Role)
+		}
+		if userFilter.Search != nil {
+			searchTerm := "%" + *userFilter.Search + "%"
+			db = db.Where("username ILIKE ? OR email ILIKE ?", searchTerm, searchTerm)
+		}
+	}
+
+	// Count total results (before pagination)
+	if err := db.Count(&totalCount).Error; err != nil {
+		return nil, err
+	}
+
+	// Apply pagination
+	page := pagination.Page
+	pageSize := pagination.PageSize
+	offset := (page - 1) * pageSize
+
+	err := db.Limit(pageSize).Offset(offset).Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+
+	totalPages := int((totalCount + int64(pageSize) - 1) / int64(pageSize))
+
+	return &models.UsersResponse{
+		Users:      users,
+		TotalCount: int(totalCount),
+		Page:       page,
+		PageSize:   pageSize,
+		TotalPages: totalPages,
+	}, nil
+}
+
+func (r *userRepository) DeleteUser(ctx context.Context, userID uuid.UUID) error {
+	return r.db.WithContext(ctx).Unscoped().Delete(&models.User{}, "id = ?", userID).Error
 }

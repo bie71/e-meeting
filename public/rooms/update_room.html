@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><circle fill=%222980b9%22 cx=%2232%22 cy=%2232%22 r=%2232%22/><text x=%2232%22 y=%2242%22 font-size=%2232%22 font-family=%22Poppins,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>eM</text></svg>" type="image/svg+xml"/>
+  <title>Update Room</title>
+  <script src="../axios/axios.min.js"></script>
+  <script src="../tailwind/tailwindcss.js"></script>
+</head>
+<body class="bg-gradient-to-br from-cyan-400 to-blue-800 min-h-screen flex items-start justify-center p-6">
+  <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg mt-10">
+    <h1 class="text-2xl font-bold text-center text-blue-800 mb-6">Update Room</h1>
+
+    <form id="updateRoomForm" class="space-y-4">
+      <div>
+        <label for="name" class="font-semibold text-blue-700 block mb-1">Nama Room</label>
+        <input type="text" id="name" name="name" placeholder="Nama room" class="w-full border rounded p-2" />
+      </div>
+      <div>
+        <label for="capacity" class="font-semibold text-blue-700 block mb-1">Kapasitas</label>
+        <input type="number" id="capacity" name="capacity" min="1" placeholder="Kapasitas" class="w-full border rounded p-2" />
+      </div>
+      <div>
+        <label for="price_per_hour" class="font-semibold text-blue-700 block mb-1">Harga per Jam</label>
+        <input type="number" id="price_per_hour" name="price_per_hour" min="0" step="0.01" placeholder="Harga" class="w-full border rounded p-2" />
+      </div>
+      <div>
+        <label for="status" class="font-semibold text-blue-700 block mb-1">Status</label>
+        <select id="status" name="status" class="w-full border rounded p-2">
+          <option value="">-- Pilih Status --</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <div>
+        <label for="url_room_pic" class="font-semibold text-blue-700 block mb-1">URL Gambar Room</label>
+        <input type="text" id="url_room_pic" name="url_room_pic" class="w-full border rounded p-2 bg-gray-100" readonly />
+      </div>
+      <div class="mb-4">
+        <label for="roomImage" class="font-semibold text-blue-700 block mb-1">Upload Gambar</label>
+        <input type="file" id="roomImage" name="roomImage" accept="image/*" class="w-full" />
+      </div>
+      <button type="submit" class="w-full bg-blue-700 text-white font-semibold py-2 rounded hover:bg-blue-800 mb-8 mt-4">Update Room</button>
+    </form>
+
+    <div id="alert" class="text-center font-semibold mt-4 hidden"></div>
+  </div>
+
+  <script>
+    const token = JSON.parse(localStorage.getItem('loginData'))?.token;
+    if (!token) {
+      alert('Silakan login terlebih dahulu.');
+      window.location.href = '/login.html';
+    }
+
+    const alertEl = document.getElementById('alert');
+    const form = document.getElementById('updateRoomForm');
+    const urlRoomPicInput = document.getElementById('url_room_pic');
+    const roomImageInput = document.getElementById('roomImage');
+
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get('id');
+    if (!roomId) {
+      alert('ID Room tidak ditemukan.');
+      window.location.href = '/rooms/create_room.html';
+    }
+
+    function showAlert(message, isError = false) {
+      alertEl.textContent = message;
+      alertEl.className = `text-center font-semibold mt-4 ${isError ? 'text-red-600' : 'text-green-600'}`;
+      alertEl.classList.remove('hidden');
+    }
+
+    async function loadRoomData() {
+      try {
+        const { data } = await axios.get(`/api/v1/admin/rooms/${roomId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        form.name.value = data.name || '';
+        form.capacity.value = data.capacity || '';
+        form.price_per_hour.value = data.price_per_hour || '';
+        form.status.value = data.status || '';
+        urlRoomPicInput.value = data.url_room_pic || '';
+      } catch (err) {
+        alert('Gagal memuat data room: ' + err.message);
+      }
+    }
+
+    roomImageInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      showAlert('Mengunggah gambar...');
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const { data } = await axios.post('/api/v1/upload-image', formData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        urlRoomPicInput.value = data.url;
+        showAlert('Upload gambar berhasil');
+      } catch (err) {
+        showAlert('Gagal upload gambar: ' + err.message, true);
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {};
+      if (form.name.value) payload.name = form.name.value;
+      if (form.capacity.value) payload.capacity = parseInt(form.capacity.value);
+      if (form.price_per_hour.value) payload.price_per_hour = parseFloat(form.price_per_hour.value);
+      if (form.status.value) payload.status = form.status.value;
+      if (urlRoomPicInput.value) payload.url_room_pic = urlRoomPicInput.value;
+
+      try {
+        await axios.put(`/api/v1/admin/rooms/${roomId}`, payload, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        });
+        showAlert('Room berhasil diupdate');
+        setTimeout(() => window.location.href = '/rooms/create_room.html', 1500);
+      } catch (err) {
+        showAlert('Gagal update room: ' + err.message, true);
+      }
+    });
+
+    window.onload = loadRoomData;
+  </script>
+</body>
+</html>

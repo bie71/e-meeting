@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><circle fill=%222980b9%22 cx=%2232%22 cy=%2232%22 r=%2232%22/><text x=%2232%22 y=%2242%22 font-size=%2232%22 font-family=%22Poppins,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>eM</text></svg>" type="image/svg+xml"/>
+<title>Reservation History - Admin</title>
+
+<!-- CSS DataTables + jQuery UI -->
+<link rel="stylesheet" href="jquery.dataTables.min.css" />
+<link rel="stylesheet" href="jquery-ui.css" />
+
+<style>
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    padding: 30px;
+    color: #222;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 700;
+    color: #0047ab;
+  }
+  form {
+    max-width: 600px;
+    margin: 0 auto 30px;
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  input[type="datetime-local"] {
+    padding: 8px 10px;
+    border-radius: 5px;
+    border: 1.8px solid #ccc;
+    font-size: 14px;
+    min-width: 220px;
+  }
+  button {
+    background-color: #3f51b5;
+    color: white;
+    padding: 10px 22px;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #2c387e;
+  }
+  #status {
+    max-width: 600px;
+    margin: 0 auto 20px;
+    text-align: center;
+    font-weight: 600;
+  }
+  #status.loading {
+    color: #666;
+    font-style: italic;
+  }
+  #status.error {
+    color: #e53935;
+  }
+  table.dataTable {
+    background: white;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.1);
+    border-radius: 8px !important;
+  }
+  table.dataTable thead th {
+    background-color: #3f51b5 !important;
+    color: white !important;
+  }
+
+  .btn-back-dashboard {
+  display: inline-block;
+  background-color: #3f51b5;
+  color: white;
+  padding: 10px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-back-dashboard:hover {
+  background-color: #2c387e;
+}
+
+#reservationTable tbody tr {
+  cursor: pointer;
+}
+
+</style>
+</head>
+<body class="bg-gradient-to-br from-cyan-400 to-blue-800 min-h-screen text-gray-900 font-sans p-6">
+
+<h1 class="text-3xl font-bold mb-4">Reservation History</h1>
+  
+<form id="filterForm">
+  <label>
+    Start Datetime
+    <input type="datetime-local" id="startDatetime" name="start_datetime" required />
+  </label>
+  <label>
+    End Datetime
+    <input type="datetime-local" id="endDatetime" name="end_datetime" required />
+  </label>
+  <button type="submit" class="bg-blue-800 text-white py-2 px-4 rounded">Search</button>
+</form>
+
+<div id="status"></div>
+
+<table id="reservationTable" class="display" style="width:100%">
+  <thead>
+    <tr>
+      <th>Event ID</th>
+      <th>Room Name</th>
+      <th>User</th>
+      <th>Start Time</th>
+      <th>End Time</th>
+      <th>Duration (Hours)</th>
+      <th>Visitor Count</th>
+      <th>Price (Rp)</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+
+    <!-- modal popup -->
+    <div id="modalDetail" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white w-full max-w-3xl rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto">
+          <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl rounded-lg p-2">&times;</button>
+          <h2 class="text-xl font-bold text-blue-800 mb-4 text-center">Detail Reservasi</h2>
+          <div id="modalContent" class="space-y-4 text-sm"></div>
+        </div>
+      </div>
+      
+
+    <!-- end modal -->
+
+
+<a href="/dashboard/dashboard_statistic.html" 
+class="inline-block w-auto max-w-fit bg-blue-800 text-white py-2 px-4 m-4  rounded-full font-bold hover:bg-blue-600"
+ id="btn-back-dashboard-statistic" 
+ style="display: none;">
+    📊 Kembali ke Dashboard Statistik
+  </a>
+  <a href="/success.html" 
+  class="inline-block w-auto max-w-fit bg-blue-800 text-white py-2 px-4 m-4  rounded-full font-bold hover:bg-blue-600"
+  id="btn-back-dashboard" 
+  style="display: none;">
+    🏠 Kembali ke Dashboard
+  </a>
+
+<script src="../tailwind/tailwindcss.js"></script>
+<script src="../axios/axios.min.js"></script>
+<!-- jQuery dan DataTables -->
+<script src="jquery-3.7.0.min.js"></script>
+<script src="jquery.dataTables.min.js"></script>
+<script src="modal.js"></script>
+<script src="../js/jwtUtils.js"></script>
+
+<script>
+  // Helper untuk format datetime ISO ke lokal yg readable
+//   function formatLocalDateTime(isoString) {
+//     const d = new Date(isoString);
+//     if (isNaN(d)) return isoString;
+//     return d.toLocaleString('id-ID', {
+//       year: 'numeric', month: '2-digit', day: '2-digit',
+//       hour: '2-digit', minute: '2-digit', second: '2-digit',
+//       hour12: false
+//     });
+//   }
+
+function formatDateWithoutOffset(isoString) {
+  if (!isoString) return "";
+
+  // Pastikan isoString punya format "YYYY-MM-DDTHH:mm:ss" atau "YYYY-MM-DDTHH:mm:ssZ"
+  // Hilangkan Z jika ada
+  const cleanStr = isoString.replace('Z', '');
+
+  // Pisah tanggal dan waktu
+  const [datePart, timePart] = cleanStr.split('T');
+  if (!datePart || !timePart) return isoString;
+
+  // Format tanggal jadi DD/MM/YYYY
+  const [year, month, day] = datePart.split('-');
+  return `${day}/${month}/${year} ${timePart}`;
+}
+
+
+  $(document).ready(function() {
+    const token = JSON.parse(localStorage.getItem('loginData') || '{}').token;
+    if (!token) {
+      alert('Token tidak ditemukan, silakan login dulu.');
+      window.location.href = '/login.html';
+      return;
+    }
+
+    const role = parseJwt(token).role;
+    if (role == 'admin') {
+        document.getElementById("btn-back-dashboard-statistic").style.display = "flex";
+    }else{
+        document.getElementById("btn-back-dashboard").style.display = "flex";
+    }
+
+
+    const $status = $('#status');
+    const $table = $('#reservationTable').DataTable({
+      columns: [
+        { data: 'id' },
+        { data: 'room_name' },
+        { data: 'username' },
+        { data: 'start_time', render: d => formatDateWithoutOffset(d) },
+        { data: 'end_time', render: d => formatDateWithoutOffset(d) },
+        { data: 'duration_hours' },
+        { data: 'visitor_count' },
+        { data: 'price', render: p => Number(p).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) },
+        { data: 'status', render: function (data) {
+                const badgeClass = {
+                pending: 'bg-yellow-100 text-yellow-800',
+                confirmed: 'bg-green-100 text-green-800',
+                cancelled: 'bg-red-100 text-red-800',
+                completed: 'bg-blue-100 text-blue-800'
+                }[data] || 'bg-gray-100 text-gray-800';
+
+                return `<span class="px-2 py-1 rounded text-xs font-semibold ${badgeClass}">${data}</span>`;
+            } },
+      ],
+      pageLength: 10,
+      lengthMenu: [5,10,25,50],
+      order: [[3, 'desc']],
+      language: {
+        emptyTable: "Tidak ada data reservasi",
+        loadingRecords: "Memuat...",
+        search: "Cari:",
+        lengthMenu: "Tampilkan _MENU_ data",
+        paginate: {
+          next: "Berikutnya",
+          previous: "Sebelumnya"
+        }
+      }
+    });
+
+    async function loadData(startDatetime, endDatetime) {
+      $status.text('Loading...').removeClass().addClass('loading');
+      $table.clear().draw();
+
+      function formatToBackendDateTime(localDatetime) {
+        return localDatetime.replace('T', ' ');
+  }
+
+      try {
+        const url = '/api/v1/reservations/history?start_datetime=' + encodeURIComponent(formatToBackendDateTime(startDatetime)) +
+            '&end_datetime=' + encodeURIComponent(formatToBackendDateTime(endDatetime));
+
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const data = await response.json();
+
+        if (!data.events || data.events.length === 0) {
+          $status.text('Tidak ditemukan data reservasi pada rentang waktu tersebut.').removeClass();
+          return;
+        }
+
+        // Isi tabel
+        $table.rows.add(data.events).draw();
+        $status.text(`Menampilkan ${data.events.length} reservasi dari ${formatDateWithoutOffset(startDatetime)} sampai ${formatDateWithoutOffset(endDatetime)}`).removeClass();
+
+      } catch (err) {
+        $status.text('Error: ' + err.message).removeClass().addClass('error');
+      }
+    }
+
+    $('#filterForm').on('submit', function(e) {
+      e.preventDefault();
+
+      const startDatetime = $('#startDatetime').val();
+      const endDatetime = $('#endDatetime').val();
+
+      if (!startDatetime || !endDatetime) {
+        alert('Mohon isi kedua tanggal mulai dan selesai.');
+        return;
+      }
+      if (startDatetime > endDatetime) {
+        alert('Tanggal mulai harus sebelum tanggal selesai.');
+        return;
+      }
+
+      loadData(startDatetime, endDatetime);
+    });
+
+    // Set default tanggal (hari ini jam 00:00 sampai sekarang)
+    function toDatetimeLocal(date) {
+      const pad = n => n.toString().padStart(2, '0');
+      return date.getFullYear() + '-' +
+             pad(date.getMonth()+1) + '-' +
+             pad(date.getDate()) + 'T' +
+             pad(date.getHours()) + ':' +
+             pad(date.getMinutes());
+    }
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0);
+    $('#startDatetime').val(toDatetimeLocal(startOfDay));
+    $('#endDatetime').val(toDatetimeLocal(now));
+
+
+       $('#reservationTable tbody').on('click', 'tr', function () {
+        const data = $table.row(this).data();
+        if (!data || !data.id) return;
+        showDetailInModal(data.id); // gunakan modal
+        });
+
+
+
+    // Load data default
+    loadData($('#startDatetime').val(), $('#endDatetime').val());
+  });
+
+
+
+
+
+
+</script>
+
+</body>
+</html>

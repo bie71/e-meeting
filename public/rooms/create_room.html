@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Create & Search Rooms - Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><circle fill=%222980b9%22 cx=%2232%22 cy=%2232%22 r=%2232%22/><text x=%2232%22 y=%2242%22 font-size=%2232%22 font-family=%22Poppins,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>eM</text></svg>" type="image/svg+xml"/>
+<link rel="stylesheet" href="../css/dashboard_return.css">
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom right, #00aaff, #0047ab);
+    margin: 0; padding: 20px;
+    min-height: 100vh;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .main-container {
+    max-width: 1100px;
+    width: 100%;
+    display: flex;
+    gap: 24px;
+    margin-bottom: 30px;
+    box-sizing: border-box;
+    align-items: flex-start; /* agar create box tinggi auto */
+  }
+  .box {
+    background: white;
+    padding: 25px 30px;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    box-sizing: border-box;
+  }
+  .create-room-box {
+    flex: 0 0 400px;
+    /* height: auto; default sudah begitu */
+  }
+  .content-box {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  h1, h2 {
+    color: #0047ab;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-align: center;
+  }
+  form > div {
+    margin-bottom: 15px;
+  }
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #0047ab;
+  }
+  input[type=text], input[type=number], select, input[type=file] {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+  }
+  button {
+    background-color: #0047ab;
+    color: white;
+    border: none;
+    padding: 14px 0;
+    width: 100%;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #0066cc;
+  }
+  /* Filter box di atas list rooms, horizontal */
+  #filterBox {
+    background: white;
+    padding: 15px 25px;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    box-sizing: border-box;
+    width: 100%;
+  }
+  #searchForm {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  #searchForm > div {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    min-width: 150px;
+    flex: 1 1 180px;
+  }
+  #searchForm label {
+    margin-bottom: 4px;
+    font-weight: 600;
+    color: #0047ab;
+  }
+  #searchForm input[type=text],
+  #searchForm input[type=number],
+  #searchForm select {
+    padding: 6px 8px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  #searchForm button[type=submit],
+  #resetFilterBtn {
+    flex: none;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    color: white;
+    transition: background-color 0.3s ease;
+    width: 120px;       /* buat lebar tombol sama */
+  text-align: center;
+  box-sizing: border-box;
+  }
+  #searchForm button[type=submit] {
+    background-color: #0047ab;
+  }
+  #searchForm button[type=submit]:hover {
+    background-color: #0066cc;
+  }
+  #resetFilterBtn {
+    background-color: #999;
+    margin-left: 12px;
+  }
+  #resetFilterBtn:hover {
+    background-color: #777;
+  }
+  .rooms-list {
+    color: #222;
+    width: 100%;
+  }
+  .room-item {
+    background: #f7f9fb;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .room-info {
+    max-width: 80%;
+  }
+  .room-name {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #0047ab;
+    margin: 0 0 6px 0;
+  }
+  .room-details span {
+    display: inline-block;
+    margin-right: 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  .pagination {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .pagination button {
+    background-color: #0047ab;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin: 0 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .pagination button:disabled {
+    background-color: #999;
+    cursor: default;
+  }
+  .pagination button:hover:not(:disabled) {
+    background-color: #0066cc;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+  }
+  .update-btn, .delete-btn {
+    flex: 1; /* Sama lebar */
+    padding: 10px 10px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-radius: 6px;
+    border: none;
+    user-select: none;
+    text-align: center;
+  }
+  
+  .update-btn {
+    background-color: #006cdf; /* biru */
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  
+  .update-btn:hover {
+    background-color: rgb(0, 78, 160);
+  }
+  
+  .delete-btn {
+    background-color: #c0392b; /* merah */
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  
+  .delete-btn:hover {
+    background-color: #a83227;
+  }
+
+  @media (max-width: 1024px) {
+    .main-container {
+      flex-direction: column;
+      align-items: center;
+    }
+    .create-room-box {
+      width: 100%;
+      flex: none;
+      margin-bottom: 30px;
+    }
+    .content-box {
+      width: 100%;
+    }
+  }
+  @media (max-width: 600px) {
+    #searchForm {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    #searchForm > div {
+      min-width: auto;
+      flex: none;
+    }
+    #searchForm button[type=submit], #resetFilterBtn {
+      width: 100%;
+      margin-left: 0 !important;
+      margin-top: 8px;
+    }
+  }
+
+   
+</style>
+</head>
+<body>
+
+<div class="main-container">
+  <!-- Create Room -->
+  <div class="box create-room-box">
+    <h1>Create Room</h1>
+    <button id="dashboardBtn" onclick="goDashboard()">🏠 Kembali ke Dashboard</button>
+    <form id="createRoomForm" enctype="multipart/form-data">
+      <div><label for="name">Name</label><input type="text" id="name" name="name" required maxlength="100" /></div>
+      <div><label for="capacity">Capacity</label><input type="number" id="capacity" name="capacity" required min="1" /></div>
+      <div><label for="price_per_hour">Price per Hour (decimal)</label><input type="number" id="price_per_hour" name="price_per_hour" required min="0" step="0.0" /></div>
+      <div>
+        <label for="status">Status</label>
+        <select id="status" name="status" required>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <div><label for="roomImage">Room Picture (upload image)</label><input type="file" id="roomImage" name="roomImage" accept="image/*" /></div>
+      <button type="submit" style="margin-bottom: 20px;">Create Room</button>
+    </form>
+    <div class="alert" id="createRoomAlert" style="display:none; margin-top: 10px;"></div>
+  </div>
+
+  <!-- Content: Filter + List Rooms -->
+  <div class="content-box">
+    <div id="filterBox">
+      <h2>Search Rooms</h2>
+      <form id="searchForm">
+        <div>
+          <label for="search">Search Text</label>
+          <input type="text" id="search" name="search" placeholder="Room name or keywords" />
+        </div>
+        <div>
+          <label for="min_capacity">Minimum Capacity</label>
+          <input type="number" id="min_capacity" name="min_capacity" min="1" />
+        </div>
+        <div>
+          <label for="statusFilter">Status</label>
+          <select id="statusFilter" name="status">
+            <option value="">-- Any --</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <button type="submit">Search</button>
+        <button type="button" id="resetFilterBtn">Reset</button>
+      </form>
+    </div>
+
+    <div class="rooms-list" id="roomsList"></div>
+    <div class="pagination">
+      <button id="prevPageBtn" disabled>⬅️ Previous</button>
+      <span>Page: <span id="currentPage">1</span></span>
+      <button id="nextPageBtn">Next ➡️</button>
+    </div>
+
+  </div>
+</div>
+
+<script src="../js/return_dashboard.js"></script>
+<script src="../js/jwtUtils.js"></script>
+<script>
+  const loginData = JSON.parse(localStorage.getItem('loginData'));
+  const token = loginData.token;
+  const payload = parseJwt(token);
+  const role = payload?.role || '';
+
+  if(role !== 'admin'){
+    alert('Hanya admin yang dapat mengakses halaman ini.');
+    window.location.href = '/success.html';
+  }
+
+  const prevBtn = document.getElementById('prevPageBtn');
+  const nextBtn = document.getElementById('nextPageBtn');
+  const currentPageSpan = document.getElementById('currentPage');
+  let currentPage = 1;
+  const pageSize = 20;
+
+  function updatePaginationButtons(totalPages) {
+    prevBtn.disabled = currentPage <= 1;
+    nextBtn.disabled = totalPages && currentPage >= totalPages;
+    currentPageSpan.textContent = currentPage;
+  }
+
+  async function loadRooms(filters = {}) {
+    const roomsList = document.getElementById('roomsList');
+    roomsList.innerHTML = '<p>Loading rooms...</p>';
+
+    const hasFilters = (filters.search && filters.search.trim() !== '') ||
+                       (filters.min_capacity != null && filters.min_capacity !== '') ||
+                       (filters.status && filters.status.trim() !== '');
+
+    try {
+      let res;
+
+      if (hasFilters) {
+        const searchPayload = {
+          search: filters.search || null,
+          min_capacity: filters.min_capacity || null,
+          status: filters.status || null,
+        };
+
+        res = await fetch(`/api/v1/rooms`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(searchPayload)
+        });
+      } else {
+        res = await fetch(`/api/v1/rooms?page=${currentPage}&page_size=${pageSize}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      }
+
+      if (!res.ok) throw new Error('Gagal mengambil daftar rooms.');
+
+      const result = await res.json();
+
+      const rooms = result.rooms || [];
+      const totalPages = result.total_pages || null;
+
+      if (rooms.length === 0) {
+        roomsList.innerHTML = '<p>Tidak ada rooms ditemukan.</p>';
+        updatePaginationButtons(totalPages);
+        return;
+      }
+
+      roomsList.innerHTML = '';
+      rooms.forEach(room => {
+        const roomEl = document.createElement('div');
+        roomEl.className = 'room-item';
+
+        const imageUrl = room.url_room_pic && room.url_room_pic.trim() !== ''
+          ? room.url_room_pic
+          : 'https://placehold.co/80x60/png?text=No+Image';
+
+        roomEl.innerHTML = `
+          <img src="${imageUrl}" alt="Gambar ${room.name}" style="width:80px; height:60px; border-radius:6px; object-fit:cover; cursor:pointer;" onclick="window.location.href='room_detail.html?id=${room.id}'" />
+          <div class="room-info" style="cursor:pointer;" onclick="window.location.href='room_detail.html?id=${room.id}'">
+            <h3 class="room-name">${room.name}</h3>
+            <div class="room-details">
+              <span>Capacity: ${room.capacity}</span>
+              <span>Price: $${room.price_per_hour.toFixed(2)}</span>
+              <span>Status: ${room.status}</span>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button class="update-btn" title="Update Room">Update</button>
+            <button class="delete-btn" title="Delete Room">Delete</button>
+        </div>
+          
+        `;
+
+        roomEl.querySelector(".update-btn").addEventListener("click", () => {
+        window.location.href = `update_room.html?id=${room.id}`;
+      });
+
+        // Event delete
+        roomEl.querySelector('.delete-btn').addEventListener('click', async (e) => {
+          e.stopPropagation(); // supaya gak trigger redirect ke detail room
+          if(!confirm(`Yakin ingin menghapus room "${room.name}"?`)) return;
+
+          try {
+            const delRes = await fetch(`/api/v1/admin/rooms/${room.id}`, {
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+
+            if (!delRes.ok) {
+              const errData = await delRes.json();
+              throw new Error(errData.message || 'Gagal menghapus room.');
+            }
+
+            alert('Room berhasil dihapus.');
+            loadRooms(getCurrentFilters()); // refresh list setelah hapus
+          } catch (err) {
+            alert('Error hapus room: ' + err.message);
+          }
+        });
+
+        roomsList.appendChild(roomEl);
+      });
+
+      updatePaginationButtons(totalPages);
+    } catch (err) {
+      roomsList.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+    }
+  }
+
+  prevBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      loadRooms(getCurrentFilters());
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    currentPage++;
+    loadRooms(getCurrentFilters());
+  });
+
+  function getCurrentFilters() {
+    const form = document.getElementById('searchForm');
+    return {
+      search: form.search.value.trim(),
+      min_capacity: form.min_capacity.value ? parseInt(form.min_capacity.value, 10) : null,
+      status: form.status.value || ''
+    };
+  }
+
+  document.getElementById('searchForm').addEventListener('submit', e => {
+    e.preventDefault();
+    currentPage = 1; // reset ke halaman 1 saat search baru
+    loadRooms(getCurrentFilters());
+  });
+
+  document.getElementById('resetFilterBtn').addEventListener('click', () => {
+    const filterForm = document.getElementById('searchForm');
+    filterForm.reset();
+
+    // Load ulang rooms tanpa filter (GET request)
+    currentPage = 1;
+    loadRooms();
+  });
+
+  document.getElementById('createRoomForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const alertEl = document.getElementById('createRoomAlert');
+    alertEl.style.display = 'none';
+    const form = e.target;
+    const fileInput = document.getElementById('roomImage');
+    let url_room_pic = '';
+
+    try {
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const uploadRes = await fetch(`/api/v1/upload-image`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: formData
+        });
+
+        if (!uploadRes.ok) {
+          const errText = await uploadRes.text();
+          throw new Error('Upload gambar gagal: ' + errText);
+        }
+
+        const uploadData = await uploadRes.json();
+        url_room_pic = uploadData.url || '';
+      }
+
+      const payload = {
+        name: form.name.value.trim(),
+        capacity: parseInt(form.capacity.value, 10),
+        price_per_hour: parseFloat(form.price_per_hour.value),
+        status: form.status.value,
+        url_room_pic: url_room_pic
+      };
+
+      const createRes = await fetch(`/api/v1/admin/rooms`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!createRes.ok) {
+        const errData = await createRes.json();
+        throw new Error(errData.message || 'Gagal membuat room.');
+      }
+
+      alertEl.style.color = 'green';
+      alertEl.textContent = 'Room berhasil dibuat!';
+      alertEl.style.display = 'block';
+      form.reset();
+      currentPage = 1;
+      loadRooms();
+
+    } catch (err) {
+      alertEl.style.color = 'red';
+      alertEl.textContent = err.message;
+      alertEl.style.display = 'block';
+    }
+  });
+
+  // Load rooms awal
+  loadRooms();
+
+
+
+</script>
+</body>
+</html>

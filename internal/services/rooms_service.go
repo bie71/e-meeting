@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"e_metting/internal/models"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -31,12 +32,14 @@ func (s *RoomService) CreateRoom(req *models.CreateRoomRequest) (*models.Room, e
 		UpdatedAt:    time.Now(),
 	}
 
-	err := s.db.QueryRow(`
-		INSERT INTO rooms (id, name, capacity, price_per_hour, status, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
-		RETURNING id, name, capacity, price_per_hour, status, created_at, updated_at`,
-		room.ID, room.Name, room.Capacity, room.PricePerHour, room.Status, room.CreatedAt, room.UpdatedAt,
-	).Scan(&room.ID, &room.Name, &room.Capacity, &room.PricePerHour, &room.Status, &room.CreatedAt, &room.UpdatedAt)
+	if req.UrlRoomPic != nil {
+		room.UrlRoomPic = req.UrlRoomPic
+	}
+
+	_, err := s.db.Exec(`
+		INSERT INTO rooms (id, name, capacity, price_per_hour, status, url_room_pic, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+	`, room.ID, room.Name, room.Capacity, room.PricePerHour, room.Status, room.UrlRoomPic, room.CreatedAt, room.UpdatedAt)
 
 	if err != nil {
 		return nil, fmt.Errorf("error creating room: %v", err)
@@ -56,10 +59,10 @@ func (s *RoomService) UpdateRoom(id uuid.UUID, req *models.UpdateRoomRequest) (*
 	// First, check if room exists
 	var room models.Room
 	err = tx.QueryRow(`
-		SELECT id, name, capacity, price_per_hour, status, created_at, updated_at
+		SELECT id, name, capacity, price_per_hour, status, created_at, updated_at, url_room_pic
 		FROM rooms WHERE id = $1`,
 		id,
-	).Scan(&room.ID, &room.Name, &room.Capacity, &room.PricePerHour, &room.Status, &room.CreatedAt, &room.UpdatedAt)
+	).Scan(&room.ID, &room.Name, &room.Capacity, &room.PricePerHour, &room.Status, &room.CreatedAt, &room.UpdatedAt, &room.UrlRoomPic)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -81,14 +84,19 @@ func (s *RoomService) UpdateRoom(id uuid.UUID, req *models.UpdateRoomRequest) (*
 	if req.Status != nil {
 		room.Status = *req.Status
 	}
+
+	if req.UrlRoomPic != nil {
+		room.UrlRoomPic = req.UrlRoomPic
+	}
+
 	room.UpdatedAt = time.Now()
 
 	// Update room
 	_, err = tx.Exec(`
 		UPDATE rooms 
-		SET name = $1, capacity = $2, price_per_hour = $3, status = $4, updated_at = $5
-		WHERE id = $6`,
-		room.Name, room.Capacity, room.PricePerHour, room.Status, room.UpdatedAt, room.ID,
+		SET name = $1, capacity = $2, price_per_hour = $3, status = $4, updated_at = $5, url_room_pic = $6
+		WHERE id = $7`,
+		room.Name, room.Capacity, room.PricePerHour, room.Status, room.UpdatedAt, room.UrlRoomPic, room.ID,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error updating room: %v", err)
@@ -181,9 +189,9 @@ func (s *RoomService) GetRooms(filter *models.RoomFilter, pagination *models.Pag
 			argCount++
 		}
 
-		if filter.RoomTypeID != nil {
-			conditions = append(conditions, fmt.Sprintf("room_type_id = $%d", argCount))
-			args = append(args, *filter.RoomTypeID)
+		if filter.RoomId != nil {
+			conditions = append(conditions, fmt.Sprintf("id = $%d", argCount))
+			args = append(args, *filter.RoomId)
 			argCount++
 		}
 
@@ -208,7 +216,6 @@ func (s *RoomService) GetRooms(filter *models.RoomFilter, pagination *models.Pag
 
 	// Calculate offset
 	offset := (pagination.Page - 1) * pagination.PageSize
-
 	// Get total count
 	var totalCount int
 	countQuery := fmt.Sprintf(`
@@ -227,7 +234,7 @@ func (s *RoomService) GetRooms(filter *models.RoomFilter, pagination *models.Pag
 	totalPages := (totalCount + pagination.PageSize - 1) / pagination.PageSize
 	// Get rooms with pagination
 	query := fmt.Sprintf(`
-		SELECT id, name, capacity, price_per_hour, status, created_at, updated_at
+		SELECT id, name, capacity, price_per_hour, status, created_at, updated_at, url_room_pic
 		FROM rooms 
 		WHERE %s
 		ORDER BY name ASC
@@ -239,6 +246,8 @@ func (s *RoomService) GetRooms(filter *models.RoomFilter, pagination *models.Pag
 
 	// Add pagination parameters
 	args = append(args, pagination.PageSize, offset)
+
+	log.Println("Rooms Query:", query, "Args:", args)
 
 	rows, err := tx.Query(query, args...)
 	if err != nil {
@@ -257,6 +266,7 @@ func (s *RoomService) GetRooms(filter *models.RoomFilter, pagination *models.Pag
 			&room.Status,
 			&room.CreatedAt,
 			&room.UpdatedAt,
+			&room.UrlRoomPic,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning room: %v", err)
@@ -300,19 +310,30 @@ func (s *RoomService) GetRoomSchedule(roomID uuid.UUID, query *models.RoomSchedu
 		return nil, fmt.Errorf("room not found")
 	}
 
+	queryStr := `
+			SELECT r.id, r.start_time, r.end_time, r.status, r.visitor_count
+			FROM reservations r
+			WHERE r.room_id = $1
+			AND (
+				(r.start_time >= $2 AND r.start_time < $3)
+				OR (r.end_time > $2 AND r.end_time <= $3)
+				OR (r.start_time <= $2 AND r.end_time >= $3)
+			)`
+
+	args := []interface{}{roomID, query.StartDateTime, query.EndDateTime}
+
+	if query != nil && !query.IsAdmin {
+		queryStr += " AND r.user_id = $4"
+		args = append(args, query.UserID)
+	}
+
+	queryStr += " ORDER BY r.start_time ASC"
+
+	log.Println("Room Schedule Query:", queryStr, "Args:", args)
+
 	// Query reservations within the time range
-	rows, err := tx.Query(`
-		SELECT id, start_time, end_time, status, visitor_count
-		FROM reservations
-		WHERE room_id = $1
-		AND (
-			(start_time >= $2 AND start_time < $3)
-			OR (end_time > $2 AND end_time <= $3)
-			OR (start_time <= $2 AND end_time >= $3)
-		)
-		ORDER BY start_time ASC`,
-		roomID, query.StartDateTime, query.EndDateTime,
-	)
+	rows, err := tx.Query(queryStr, args...)
+
 	if err != nil {
 		return nil, fmt.Errorf("error querying reservations: %v", err)
 	}
@@ -349,4 +370,37 @@ func (s *RoomService) GetRoomSchedule(roomID uuid.UUID, query *models.RoomSchedu
 		StartTime: query.StartDateTime,
 		EndTime:   query.EndDateTime,
 	}, nil
+}
+
+func (s *RoomService) GetRoomByID(id uuid.UUID) (*models.Room, error) {
+	// Start transaction
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, fmt.Errorf("error starting transaction: %v", err)
+	}
+	defer tx.Rollback()
+
+	// Get room details
+	var room models.Room
+	err = tx.QueryRow(`
+		SELECT id, name, capacity, price_per_hour, status, created_at, updated_at, url_room_pic
+		FROM rooms
+		WHERE id = $1
+	`, id).Scan(
+		&room.ID, &room.Name, &room.Capacity, &room.PricePerHour, &room.Status, &room.CreatedAt, &room.UpdatedAt, &room.UrlRoomPic,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error querying room: %v", err)
+	}
+
+	// Commit transaction
+	if err = tx.Commit(); err != nil {
+		return nil, fmt.Errorf("error committing transaction: %v", err)
+	}
+
+	if room.ID == uuid.Nil {
+		return nil, fmt.Errorf("room not found")
+	}
+
+	return &room, nil
 }

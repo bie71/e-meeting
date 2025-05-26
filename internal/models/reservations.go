@@ -68,8 +68,10 @@ type ReservationCalculationRequest struct {
 		SnackID  uuid.UUID `json:"snack_id" validate:"required"`
 		Quantity int       `json:"quantity" validate:"required,min=1"`
 	} `json:"snacks" validate:"required"`
-	StartTime time.Time `json:"start_time" validate:"required"`
-	EndTime   time.Time `json:"end_time" validate:"required"`
+	StartTimeRaw string    `json:"start_time" validate:"required"`
+	EndTimeRaw   string    `json:"end_time" validate:"required"`
+	StartTime    time.Time `json:"-"`
+	EndTime      time.Time `json:"-"`
 }
 
 type ReservationCalculationResponse struct {
@@ -94,13 +96,15 @@ type ReservationCalculationResponse struct {
 type CreateReservationRequest struct {
 	RoomID       uuid.UUID `json:"room_id" validate:"required"`
 	UserID       uuid.UUID `json:"user_id" validate:"required"`
-	StartTime    time.Time `json:"start_time" validate:"required"`
-	EndTime      time.Time `json:"end_time" validate:"required,gtfield=StartTime"`
+	StartTime    time.Time `json:"-"`
+	EndTime      time.Time `json:"-"`
 	VisitorCount int       `json:"visitor_count" validate:"required,min=1"`
 	Snacks       []struct {
 		SnackID  uuid.UUID `json:"snack_id" validate:"required"`
 		Quantity int       `json:"quantity" validate:"required,min=1"`
 	} `json:"snacks" validate:"required,dive"`
+	StartTimeRaw string `json:"start_time"`
+	EndTimeRaw   string `json:"end_time"`
 }
 
 type CreateReservationResponse struct {

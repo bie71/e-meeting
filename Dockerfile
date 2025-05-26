@@ -1,5 +1,10 @@
 FROM golang:1.23-alpine AS build
 
+RUN apk add --no-cache tzdata
+
+# Optional: set timezone lingkungan agar default juga WIB
+ENV TZ=Asia/Jakarta
+
 WORKDIR /app
 
 COPY go.mod go.sum ./

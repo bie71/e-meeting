@@ -24,6 +24,14 @@ func LoggerMiddleware() fiber.Handler {
 
 		// Stop timer
 		duration := time.Since(start)
+		maxLogSize := 1024 * 10 // maksimal byte body yang mau di-log (misal 10KB)
+
+		var loggedBody []byte
+		if len(requestBody) > maxLogSize {
+			loggedBody = requestBody[:maxLogSize]
+		} else {
+			loggedBody = requestBody
+		}
 
 		// Log request details
 		log.Info().
@@ -33,7 +41,7 @@ func LoggerMiddleware() fiber.Handler {
 			Int("status", c.Response().StatusCode()).
 			Dur("duration", duration).
 			Str("user_agent", string(c.Request().Header.UserAgent())).
-			Bytes("request_body", requestBody).
+			Bytes("request_body", loggedBody).
 			Msg("HTTP request")
 
 		return err

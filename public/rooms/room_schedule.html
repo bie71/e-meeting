@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jadwal Ruangan</title>
+  <link
+  rel="icon"
+  href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><circle fill=%222980b9%22 cx=%2232%22 cy=%2232%22 r=%2232%22/><text x=%2232%22 y=%2242%22 font-size=%2232%22 font-family=%22Poppins,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>eM</text></svg>"
+  type="image/svg+xml"
+/>
+  <script src="../tailwind/tailwindcss.js"></script>
+  <script src="../axios/axios.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-cyan-400 to-blue-800 min-h-screen text-gray-900 font-sans p-6">
+
+  <div class="max-w-6xl mx-auto bg-white shadow rounded-lg p-6 mt-10">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-bold text-blue-700">Jadwal Ruangan</h1>
+      <h2 class="text-xl font-bold text-blue-700">Ruangan: <span id="roomName"></span></h2>
+      <a href="/rooms/list_room.html" class="bg-blue-600 hover:bg-blue-800 text-white font-bold  px-4 py-2 rounded">← Kembali ke Daftar Room</a>
+    </div>
+
+    <form id="filterForm" class="flex flex-col sm:flex-row gap-4 mb-6">
+      <input type="datetime-local" id="startDatetime" class="border rounded px-3 py-2 w-full sm:w-auto" required />
+      <input type="datetime-local" id="endDatetime" class="border rounded px-3 py-2 w-full sm:w-auto" required />
+      <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded">Cari</button>
+    </form>
+
+    <div id="scheduleList" class="grid md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6 mt-6"></div>
+  </div>
+
+  <script src="../js/format_date.js"></script>
+
+  <script>
+    const token = JSON.parse(localStorage.getItem('loginData') || '{}').token;
+    const roomId = new URLSearchParams(window.location.search).get('room_id');
+
+    if (!token || !roomId) {
+      alert("Token atau room_id tidak ditemukan.");
+      window.location.href = "/login.html";
+    }
+
+    function formatDate(dt) {
+      const d = new Date(dt);
+      return d.toLocaleString("id-ID");
+    }
+
+    function toRFC3339(datetimeStr) {
+      return datetimeStr + ":00+07:00";
+    }
+
+    function getStatusBadge(status) {
+      const badgeMap = {
+        pending: 'bg-yellow-100 text-yellow-800',
+        confirmed: 'bg-green-100 text-green-800',
+        cancelled: 'bg-red-100 text-red-800',
+        completed: 'bg-blue-100 text-blue-800'
+      };
+      return `<span class="px-2 py-1 text-xs font-semibold rounded ${badgeMap[status] || 'bg-gray-200 text-gray-700'}">${status}</span>`;
+    }
+
+    async function fetchRoomSchedule(start, end) {
+      const container = document.getElementById('scheduleList');
+      container.innerHTML = '<p class="text-sm text-gray-500">Memuat...</p>';
+      getRoom(roomId);
+      try {
+        const res = await axios.get(`/api/v1/rooms/${roomId}/schedule`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params: {
+            start_datetime: start,
+            end_datetime: end
+          }
+        });
+
+        const data = res.data;
+        console.log(data);
+        // Cek apakah schedules adalah array dan punya data
+            if (!Array.isArray(data.schedules) || data.schedules.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 col-span-full">Tidak ada jadwal ditemukan.</p>';
+            return;
+            }
+
+        const grouped = data.schedules.reduce((acc, s) => {
+          acc[s.status] = acc[s.status] || [];
+          acc[s.status].push(s);
+          return acc;
+        }, {});
+
+        const columns = Object.entries(grouped).map(([status, items]) => {
+          return `
+            <div class="bg-gray-50 border rounded-lg p-4 shadow-sm">
+              <h2 class="font-bold mb-3 text-sm flex items-center gap-2">${getStatusBadge(status)} <span class="text-gray-700">${status.toUpperCase()}</span></h2>
+              <div class="space-y-3">
+                ${items.map(s => `
+                  <div class="bg-white border rounded p-3 text-sm">
+                    <div><strong>Waktu:</strong> ${pretty(s.start_time)} - ${pretty(s.end_time)}</div>
+                    <div><strong>Pengunjung:</strong> ${s.visitor_count}</div>
+                    <div class="text-gray-400 text-xs">ID: ${s.reservation_id}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = columns.join('');
+
+      } catch (err) {
+        container.innerHTML = `<p class="text-red-600 col-span-full">Gagal mengambil data: ${err.message}</p>`;
+      }
+    }
+
+    document.getElementById("filterForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const start = document.getElementById("startDatetime").value;
+      const end = document.getElementById("endDatetime").value;
+
+      if (!start || !end) return alert("Isi rentang waktu terlebih dahulu.");
+      fetchRoomSchedule(toRFC3339(start), toRFC3339(end));
+    });
+
+    const now = new Date();
+    const pad = n => n.toString().padStart(2, '0');
+    const toDatetimeLocal = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0);
+    document.getElementById("startDatetime").value = toDatetimeLocal(startOfDay);
+    document.getElementById("endDatetime").value = toDatetimeLocal(now);
+    fetchRoomSchedule(toRFC3339(document.getElementById("startDatetime").value), toRFC3339(document.getElementById("endDatetime").value));
+
+  async function getRoom(id) {
+
+      try {
+        const res = await axios.post(`/api/v1/rooms`, {room_id: id}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+  
+        const dataRoom = res.data.rooms?.[0];
+        console.log(res);
+        document.getElementById("roomName").textContent = dataRoom.name;
+        
+    } catch (err) {
+       console.log(err);
+      }
+    }
+
+  </script>
+</body>
+</html>

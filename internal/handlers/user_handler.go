@@ -72,16 +72,16 @@ func (h *UserHandler) GetProfile(c *fiber.Ctx) error {
 		switch err.Error() {
 		case "user not found":
 			return c.Status(http.StatusNotFound).JSON(models.ErrorResponse{
-				Error: "user not found",
+				Error: err.Error(),
 			})
 		case "invalid user ID format":
 			return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
-				Error: "invalid user ID format",
+				Error: err.Error(),
 			})
 		default:
 			fmt.Printf("Error fetching user profile: %v\n", err)
 			return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
-				Error: "Failed to fetch user profile",
+				Error: err.Error(),
 			})
 		}
 	}
@@ -95,9 +95,10 @@ func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 	requestedID := c.Params("id")
 
 	// Optional: Check if user is requesting their own profile or has admin rights
-	if authUserID != requestedID {
+	isAdmin, _ := c.Locals("isAdmin").(bool)
+	if authUserID != requestedID && !isAdmin {
 		return c.Status(http.StatusForbidden).JSON(models.ErrorResponse{
-			Error: "Forbidden",
+			Error: "Forbidden - you can only update your own profile",
 		})
 	}
 
@@ -108,19 +109,74 @@ func (h *UserHandler) UpdateProfile(c *fiber.Ctx) error {
 		switch err.Error() {
 		case "user not found":
 			return c.Status(http.StatusNotFound).JSON(models.ErrorResponse{
-				Error: "user not found",
+				Error: err.Error(),
 			})
 		case "invalid user ID format":
 			return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
-				Error: "invalid user ID format",
+				Error: err.Error(),
 			})
 		default:
 			fmt.Printf("Error updating user profile: %v\n", err)
 			return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
-				Error: "Failed to update user profile",
+				Error: err.Error(),
 			})
 		}
 	}
 
 	return c.Status(http.StatusOK).JSON(profile)
+}
+
+func (h *UserHandler) DeleteUser(c *fiber.Ctx) error {
+	// Get authenticated user ID from context
+	requestedID := c.Params("id")
+
+	err := h.userService.DeleteUser(requestedID)
+	if err != nil {
+		switch err.Error() {
+		case "invalid user ID format":
+			return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+				Error: err.Error(),
+			})
+		default:
+			fmt.Printf("Error deleting user: %v\n", err)
+			return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
+				Error: err.Error(),
+			})
+		}
+	}
+
+	return c.Status(http.StatusOK).JSON(models.SuccessResponse{
+		Message: "User deleted successfully",
+	})
+}
+
+func (h *UserHandler) GetAllUsers(c *fiber.Ctx) error {
+
+	var filter models.UserFilter
+	var pagination models.PaginationQuery
+
+	// Selalu parse pagination dari query
+	if err := c.QueryParser(&pagination); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+			Error: "invalid query params: " + err.Error(),
+		})
+	}
+
+	// Jika POST, parse filter dari body
+	if c.Method() == fiber.MethodPost {
+		if err := c.BodyParser(&filter); err != nil {
+			return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+				Error: "invalid body: " + err.Error(),
+			})
+		}
+	}
+
+	users, err := h.userService.GetUsers(&filter, &pagination)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
+			Error: err.Error(),
+		})
+	}
+
+	return c.JSON(users)
 }

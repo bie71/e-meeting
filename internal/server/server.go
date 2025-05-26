@@ -8,11 +8,13 @@ import (
 	"e_metting/internal/middleware"
 	"e_metting/internal/repositories"
 	"e_metting/internal/services"
+	"e_metting/internal/services/supabase"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/go-resty/resty/v2"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -30,6 +32,9 @@ func NewServer(cfg *config.Config) *Server {
 	if err != nil {
 		log.Fatalf("Failed to seed users: %v", err)
 	}
+
+	restClient := resty.New()
+
 	// Initialize repositories
 	userRepo := repositories.NewUserRepository(db.GormDB())
 	passwordResetRepo := repositories.NewPasswordResetRepository(db.GormDB())
@@ -66,6 +71,9 @@ func NewServer(cfg *config.Config) *Server {
 	roomService := services.NewRoomService(db.DB())
 	snackService := services.NewSnackService(db.DB())
 
+	// upload service
+	rClient := supabase.InitUploadClient(cfg, restClient)
+
 	validator := validator.New()
 
 	// Initialize handlers
@@ -76,6 +84,9 @@ func NewServer(cfg *config.Config) *Server {
 	reservationHandler := handlers.NewReservationHandler(reservationService)
 	roomHandler := handlers.NewRoomHandler(roomService)
 	snackHandler := handlers.NewSnackHandler(snackService, validator)
+
+	// Initialize upload handler
+	uploadHandler := handlers.NewUploadHandler(rClient, cfg)
 
 	// Initialize rate limiter
 	rateLimiter := middleware.NewRateLimiter(100, time.Hour)
@@ -91,6 +102,7 @@ func NewServer(cfg *config.Config) *Server {
 		reservationHandler,
 		roomHandler,
 		snackHandler,
+		uploadHandler,
 	)
 
 	return &Server{

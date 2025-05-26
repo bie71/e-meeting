@@ -172,7 +172,8 @@
 </head>
 <body>
   <div class="top-right-button">
-    <a href="/register.html" class="button-link">Create Account</a>
+    <a href="/register.html" class="button-link" id="createAccountBtn">Create Account</a>
+    <a href="/success.html" class="button-link" id="dashboardBtn" style="display:none;">Dashboard</a>
   </div>
   
     <div class="logo" aria-label="eMeeting logo">
@@ -193,10 +194,26 @@
 </div>
   </div>
   <script>
-    document.getElementById('exploreApiBtn').addEventListener('click', function() {
-     const apiUrl = window.location.origin + '/swagger/';
-    window.open(apiUrl, '_blank');
-    });
+    // document.getElementById('exploreApiBtn').addEventListener('click', function() {
+    //  const apiUrl = window.location.origin + '/swagger/';
+    // window.open(apiUrl, '_blank');
+    // });
+
+
+  const loginData = JSON.parse(localStorage.getItem("loginData"));
+  
+  const createAccountBtn = document.getElementById("createAccountBtn");
+  const dashboardBtn = document.getElementById("dashboardBtn");
+  
+  if (createAccountBtn && dashboardBtn) {
+    if (loginData && loginData.user_id && loginData.token) {
+      createAccountBtn.style.display = "none";
+      dashboardBtn.style.display = "inline-block";
+    } else {
+      createAccountBtn.style.display = "inline-block";
+      dashboardBtn.style.display = "none";
+    }
+  }
   </script>
 </body>
 </html>

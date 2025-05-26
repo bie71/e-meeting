@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Create & Search Snacks - Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><circle fill=%222980b9%22 cx=%2232%22 cy=%2232%22 r=%2232%22/><text x=%2232%22 y=%2242%22 font-size=%2232%22 font-family=%22Poppins,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>eM</text></svg>" type="image/svg+xml"/>
+<link rel="stylesheet" href="/css/snack-management.css" />
+<link rel="stylesheet" href="../css/dashboard_return.css">
+<script src="../js/return_dashboard.js"></script>
+<script defer src="../js/jwtUtils.js"></script>
+<script defer src="../js/snack-management.js"></script>
+</head>
+<body>
+
+<div class="main-container">
+  <!-- Create Snack -->
+  <div class="box create-snack-box">
+    <h1>Create Snack</h1>
+    <button id="dashboardBtn" onclick="goDashboard()">🏠 Kembali ke Dashboard</button>
+    <form id="createSnackForm">
+      <div><label for="name">Name</label><input type="text" id="name" name="name" required maxlength="100" /></div>
+      <label for="category">Category</label>
+      <select id="category" name="category" required>
+        <option value="">-- Pilih Kategori --</option>
+        <option value="Minuman">Minuman</option>
+        <option value="Makanan">Makanan</option>
+        <option value="Cemilan">Cemilan</option>
+      </select>
+      <div><label for="price">Price</label><input type="number" id="price" name="price" required min="0" step="0" /></div>
+      <button type="submit">Create Snack</button>
+    </form>
+    <div class="alert" id="createSnackAlert" style="display:none; text-align: center; margin-top: 5px;"></div>
+  </div>
+
+  <!-- Content: Filter + List Snacks -->
+  <div class="content-box">
+    <div id="filterBox">
+      <h2>Search Snacks</h2>
+      <form id="searchForm">
+        <div>
+          <label for="search">Search Text</label>
+          <input type="text" id="search" name="search" placeholder="Snack name or keywords" />
+        </div>
+        <div>
+          <label for="categoryFilter">Category</label>
+          <select id="categoryFilter" name="category">
+            <option value="">-- Any --</option>
+            <option value="Minuman">Minuman</option>
+            <option value="Makanan">Makanan</option>
+            <option value="Cemilan">Cemilan</option>
+          </select>
+        </div>
+        <div>
+          <label for="min_price">Min Price</label>
+          <input type="number" id="min_price" name="min_price" min="0" step="0.0" />
+        </div>
+        <div>
+          <label for="max_price">Max Price</label>
+          <input type="number" id="max_price" name="max_price" min="0" step="0.0" />
+        </div>
+        <button type="submit">Search</button>
+        <button type="button" id="resetFilterBtn">Reset</button>
+      </form>
+    </div>
+
+    <div class="rooms-list" id="snacksList"></div>
+    <div class="pagination">
+      <button id="prevPageBtn" disabled>⬅️ Previous</button>
+      <span>Page: <span id="currentPage">1</span></span>
+      <button id="nextPageBtn">Next ➡️</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,189 +1,146 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login Success</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><circle fill=%222980b9%22 cx=%2232%22 cy=%2232%22 r=%2232%22/><text x=%2232%22 y=%2242%22 font-size=%2232%22 font-family=%22Poppins,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>eM</text></svg>" type="image/svg+xml"/>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom right, #00aaff, #0047ab);
-      color: #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      padding: 1rem;
-    }
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-      max-width: 700px;
-      width: 100%;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #0047ab;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    th, td {
-      padding: 12px 15px;
-      border: 2px solid #dcdcdc;
-      text-align: left;
-    }
-    th {
-      background-color: #f7f9fb;
-      color: #0047ab;
-    }
-    .token-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      word-break: break-all;
-    }
-    .copy-btn {
-      background-color: #0047ab;
-      border: none;
-      color: white;
-      padding: 6px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: background 0.3s ease;
-    }
-    .copy-btn:hover {
-      background-color: #0066cc;
-    }
-    a.button-link, button.logout-btn {
-      display: inline-block;
-      padding: 12px 24px;
-      background: #0047ab;
-      color: white;
-      border: none;
-      border-radius: 30px;
-      font-weight: bold;
-      cursor: pointer;
-      text-decoration: none;
-      margin: 8px 4px;
-      transition: background 0.3s ease;
-    }
-    a.button-link:hover, button.logout-btn:hover {
-      background: #0066cc;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Success</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><circle fill=%222980b9%22 cx=%2232%22 cy=%2232%22 r=%2232%22/><text x=%2232%22 y=%2242%22 font-size=%2232%22 font-family=%22Poppins,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>eM</text></svg>"
+      type="image/svg+xml"
+    />
+    <script src="../tailwind/tailwindcss.js"></script>
+    <script src="../axios/axios.min.js"></script>
+  </head>
+  <body class="bg-gradient-to-br from-cyan-400 to-blue-800 min-h-screen flex flex-col items-center justify-start p-6">
+    <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-4xl mt-10">
+      <h1 class="text-2xl font-bold text-blue-900 text-center mb-6">
+        Hallo, <span id="username-span"></span>
+      </h1>
 
-.copy-icon {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  margin-left: 8px;
-  flex-shrink: 0;
-}
-.copy-icon:hover {
-  transform: scale(1.15);
-  fill: #0047ab;
-}
+      <div id="adminButtons" class="flex flex-wrap gap-3 justify-center mb-6 hidden">
+        <a href="/rooms/create_room.html" class="bg-blue-700 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-800">➕ Create Room</a>
+        <a href="/snacks/create_snack.html" class="bg-blue-700 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-800">➕ Create Snack</a>
+        <a href="/dashboard/dashboard_statistic.html" class="bg-blue-700 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-800">📊 Dashboard Statistics</a>
+        <a href="/users/management_users.html" class="bg-blue-700 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-800">👥 Manajemen Pengguna</a>
+      </div>
 
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Login Berhasil</h1>
-    <table>
-      <tr><th>ID</th><td id="userId">-</td></tr>
-      <tr><th>Username</th><td id="username">-</td></tr>
-      <tr><th>Email</th><td id="email">-</td></tr>
-      <tr><th>Role</th><td id="role">-</td></tr>
-      <tr><th>Status</th><td id="status">-</td></tr>
-      <tr>
-        <th>Token</th>
-        <td>
-          <!-- Di dalam token row -->
-        <div class="token-row">
-            <span id="token">-</span>
-            <svg class="copy-icon" onclick="copyToken()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8m4 4v10a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8a2 2 0 012 2z" />
-            </svg>
+      <a href="/reservations/reservations_history.html" id="reservationHistoryLink" class="bg-blue-700 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-800 block text-center w-fit mx-auto mb-6 hidden">
+        👀 Lihat Reservation History
+      </a>
+
+      <div class="flex flex-wrap gap-6 items-center justify-center">
+
+        <div class="w-24 h-24 rounded-lg shadow-md overflow-hidden bg-gray-100">
+          <img id="profilePic" src="" alt="Profile Picture" class="w-full h-full object-cover" />
         </div>
-  
-        </td>
-      </tr>
-    </table>
-    <a href="/" class="button-link">🏠 Home</a>
-    <a href="javascript:void(0)" class="button-link" onclick="logout()">🚪 Logout</a>
 
-  </div>
+        <div class="overflow-auto rounded-lg shadow">
+          <table class="min-w-[320px] w-full border border-gray-300 text-sm table-auto">
+            <thead>
+              <tr>
+                <th colspan="2" class="bg-blue-50 text-blue-800 text-left px-4 py-2 border-b border-gray-300 text-base font-semibold">
+                  Informasi Pengguna
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="bg-white">
+                <th class="bg-gray-100 text-left px-4 py-2 border-b border-r border-gray-300 w-1/3">ID</th>
+                <td id="userId" class="px-4 py-2 border-b border-gray-300">-</td>
+              </tr>
+              <tr class="bg-gray-50">
+                <th class="bg-gray-100 text-left px-4 py-2 border-b border-r border-gray-300">Username</th>
+                <td id="username" class="px-4 py-2 border-b border-gray-300">-</td>
+              </tr>
+              <tr class="bg-white">
+                <th class="bg-gray-100 text-left px-4 py-2 border-b border-r border-gray-300">Email</th>
+                <td id="email" class="px-4 py-2 border-b border-gray-300">-</td>
+              </tr>
+              <tr class="bg-gray-50">
+                <th class="bg-gray-100 text-left px-4 py-2 border-b border-r border-gray-300">Role</th>
+                <td id="role" class="px-4 py-2 border-b border-gray-300">-</td>
+              </tr>
+              <tr class="bg-white">
+                <th class="bg-gray-100 text-left px-4 py-2 border-b border-r border-gray-300">Status</th>
+                <td id="status" class="px-4 py-2 border-b border-gray-300">-</td>
+              </tr>
+              <tr class="bg-gray-50">
+                <th class="bg-gray-100 text-left px-4 py-2 border-r border-gray-300">Token</th>
+                <td class="px-4 py-2">
+                  <div class="flex items-center gap-2 break-all">
+                    <span id="token">-</span>
+                    <button onclick="copyToken()" class="text-blue-600 hover:text-blue-800" title="Salin Token">📋</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+       
+      </div>
 
-  <script>
-    const loginData = JSON.parse(localStorage.getItem("loginData")) || null;
+      <div class="flex flex-wrap justify-center gap-4 mt-8 mb-6">
+        <a href="/" class="bg-blue-700 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-800">🏠 Home</a>
+        <a href="/update-profile.html" class="bg-blue-700 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-800">✏️ Update Profile</a>
+        <a href="/rooms/list_room.html" class="bg-blue-700 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-800">🏢 View Rooms List</a>
+        <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-red-700">🚪 Logout</button>
+      </div>
+    </div>
 
-    if (!loginData?.user_id || !loginData?.token) {
-      alert("Login data tidak ditemukan. Silakan login ulang.");
-      window.location.href = "/api/v1/login";
-    }
-
-    document.getElementById("userId").textContent = loginData.user_id;
-    document.getElementById("token").textContent = loginData.token;
-
-    fetch(window.location.origin + `/api/v1/profile/${loginData.user_id}`, {
-      headers: {
-        Authorization: `Bearer ${loginData.token}`,
-        "Content-Type": "application/json"
+    <script>
+      const loginData = JSON.parse(localStorage.getItem("loginData")) || null;
+      if (!loginData?.user_id || !loginData?.token) {
+        alert("Login data tidak ditemukan. Silakan login ulang.");
+        window.location.href = "/api/v1/login";
       }
-    })
-    .then(res => {
-      if (!res.ok) throw new Error("Gagal mengambil profil.");
-      return res.json();
-    })
-    .then(profile => {
-      document.getElementById("username").textContent = profile.username;
-      document.getElementById("email").textContent = profile.email;
-      document.getElementById("role").textContent = profile.role;
-      document.getElementById("status").textContent = profile.status ? "Aktif" : "Tidak Aktif";
-    })
-    .catch(err => {
-      alert("Gagal memuat profil: " + err.message);
-    });
 
-    function logout() {
-      localStorage.removeItem("loginData");
-      window.location.href = "/api/v1/login";
-    }
+      document.getElementById("userId").textContent = loginData.user_id;
+      document.getElementById("token").textContent = loginData.token;
 
-    function copyToken() {
-  const token = document.getElementById("token").textContent;
-  
-  // Buat elemen sementara untuk menyalin teks
-  const textArea = document.createElement("textarea");
-  textArea.value = token;
-  document.body.appendChild(textArea);
-  
-  // Pilih dan salin teks
-  textArea.select();
-  textArea.setSelectionRange(0, 99999); // Untuk mobile
-  
-  try {
-    const successful = document.execCommand('copy');
-    const msg = successful ? 'Token berhasil disalin!' : 'Gagal menyalin token';
-    alert(msg);
-  } catch (err) {
-    alert("Gagal menyalin token.");
-  }
-  
-  // Hapus elemen sementara
-  document.body.removeChild(textArea);
-}
+      fetch(`/api/v1/profile/${loginData.user_id}`, {
+        headers: {
+          Authorization: `Bearer ${loginData.token}`,
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Gagal mengambil profil.");
+          return res.json();
+        })
+        .then((profile) => {
+          document.getElementById("username").textContent = profile.username;
+          document.getElementById("username-span").textContent = profile.username.toUpperCase();
+          document.getElementById("email").textContent = profile.email;
+          document.getElementById("role").textContent = profile.role;
+          document.getElementById("status").textContent = profile.status ? "Aktif" : "Tidak Aktif";
+          document.getElementById("profilePic").src = profile.prof_pic || "https://placehold.co/100x100/png?text=No+Image";
 
-  </script>
-</body>
+          if (profile.role === "admin") {
+            document.getElementById("adminButtons").style.display = "flex";
+          } else {
+            document.getElementById("reservationHistoryLink").style.display = "block";
+          }
+        })
+        .catch((err) => {
+          alert("Gagal memuat profil: " + err.message);
+          document.getElementById("profilePic").src = "https://placehold.co/100x100/png?text=No+Image";
+        });
+
+      function logout() {
+        localStorage.removeItem("loginData");
+        window.location.href = "/api/v1/login";
+      }
+
+      function copyToken() {
+        const token = document.getElementById("token").textContent;
+        navigator.clipboard.writeText(token).then(() => {
+          alert("Token berhasil disalin!");
+        }, () => {
+          alert("Gagal menyalin token.");
+        });
+      }
+    </script>
+  </body>
 </html>

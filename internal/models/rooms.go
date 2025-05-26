@@ -12,13 +12,14 @@ type Room struct {
 	Capacity     int       `json:"capacity" validate:"required,min=1"`
 	PricePerHour float64   `json:"price_per_hour" validate:"required,min=0"`
 	Status       string    `json:"status" validate:"required,oneof=active inactive"`
+	UrlRoomPic   *string   `json:"url_room_pic" validate:"omitempty,url"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type RoomFilter struct {
 	Search      *string    `json:"search,omitempty"` // Search by name
-	RoomTypeID  *uuid.UUID `json:"room_type_id,omitempty"`
+	RoomId      *uuid.UUID `json:"room_id,omitempty"`
 	MinCapacity *int       `json:"min_capacity,omitempty"`
 	MaxCapacity *int       `json:"max_capacity,omitempty"`
 	Status      *string    `json:"status,omitempty"` // active, inactive
@@ -42,6 +43,7 @@ type CreateRoomRequest struct {
 	Capacity     int     `json:"capacity" validate:"required,min=1"`
 	PricePerHour float64 `json:"price_per_hour" validate:"required,min=0"`
 	Status       string  `json:"status" validate:"required,oneof=active inactive"`
+	UrlRoomPic   *string `json:"url_room_pic" validate:"omitempty"`
 }
 
 type UpdateRoomRequest struct {
@@ -49,11 +51,14 @@ type UpdateRoomRequest struct {
 	Capacity     *int     `json:"capacity,omitempty" validate:"omitempty,min=1"`
 	PricePerHour *float64 `json:"price_per_hour,omitempty" validate:"omitempty,min=0"`
 	Status       *string  `json:"status,omitempty" validate:"omitempty,oneof=active inactive"`
+	UrlRoomPic   *string  `json:"url_room_pic,omitempty" validate:"omitempty"`
 }
 
 type RoomScheduleQuery struct {
-	StartDateTime time.Time `query:"start_datetime" validate:"required" time_format:"2006-01-02T15:04:05Z07:00"`
-	EndDateTime   time.Time `query:"end_datetime" validate:"required,gtfield=StartDateTime" time_format:"2006-01-02T15:04:05Z07:00"`
+	StartDateTime time.Time `query:"start_datetime" `
+	EndDateTime   time.Time `query:"end_datetime" validate:"required,gtfield=StartDateTime" `
+	IsAdmin       bool      `json:"-"`
+	UserID        uuid.UUID `json:"-"`
 }
 
 type RoomScheduleBlock struct {

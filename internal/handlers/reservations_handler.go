@@ -6,9 +6,14 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+)
+
+const (
+	layoutTime = "2006-01-02 15:04"
 )
 
 type ReservationHandler struct {
@@ -29,7 +34,7 @@ func (h *ReservationHandler) GetReservationHistory(c *fiber.Ctx) error {
 			Error: "Invalid query parameters",
 		})
 	}
-	log.Printf("Querying history from %s to %s", query.StartDatetime, query.EndDatetime)
+	log.Printf("Querying history handler from %s to %s", query.StartDatetime, query.EndDatetime)
 
 	isAdmin, _ := c.Locals("isAdmin").(bool)
 	query.IsAdmin = isAdmin
@@ -85,6 +90,17 @@ func (h *ReservationHandler) CalculateReservationCost(c *fiber.Ctx) error {
 			Error: "Invalid request body",
 		})
 	}
+
+	startTime, errStart := time.Parse(layoutTime, req.StartTimeRaw)
+	endTime, errEnd := time.Parse(layoutTime, req.EndTimeRaw)
+
+	if errStart != nil || errEnd != nil {
+		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+			Error: "Invalid time format",
+		})
+	}
+	req.StartTime = startTime
+	req.EndTime = endTime
 
 	// Validate time range
 	if req.EndTime.Before(req.StartTime) {
@@ -143,6 +159,17 @@ func (h *ReservationHandler) CreateReservation(c *fiber.Ctx) error {
 		})
 	}
 
+	startTime, errStart := time.Parse(layoutTime, req.StartTimeRaw)
+	endTime, errEnd := time.Parse(layoutTime, req.EndTimeRaw)
+
+	if errStart != nil || errEnd != nil {
+		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+			Error: "Invalid time format",
+		})
+	}
+	req.StartTime = startTime
+	req.EndTime = endTime
+
 	// Validate time range
 	if req.EndTime.Before(req.StartTime) {
 		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
@@ -159,4 +186,29 @@ func (h *ReservationHandler) CreateReservation(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusCreated).JSON(response)
+}
+
+func (h *ReservationHandler) DeleteReservation(c *fiber.Ctx) error {
+	reservationID, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+			Error: "Invalid reservation ID",
+		})
+	}
+
+	err = h.service.DeleteReservation(reservationID)
+	if err != nil {
+		if err.Error() == "reservation not found" {
+			return c.Status(http.StatusNotFound).JSON(models.ErrorResponse{
+				Error: err.Error(),
+			})
+		}
+		return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
+			Error: err.Error(),
+		})
+	}
+
+	return c.Status(http.StatusOK).JSON(models.SuccessResponse{
+		Message: "Reservation deleted successfully",
+	})
 }

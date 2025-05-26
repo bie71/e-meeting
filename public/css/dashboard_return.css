@@ -1,0 +1,19 @@
+/* Tombol dashboard */
+#dashboardBtn {
+    display: block;
+    margin: 15px auto;
+    padding: 12px 14px;
+    background-color: #0047ab;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    max-width: 400px;
+    text-align: center;
+  }
+  #dashboardBtn:hover {
+    background-color: #0066cc;
+  }

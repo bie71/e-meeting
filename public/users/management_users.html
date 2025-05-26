@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><circle fill=%222980b9%22 cx=%2232%22 cy=%2232%22 r=%2232%22/><text x=%2232%22 y=%2242%22 font-size=%2232%22 font-family=%22Poppins,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>eM</text></svg>" type="image/svg+xml"/>
+  <title>Manajemen Pengguna</title>
+  <script src="../tailwind/tailwindcss.js"></script>
+  <script src="../axios/axios.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-cyan-400 to-blue-800 min-h-screen text-gray-900 font-sans p-6">
+  <div class="max-w-6xl mx-auto mt-8">
+    <h1 class="text-3xl font-bold text-blue-800 text-center mb-8">Manajemen Pengguna</h1>
+
+    <div class="flex justify-center mb-6 gap-4">
+      <a href="/success.html" class="bg-white text-blue-800 font-semibold px-4 py-2 rounded hover:bg-gray-100 shadow">🏠 Kembali ke Dashboard</a>
+      <button onclick="openAddUserModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 font-semibold shadow">➕ Tambah Pengguna</button>
+    </div>
+
+    <div class="flex flex-wrap gap-3 justify-between mb-6">
+      <input id="searchInput" type="text" placeholder="Cari nama pengguna..." class="p-2 border rounded w-full md:w-1/3">
+      <select id="roleFilter" class="p-2 border rounded w-full md:w-1/4">
+        <option value="">Semua Role</option>
+        <option value="admin">Admin</option>
+        <option value="user">User</option>
+      </select>
+      <select id="statusFilter" class="p-2 border rounded w-full md:w-1/4">
+        <option value="">Semua Status</option>
+        <option value="true">Aktif</option>
+        <option value="false">Tidak Aktif</option>
+      </select>
+      <button onclick="applyFilter()" class="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800">Filter</button>
+      <button onclick="resetFilter()" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Reset</button>
+    </div>
+
+    <div id="usersContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <div class="flex justify-center items-center gap-4 mt-8" id="paginationContainer"></div>
+  </div>
+
+  <!-- Modal Detail Pengguna -->
+  <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md relative">
+      <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl">&times;</button>
+      <h3 class="text-xl font-bold mb-4 text-blue-800">Detail Pengguna</h3>
+      <div id="modalContent" class="space-y-2 text-sm"></div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah Pengguna -->
+  <div id="createUserModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md relative">
+      <button onclick="closeAddUserModal()" class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl">&times;</button>
+      <h3 class="text-xl font-bold mb-4 text-blue-800">Tambah Pengguna</h3>
+      <form id="createUserForm" class="space-y-3">
+        <input type="text" id="newUsername" placeholder="Username" required class="w-full border p-2 rounded">
+        <input type="email" id="newEmail" placeholder="Email" required class="w-full border p-2 rounded">
+        <input type="password" id="newPassword" placeholder="Password" required class="w-full border p-2 rounded">
+        <input type="password" id="confirmPassword" placeholder="Konfirmasi Password" required class="w-full border p-2 rounded">
+        <input type="text" id="language" placeholder="Bahasa (id/en)" class="w-full border p-2 rounded">
+        <select id="newStatus" required class="w-full border p-2 rounded">
+          <option value="">-- Pilih Status --</option>
+          <option value="active">Aktif</option>
+          <option value="inactive">Tidak Aktif</option>
+        </select>
+        <input type="file" id="newProfilePic" accept="image/*" class="w-full">
+        <div id="uploadFeedback" class="text-sm text-center text-blue-700"></div>
+        <div class="flex justify-end">
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const loginData = JSON.parse(localStorage.getItem("loginData"));
+    if (!loginData?.token) {
+      alert("Silakan login terlebih dahulu.");
+      window.location.href = "/login.html";
+    }
+    const token = loginData.token;
+    const headers = { Authorization: `Bearer ${token}` };
+    const userPayload = JSON.parse(atob(token.split('.')[1] || '{}'));
+    if (userPayload?.role !== "admin") {
+      alert("Hanya admin yang bisa mengakses halaman ini.");
+      window.location.href = "/success.html";
+    }
+
+    let currentPage = 1;
+    let totalPages = 1;
+    const pageSize = 6;
+
+    async function loadUsers(page = 1, filter = {}) {
+      currentPage = page;
+      const container = document.getElementById('usersContainer');
+      container.innerHTML = 'Memuat...';
+      try {
+        const url = '/api/v1/admin/users';
+        const params = { page, page_size: pageSize };
+        const response = Object.keys(filter).length
+          ? await axios.post(url + `?page=${page}&page_size=${pageSize}`, filter, { headers })
+          : await axios.get(url, { headers, params });
+        const { users, total_pages } = response.data;
+        totalPages = total_pages;
+
+        if (!users.length) {
+          container.innerHTML = '<p class="text-gray-500 text-center col-span-full">Tidak ada pengguna ditemukan.</p>';
+          return;
+        }
+
+        container.innerHTML = users.map(user => `
+          <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="h-60 bg-gray-200" style="background-image: url('${user.prof_pic || 'https://placehold.co/600x200?text=No+Image'}'); background-size: cover; background-position: center;"></div>
+            <div class="p-4 space-y-2">
+              <h3 onclick="showUserDetail('${user.id}')" class="text-xl font-bold text-blue-800 cursor-pointer hover:underline">${user.username}</h3>
+              <p><strong>Email:</strong> ${user.email}</p>
+              <div><strong>Role:</strong>
+                <span class="inline-block px-2 py-1 text-xs font-semibold rounded 
+                ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">
+                ${user.role}
+                </span>
+            </div>
+
+            <div><strong>Status:</strong>
+                <span class="inline-block px-2 py-1 text-xs font-semibold rounded 
+                ${user.status === true || user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                ${user.status === true || user.status === 'active' ? 'Aktif' : 'Tidak Aktif'}
+                </span>
+            </div>
+              <div class="flex gap-2 mt-4">
+                <button onclick="editUser('${user.id}')" class="flex-1 bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-1 rounded">Edit</button>
+                <button onclick="deleteUser('${user.id}')" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-1 rounded">Hapus</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+        renderPagination();
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = '<p class="text-red-500 text-center">Gagal memuat data pengguna.</p>';
+      }
+    }
+
+    function renderPagination() {
+      const container = document.getElementById('paginationContainer');
+      container.innerHTML = '';
+      for (let i = 1; i <= totalPages; i++) {
+        container.innerHTML += `<button onclick="loadUsers(${i})" class="px-3 py-1 rounded ${i === currentPage ? 'bg-blue-700 text-white' : 'bg-white border'}">${i}</button>`;
+      }
+    }
+
+    function applyFilter() {
+      const search = document.getElementById('searchInput').value;
+      const role = document.getElementById('roleFilter').value;
+      const status = document.getElementById('statusFilter').value;
+      const filter = {};
+      if (search) filter.search = search;
+      if (role) filter.role = role;
+      if (status !== "") filter.status = status === "true";
+      loadUsers(1, filter);
+    }
+
+    function resetFilter() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('roleFilter').value = '';
+      document.getElementById('statusFilter').value = '';
+      loadUsers();
+    }
+
+    function editUser(userId) {
+      window.location.href = `/update-profile.html?id=${userId}`;
+    }
+
+    async function deleteUser(userId) {
+      if (!confirm('Yakin ingin menghapus pengguna ini?')) return;
+      try {
+        await axios.delete(`/api/v1/admin/users/${userId}`, { headers });
+        alert('Pengguna berhasil dihapus');
+        loadUsers(currentPage);
+      } catch (err) {
+        alert('Gagal menghapus pengguna', err.message);
+      }
+    }
+
+    async function showUserDetail(userId) {
+      try {
+        const res = await axios.get(`/api/v1/profile/${userId}`, { headers });
+        const u = res.data;
+        document.getElementById('modalContent').innerHTML = `
+         <div class="flex justify-center mb-4">
+                <img src="${u.prof_pic || 'https://placehold.co/100x100?text=No+Image'}" class="w-24 h-24 rounded-full object-cover shadow" alt="Foto Profil">
+                </div>
+                <p><strong>ID:</strong> ${u.id}</p>
+                <p><strong>Username:</strong> ${u.username}</p>
+                <p><strong>Email:</strong> ${u.email}</p>
+
+                <p><strong>Role:</strong>
+                <span class="inline-block px-2 py-1 text-xs font-semibold rounded 
+                    ${u.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">
+                    ${u.role}
+                </span>
+                </p>
+
+                <p><strong>Status:</strong>
+                <span class="inline-block px-2 py-1 text-xs font-semibold rounded 
+                    ${u.status === true || u.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                    ${u.status === true || u.status === 'active' ? 'Aktif' : 'Tidak Aktif'}
+                </span>
+                </p>
+
+                <p><strong>Dibuat:</strong> ${new Date(u.created_at).toLocaleString()}</p>
+
+        `;
+        document.getElementById('userModal').classList.remove('hidden');
+        document.getElementById('userModal').classList.add('flex');
+      } catch (err) {
+        alert("Gagal memuat detail pengguna", err.message);
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('userModal').classList.add('hidden');
+      document.getElementById('userModal').classList.remove('flex');
+    }
+
+    function openAddUserModal() {
+      document.getElementById('createUserModal').classList.remove('hidden');
+      document.getElementById('createUserModal').classList.add('flex');
+    }
+
+    function closeAddUserModal() {
+      document.getElementById('createUserModal').classList.add('hidden');
+      document.getElementById('createUserModal').classList.remove('flex');
+      document.getElementById('createUserForm').reset();
+    }
+
+    async function uploadProfileImage(file) {
+      const feedback = document.getElementById("uploadFeedback");
+      feedback.textContent = "Uploading gambar...";
+      const formData = new FormData();
+      formData.append("file", file);
+      try {
+        const res = await axios.post("/api/v1/upload-image", formData, {
+          headers: { ...headers, "Content-Type": "multipart/form-data" }
+        });
+        feedback.textContent = "Upload berhasil!";
+        return res.data.url;
+      } catch (err) {
+        feedback.textContent = "Upload gagal!";
+        throw err;
+      }
+    }
+
+    document.getElementById("createUserForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("newUsername").value.trim();
+      const email = document.getElementById("newEmail").value.trim();
+      const password = document.getElementById("newPassword").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      const language = document.getElementById("language").value.trim();
+      const status = document.getElementById("newStatus").value;
+      const file = document.getElementById("newProfilePic").files[0];
+      try {
+        const url_prof_pic = file ? await uploadProfileImage(file) : undefined;
+        const payload = { username, email, password, confirm_password: confirmPassword, language, status, url_prof_pic };
+        await axios.post("/api/v1/admin/register/users", payload, { headers });
+        alert("Pengguna berhasil ditambahkan");
+        closeAddUserModal();
+        loadUsers();
+      } catch (err) {
+        alert("Gagal menambahkan pengguna", err.message);
+      }
+    });
+
+    loadUsers();
+  </script>
+</body>
+</html>

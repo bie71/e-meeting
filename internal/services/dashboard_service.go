@@ -60,7 +60,7 @@ func (s *DashboardService) GetDashboardStats(query *models.DashboardQuery) (*mod
 			(SELECT COUNT(*) FROM rooms) as total_rooms
 		FROM rooms rm
 		LEFT JOIN reservations r ON r.room_id = rm.id
-		WHERE (r.start_time >= $1 AND r.end_time <= $2 AND r.status = 'confirmed') OR r.id IS NULL`,
+		WHERE (r.start_time >= $1 AND r.end_time <= $2 AND r.status IN ('confirmed', 'completed')) OR r.id IS NULL`,
 		startDate, endDate,
 	).Scan(&totalOmzet, &totalReservations, &totalVisitors, &totalRooms)
 
@@ -80,7 +80,7 @@ func (s *DashboardService) GetDashboardStats(query *models.DashboardQuery) (*mod
 					COALESCE(SUM(r.price), 0) as revenue
 				FROM rooms rm
 				LEFT JOIN reservations r 
-					ON r.room_id = rm.id AND r.status = 'confirmed'
+					ON r.room_id = rm.id AND r.status IN ('confirmed', 'completed')
 					AND r.start_time >= $1 AND r.end_time <= $2
 				GROUP BY rm.id, rm.name
 			)

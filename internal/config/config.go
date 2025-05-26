@@ -51,6 +51,14 @@ type Config struct {
 	Server struct {
 		Port int
 	}
+
+	Client struct {
+		Endpoint   string
+		AccessKey  string
+		SecretKey  string
+		Region     string
+		BucketName string
+	}
 }
 
 func findRootDir() string {
@@ -101,6 +109,12 @@ func setDefaults() {
 	viper.SetDefault("CLOUDFLARE_R2_TOKEN", "")
 	viper.SetDefault("CLOUDFLARE_R2_ACCOUNT_ID", "")
 	viper.SetDefault("CLOUDFLARE_R2_PUBLIC_URL", "")
+
+	viper.SetDefault("MINIO_ENDPOINT", "YOUR_MINIO_ENDPOINT")
+	viper.SetDefault("MINIO_ACCESS_KEY", "YOUR_ACCESS_KEY")
+	viper.SetDefault("MINIO_SECRET_KEY", "YOUR_SECRET_KEY")
+	viper.SetDefault("MINIO_REGION", "us-east-1")
+	viper.SetDefault("MINIO_BUCKET_NAME", "profile-pictures")
 }
 
 func LoadConfig(path string) (*Config, error) {
@@ -150,6 +164,12 @@ func LoadConfig(path string) (*Config, error) {
 	config.CloudflareR2Token = viper.GetString("CLOUDFLARE_R2_TOKEN")
 	config.CloudflareR2AccountID = viper.GetString("CLOUDFLARE_R2_ACCOUNT_ID")
 	config.CloudflareR2PublicURL = viper.GetString("CLOUDFLARE_R2_PUBLIC_URL")
+
+	config.Client.Endpoint = viper.GetString("CLIENT_ENDPOINT")
+	config.Client.AccessKey = viper.GetString("CLIENT_ACCESS_KEY")
+	config.Client.SecretKey = viper.GetString("CLIENT_SECRET_KEY")
+	config.Client.Region = viper.GetString("CLIENT_REGION")
+	config.Client.BucketName = viper.GetString("CLIENT_BUCKET_NAME")
 
 	port, err := strconv.Atoi(strings.TrimSpace(config.AppPort))
 	if err != nil {

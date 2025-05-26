@@ -508,6 +508,68 @@
         }
       }
     },
+"/upload-image": {
+  "post": {
+    "summary": "Upload file ke Supabase Storage",
+    "consumes": ["multipart/form-data"],
+    "parameters": [
+      {
+        "name": "file",
+        "in": "formData",
+        "description": "File yang akan diupload",
+        "required": true,
+        "type": "file"
+      }
+    ],
+   "responses": {
+  "200": {
+    "description": "Upload berhasil",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "upload success"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "example": "https://your-project.supabase.co/storage/v1/object/public/mybucket/uploads/filename.jpg"
+        }
+      }
+    },
+    "examples": {
+      "application/json": {
+        "message": "upload success",
+        "url": "https://your-project.supabase.co/storage/v1/object/public/mybucket/uploads/filename.jpg"
+      }
+    }
+  },
+  "400": {
+    "description": "Request tidak valid (misal file tidak disertakan)",
+    "schema": {
+      "$ref": "#/definitions/ErrorResponse"
+    },
+    "examples": {
+      "application/json": {
+        "error": "file is required"
+      }
+    }
+  },
+  "500": {
+    "description": "Terjadi kesalahan server saat upload",
+    "schema": {
+      "$ref": "#/definitions/ErrorResponse"
+    },
+    "examples": {
+      "application/json": {
+        "error": "internal server error"
+      }
+    }
+  }
+}
+    }
+  },
     "/admin/dashboard":{
       "get": {
         "summary": "Get dashboard",
@@ -1734,6 +1796,15 @@
           }
         },
         "required": ["id", "name", "category", "price", "created_at"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "file is required"
+          }
+        }
       }
   }
 } 

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Update Snack - Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+<link
+rel="icon"
+href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><circle fill=%222980b9%22 cx=%2232%22 cy=%2232%22 r=%2232%22/><text x=%2232%22 y=%2242%22 font-size=%2232%22 font-family=%22Poppins,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>eM</text></svg>"
+type="image/svg+xml"
+/>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom right, #00aaff, #0047ab);
+    margin: 0; padding: 20px;
+    min-height: 100vh;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .box {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    max-width: 480px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  h1 {
+    color: #0047ab;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-align: center;
+  }
+  form > div {
+    margin-bottom: 15px;
+  }
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #0047ab;
+  }
+  input[type=text], input[type=number], select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+  }
+  button {
+    background-color: #0047ab;
+    color: white;
+    border: none;
+    padding: 14px 0;
+    width: 100%;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #0066cc;
+  }
+  .alert {
+    margin-top: 12px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .alert.success {
+    color: green;
+  }
+  .alert.error {
+    color: #c0392b;
+  }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h1>Update Snack</h1>
+  <form id="updateSnackForm">
+    <div>
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required maxlength="100" />
+    </div>
+    <div>
+      <label for="category">Category</label>
+      <select id="category" name="category" required>
+        <option value="" >-- Pilih Kategori --</option>
+        <option value="Minuman">Minuman</option>
+        <option value="Makanan">Makanan</option>
+        <option value="Cemilan">Cemilan</option>
+      </select>
+    </div>
+    <div>
+      <label for="price">Price (decimal)</label>
+      <input type="number" id="price" name="price" required min="0" step="0.1" />
+    </div>
+    <button type="submit">Update Snack</button>
+  </form>
+  <div class="alert" id="alertMessage" style="display:none;"></div>
+</div>
+
+<script src="../js/jwtUtils.js"></script>
+<script>
+  // Ambil token & cek role
+  const loginData = JSON.parse(localStorage.getItem('loginData'));
+  const token = loginData?.token;
+  const payload = parseJwt(token);
+  const role = payload?.role || '';
+
+  if (!token || role !== 'admin') {
+    alert('Anda harus login sebagai admin untuk mengakses halaman ini.');
+    window.location.href = '/success.html';
+  }
+
+  // Ambil ID snack dari query param
+  const urlParams = new URLSearchParams(window.location.search);
+  const snackId = urlParams.get('id');
+  if (!snackId) {
+    alert('ID snack tidak ditemukan di URL.');
+    window.location.href = '/snacks/create_snacks.html';
+  }
+
+  const form = document.getElementById('updateSnackForm');
+  const alertMessage = document.getElementById('alertMessage');
+
+  // Fungsi tampilkan alert
+  function showAlert(msg, isSuccess = true) {
+    alertMessage.style.display = 'block';
+    alertMessage.textContent = msg;
+    alertMessage.className = isSuccess ? 'alert success' : 'alert error';
+  }
+
+  // Load detail snack dan prefill form
+  async function loadSnackDetail() {
+    try {
+      const res = await fetch(`/api/v1/admin/snacks/${snackId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!res.ok) throw new Error('Gagal mengambil detail snack.');
+
+      const snack = await res.json();
+
+      form.name.value = snack.name || '';
+      form.category.value = snack.category || '';
+      form.price.value = snack.price || 0;
+
+    } catch (err) {
+      alert('Error load snack: ' + err.message);
+      window.location.href = '/snacks/create_snacks.html';
+    }
+  }
+
+  // Submit update snack
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showAlert('', true);
+    const payload = {
+      id: snackId,
+      name: form.name.value.trim(),
+      category: form.category.value,
+      price: parseFloat(form.price.value)
+    };
+
+    try {
+      const res = await fetch('/api/v1/admin/snacks', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || 'Gagal update snack.');
+      }
+
+      showAlert('Snack berhasil diperbarui.', true);
+      setTimeout(() => {
+        window.location.href = '/snacks/create_snack.html';
+      }, 1500);
+
+    } catch (err) {
+      showAlert('Error update snack: ' + err.message, false);
+    }
+  });
+
+  loadSnackDetail();
+</script>
+
+</body>
+</html>

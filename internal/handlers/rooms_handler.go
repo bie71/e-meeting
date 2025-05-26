@@ -3,6 +3,7 @@ package handlers
 import (
 	"e_metting/internal/models"
 	"e_metting/internal/services"
+	"log"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -56,7 +57,7 @@ func (h *RoomHandler) UpdateRoom(c *fiber.Ctx) error {
 	if err != nil {
 		if err.Error() == "room not found" {
 			return c.Status(http.StatusNotFound).JSON(models.ErrorResponse{
-				Error: "room not found " + err.Error(),
+				Error: err.Error(),
 			})
 		}
 
@@ -145,12 +146,22 @@ func (h *RoomHandler) GetRoomSchedule(c *fiber.Ctx) error {
 			Error: "invalid query " + err.Error(),
 		})
 	}
+	log.Printf("Querying schedule from %s to %s", query.StartDateTime, query.EndDateTime)
 
 	// Validate time range
 	if query.StartDateTime.After(query.EndDateTime) {
 		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
 			Error: "start_datetime cannot be after end_datetime",
 		})
+	}
+
+	isAdmin, _ := c.Locals("isAdmin").(bool)
+	query.IsAdmin = isAdmin
+	if !isAdmin {
+		authUserID, _ := c.Locals("userID").(string)
+		query.UserID = uuid.MustParse(authUserID)
+
+		log.Println("User ID from context:", query.UserID)
 	}
 
 	// Get room schedule from service
@@ -168,4 +179,29 @@ func (h *RoomHandler) GetRoomSchedule(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(response)
+}
+
+func (h *RoomHandler) GetRoomByID(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(models.ErrorResponse{
+			Error: "Invalid room ID " + err.Error(),
+		})
+	}
+
+	room, err := h.service.GetRoomByID(id)
+	if err != nil {
+		switch err.Error() {
+		case "room not found":
+			return c.Status(http.StatusNotFound).JSON(models.ErrorResponse{
+				Error: "room not found " + err.Error(),
+			})
+		default:
+			return c.Status(http.StatusInternalServerError).JSON(models.ErrorResponse{
+				Error: "Failed to get room " + err.Error(),
+			})
+		}
+	}
+
+	return c.JSON(room)
 }

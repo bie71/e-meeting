@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><circle fill=%222980b9%22 cx=%2232%22 cy=%2232%22 r=%2232%22/><text x=%2232%22 y=%2242%22 font-size=%2232%22 font-family=%22Poppins,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>eM</text></svg>" type="image/svg+xml"/>
+  <title>Update Profile</title>
+  <script src="../tailwind/tailwindcss.js"></script>
+  <script src="../axios/axios.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-cyan-400 to-blue-800 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg">
+    <h2 class="text-2xl font-bold text-blue-800 text-center mb-6">Update Profil</h2>
+
+    <form id="updateProfileForm" class="space-y-4">
+      <div>
+        <label class="block font-semibold mb-1">Email</label>
+        <input type="email" id="email" required class="w-full p-2 border rounded" />
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">Username</label>
+        <input type="text" id="username" required minlength="3" maxlength="50" class="w-full p-2 border rounded" />
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">Status</label>
+        <select id="status" required class="w-full p-2 border rounded">
+          <option value="">-- Pilih Status --</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">Language</label>
+        <input type="text" id="language" class="w-full p-2 border rounded" />
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">Password (Opsional)</label>
+        <input type="password" id="password" minlength="6" class="w-full p-2 border rounded" />
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">Profile Picture (Opsional)</label>
+        <input type="file" id="profilePicInput" accept="image/*" class="w-full p-2 border rounded" />
+        <div id="previewContainer" class="mt-2 hidden text-center">
+          <img id="previewImage" class="w-24 h-24 rounded-full object-cover mx-auto shadow" alt="Preview Profile Picture" />
+        </div>
+      </div>
+
+      <button type="submit" class="w-full bg-blue-700 text-white py-2 px-4 rounded hover:bg-blue-800 font-semibold">Simpan Perubahan</button>
+    </form>
+
+    <div class="mt-6 text-center space-y-2">
+      <a href="/success.html" class="inline-block text-blue-800 hover:underline font-medium">🏠 Kembali ke Dashboard</a>
+      <br />
+      <a href="/users/management_users.html" class="inline-block text-blue-800 hover:underline font-medium">👥 Manajemen Pengguna</a>
+    </div>
+  </div>
+
+  <script>
+    const loginData = JSON.parse(localStorage.getItem("loginData"));
+    if (!loginData?.user_id || !loginData?.token) {
+      alert("Anda harus login terlebih dahulu.");
+      window.location.href = "/login.html";
+    }
+
+
+    function getQueryParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+
+
+
+    const token = loginData.token;
+    const userId = getQueryParam("id") || loginData?.user_id;
+
+
+    const profilePicInput = document.getElementById("profilePicInput");
+    const previewContainer = document.getElementById("previewContainer");
+    const previewImage = document.getElementById("previewImage");
+
+    function showPreview(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        previewImage.src = e.target.result;
+        previewContainer.classList.remove("hidden");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    profilePicInput.addEventListener("change", () => {
+      const file = profilePicInput.files[0];
+      if (file) showPreview(file);
+    });
+
+    // Load existing profile
+    axios.get(`/api/v1/profile/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => {
+      const profile = res.data;
+      document.getElementById("email").value = profile.email || "";
+      document.getElementById("username").value = profile.username || "";
+      document.getElementById("language").value = profile.language || "";
+      document.getElementById("status").value = profile.status ? "active" : "inactive";
+
+      if (profile.prof_pic) {
+        previewImage.src = profile.prof_pic;
+        previewContainer.classList.remove("hidden");
+      }
+    }).catch(err => {
+      alert("Gagal memuat data profil: " + err.message);
+    });
+  
+    async function uploadProfilePic(file) {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await axios.post("/api/v1/upload-image", formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return res.data.url;
+    }
+
+    document.getElementById("updateProfileForm").addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const data = {
+        email: document.getElementById("email").value.trim(),
+        username: document.getElementById("username").value.trim(),
+        language: document.getElementById("language").value.trim(),
+        status: document.getElementById("status").value
+      };
+
+      const password = document.getElementById("password").value;
+      if (password) data.password = password;
+
+      const file = profilePicInput.files[0];
+      if (file) {
+        try {
+          const uploadedUrl = await uploadProfilePic(file);
+          data.url_prof_pic = uploadedUrl;
+        } catch (uploadErr) {
+          return alert("Upload gambar gagal: " + uploadErr.message);
+        }
+      }
+
+      try {
+        await axios.put(`/api/v1/profile/${userId}`, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+        alert("Profil berhasil diperbarui.");
+      } catch (err) {
+        alert("Gagal update profil: " + (err.response?.data?.error || err.message));
+      }
+    });
+  </script>
+</body>
+</html>

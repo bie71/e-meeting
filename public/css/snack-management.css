@@ -1,0 +1,276 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom right, #00aaff, #0047ab);
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .main-container {
+    max-width: 1100px;
+    width: 100%;
+    display: flex;
+    gap: 24px;
+    margin-bottom: 30px;
+    box-sizing: border-box;
+    align-items: flex-start;
+  }
+  
+  .box {
+    background: white;
+    padding: 25px 30px;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    box-sizing: border-box;
+  }
+  
+  .create-snack-box {
+    flex: 0 0 400px;
+  }
+  
+  .content-box {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  h1, h2 {
+    color: #0047ab;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-align: center;
+  }
+  
+  form > div {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #0047ab;
+  }
+  
+  input[type=text], input[type=number], select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+  }
+  
+  button {
+    background-color: #0047ab;
+    color: white;
+    border: none;
+    padding: 14px 0;
+    width: 100%;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #0066cc;
+  }
+  
+  #filterBox {
+    background: white;
+    padding: 15px 25px;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    box-sizing: border-box;
+    width: 100%;
+  }
+  
+  #searchForm {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  
+  #searchForm > div {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    min-width: 150px;
+    flex: 1 1 180px;
+  }
+  
+  #searchForm button[type=submit],
+  #resetFilterBtn {
+    flex: none;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    color: white;
+    transition: background-color 0.3s ease;
+    width: 120px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  
+  #searchForm button[type=submit] {
+    background-color: #0047ab;
+  }
+  
+  #searchForm button[type=submit]:hover {
+    background-color: #0066cc;
+  }
+  
+  #resetFilterBtn {
+    background-color: #999;
+    margin-left: 12px;
+  }
+  
+  #resetFilterBtn:hover {
+    background-color: #777;
+  }
+  
+  .snacks-list {
+    color: #222;
+    width: 100%;
+  }
+  
+  .snack-item {
+    background: #f7f9fb;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .snack-info {
+    max-width: 80%;
+  }
+  
+  .snack-name {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #0047ab;
+    margin: 0 0 6px 0;
+  }
+  
+  .snack-details span {
+    display: inline-block;
+    margin-right: 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  
+  .pagination {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .pagination button {
+    background-color: #0047ab;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin: 0 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .pagination button:disabled {
+    background-color: #999;
+    cursor: default;
+  }
+  
+  .pagination button:hover:not(:disabled) {
+    background-color: #0066cc;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .update-btn, .delete-btn {
+    flex: 1; /* Sama lebar */
+    padding: 10px 10px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-radius: 6px;
+    border: none;
+    user-select: none;
+    text-align: center;
+  }
+  
+  .update-btn {
+    background-color: #006cdf; /* biru */
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  
+  .update-btn:hover {
+    background-color: rgb(0, 78, 160);
+  }
+  
+  .delete-btn {
+    background-color: #c0392b; /* merah */
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  
+  .delete-btn:hover {
+    background-color: #a83227;
+  }
+  
+ 
+
+  @media (max-width: 1024px) {
+    .main-container {
+      flex-direction: column;
+      align-items: center;
+    }
+    .create-snack-box {
+      width: 100%;
+      flex: none;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .content-box {
+      width: 100%;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    #searchForm {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    #searchForm > div {
+      min-width: auto;
+      flex: none;
+    }
+    #searchForm button[type=submit], #resetFilterBtn {
+      width: 100%;
+      margin-left: 0 !important;
+      margin-top: 8px;
+    }
+  }
+  

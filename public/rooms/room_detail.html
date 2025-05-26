@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Room Detail</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><circle fill=%222980b9%22 cx=%2232%22 cy=%2232%22 r=%2232%22/><text x=%2232%22 y=%2242%22 font-size=%2232%22 font-family=%22Poppins,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>eM</text></svg>" type="image/svg+xml"/>
+  <script src="../tailwind/tailwindcss.js"></script>
+  <script src="../axios/axios.min.js"></script>
+  <script src="../js/jwtUtils.js"></script>
+</head>
+<body class="bg-gradient-to-br from-cyan-400 to-blue-800 min-h-screen flex flex-col items-center p-6 font-[Poppins,sans-serif]">
+
+  <div class="bg-white bg-opacity-95 shadow-lg rounded-xl max-w-md w-full p-6 mt-6">
+    <h2 id="roomName" class="text-2xl font-bold text-blue-800 text-center mb-6">Loading...</h2>
+    <div id="roomPic" class="w-full h-60 rounded-lg bg-gray-200 bg-center bg-cover shadow mb-6"></div>
+    <div class="space-y-3 text-blue-800 text-base">
+      <div class="flex justify-between"><span>Capacity:</span><span id="capacity" class="text-gray-800 font-semibold">-</span></div>
+      <div class="flex justify-between"><span>Price per Hour:</span><span id="price" class="text-gray-800 font-semibold">-</span></div>
+      <div class="flex justify-between"><span>Status:</span><span id="status" class="text-gray-800 font-semibold">-</span></div>
+    </div>
+    <div class="flex flex-wrap justify-center gap-3 mt-6">
+      <a href="/success.html" class="bg-blue-800 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-600 transition">🏠 Dashboard</a>
+      <a href="/rooms/list_room.html" class="bg-blue-800 text-white px-6 py-2 rounded-full font-bold hover:bg-blue-600 transition">🏢 Rooms List</a>
+      <span id="adminButtons"></span>
+    </div>
+  </div>
+
+<script>
+  const token = JSON.parse(localStorage.getItem('loginData'))?.token;
+  if (!token) {
+    alert('Silakan login terlebih dahulu.');
+    window.location.href = '/api/v1/login';
+  }
+
+  const payload = parseJwt(token);
+  const role = payload?.role || '';
+  const roomId = new URLSearchParams(window.location.search).get('id');
+
+  if (!roomId) {
+    alert('ID Room tidak ditemukan di URL');
+    window.location.href = '/success.html';
+  }
+
+  async function loadRoomDetail() {
+    try {
+      const { data } = await axios.post('/api/v1/rooms', { room_id: roomId }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const room = data.rooms?.[0];
+      if (!room) throw new Error('Room tidak ditemukan');
+
+      document.getElementById('roomName').textContent = room.name;
+      document.getElementById('roomPic').style.backgroundImage = `url('${room.url_room_pic?.trim() || 'https://placehold.co/480x240/png?text=No+Image'}')`;
+      document.getElementById('capacity').textContent = room.capacity;
+      document.getElementById('price').textContent = `Rp ${Number(room.price_per_hour).toLocaleString()}`;
+      document.getElementById('status').textContent = room.status;
+
+    } catch (err) {
+      alert(err.message);
+      window.location.href = '/success.html';
+    }
+  }
+
+  if (role === 'admin') {
+    const btn = document.createElement('a');
+    btn.href = '/rooms/create_room.html';
+    btn.className = 'bg-green-700 text-white px-6 py-2 rounded-full font-bold hover:bg-green-600 transition';
+    btn.textContent = '➕ Create Room';
+    document.getElementById('adminButtons').appendChild(btn);
+  }
+
+  loadRoomDetail();
+</script>
+
+</body>
+</html>

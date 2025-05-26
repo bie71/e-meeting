@@ -21,29 +21,27 @@ func NewReservationService(db *sql.DB) *ReservationService {
 	}
 }
 func (s *ReservationService) GetReservationHistory(query *models.ReservationHistoryQuery) (*models.ReservationHistoryResponse, error) {
-
-	endDatetime := time.Now().Local()
+	endDatetime := time.Now()
 	startDatetime := endDatetime.AddDate(0, 0, -7)
 	var err error
 
 	if query != nil {
 		if query.StartDatetime != "" {
-			startDatetime, err = time.Parse("2006-01-02 15:04:05", query.StartDatetime)
+			startDatetime, err = time.Parse("2006-01-02 15:04", query.StartDatetime)
 			if err != nil {
 				return nil, fmt.Errorf("invalid start_datetime format (required: YYYY-MM-DD HH:mm:ss): %v", err)
 			}
 		}
+
 		if query.EndDatetime != "" {
-			endDatetime, err = time.Parse("2006-01-02 15:04:05", query.EndDatetime)
+			endDatetime, err = time.Parse("2006-01-02 15:04", query.EndDatetime)
 			if err != nil {
 				return nil, fmt.Errorf("invalid end_datetime format (required: YYYY-MM-DD HH:mm:ss): %v", err)
 			}
 		}
 	}
 
-	if endDatetime.Before(startDatetime) {
-		return nil, fmt.Errorf("end_datetime cannot be before start_datetime")
-	}
+	log.Printf("Querying history from %s to %s", startDatetime, endDatetime)
 
 	tx, err := s.db.Begin()
 	if err != nil {
@@ -234,6 +232,10 @@ func (s *ReservationService) UpdateReservationStatus(req *models.UpdateReservati
 }
 
 func (s *ReservationService) CalculateReservationCost(req *models.ReservationCalculationRequest) (*models.ReservationCalculationResponse, error) {
+
+	log.Printf("req.StartTime: %v", req.StartTime)
+	log.Printf("req.EndTime: %v", req.EndTime)
+
 	// Start transaction
 	tx, err := s.db.Begin()
 	if err != nil {
@@ -475,9 +477,7 @@ func (s *ReservationService) GetReservationByID(id uuid.UUID) (*models.Reservati
 }
 
 func (s *ReservationService) CreateReservation(req *models.CreateReservationRequest) (*models.CreateReservationResponse, error) {
-	// Validate time constraints
 	now := time.Now()
-
 	// Ensure start time is in the future
 	if req.StartTime.Before(now) {
 		return nil, fmt.Errorf("reservation start time must be in the future")
@@ -487,6 +487,9 @@ func (s *ReservationService) CreateReservation(req *models.CreateReservationRequ
 	if !req.EndTime.After(req.StartTime) {
 		return nil, fmt.Errorf("reservation end time must be after start time")
 	}
+
+	log.Println("req.StartTime ", req.StartTime)
+	log.Println("req.EndTime ", req.EndTime)
 
 	// Validate minimum and maximum duration
 	duration := req.EndTime.Sub(req.StartTime)
@@ -645,6 +648,36 @@ func (s *ReservationService) CreateReservation(req *models.CreateReservationRequ
 		ReservationID: reservationID,
 		Status:        "pending",
 		TotalCost:     totalCost,
-		CreatedAt:     time.Now(),
+		CreatedAt:     time.Now().Local(),
 	}, nil
+}
+
+func (s *ReservationService) DeleteReservation(id uuid.UUID) error {
+	// Start transaction
+	tx, err := s.db.Begin()
+	if err != nil {
+		return fmt.Errorf("error starting transaction: %v", err)
+	}
+	defer tx.Rollback()
+
+	// Delete reservation
+	result, err := tx.Exec(`DELETE FROM reservations WHERE id = $1`, id)
+	if err != nil {
+		return fmt.Errorf("error deleting reservation: %v", err)
+	}
+	// Commit transaction
+	if err = tx.Commit(); err != nil {
+		return fmt.Errorf("error committing transaction: %v", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("error getting rows affected: %v", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("reservation not found")
+	}
+
+	return nil
 }
