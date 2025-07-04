@@ -5,10 +5,41 @@ import (
 	"e_metting/internal/handlers"
 	"e_metting/internal/middleware"
 	"e_metting/internal/models"
+	"os"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
+
+func SetupCORS() fiber.Handler {
+	origins := os.Getenv("CORS_ALLOWED_ORIGINS")
+	allowCreds := os.Getenv("ALLOW_CREDENTIALS") == "true"
+
+	var corsConfig cors.Config
+
+	// Dynamic origin handler (support * or multiple origins)
+	if origins == "*" {
+		// special case for AllowCredentials=true + "*"
+		if allowCreds {
+			corsConfig.AllowOriginsFunc = func(origin string) bool {
+				return true // allow any origin
+			}
+		} else {
+			corsConfig.AllowOrigins = "*"
+		}
+	} else {
+		allowedOrigins := strings.Split(origins, ",")
+		corsConfig.AllowOrigins = strings.Join(allowedOrigins, ",")
+	}
+
+	corsConfig.AllowMethods = "GET,POST,HEAD,PUT,DELETE,OPTIONS"
+	corsConfig.AllowHeaders = "Origin, Content-Type, Accept, Authorization"
+	corsConfig.AllowCredentials = allowCreds
+
+	return cors.New(corsConfig)
+}
 
 func SetupRouter(
 	userHandler *handlers.UserHandler,
@@ -25,6 +56,7 @@ func SetupRouter(
 	app := fiber.New(fiber.Config{
 		BodyLimit: 2 * 1024 * 1024, // 2MB
 	})
+	app.Use(SetupCORS())
 
 	// Middleware
 	app.Use(recover.New())

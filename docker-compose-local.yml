@@ -54,6 +54,9 @@ services:
       CLIENT_BUCKET_NAME: ${CLIENT_BUCKET_NAME}
       CLIENT_REGION: ${CLIENT_REGION}
 
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      ALLOW_CREDENTIALS: ${ALLOW_CREDENTIALS}
+
     networks:
       - emeeting
       - postgres_postgres-network
