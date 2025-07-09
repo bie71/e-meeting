@@ -28,14 +28,14 @@ func (s *DashboardService) GetDashboardStats(query *models.DashboardQuery) (*mod
 	if query.StartDate != "" {
 		startDate, err = time.Parse("2006-01-02", query.StartDate)
 		if err != nil {
-			return nil, fmt.Errorf("invalid start_date format: %v", err)
+			return nil, fmt.Errorf("invalid start_date required format (YYYY-MM-DD): %v", err)
 		}
 	}
 
 	if query.EndDate != "" {
 		endDate, err = time.Parse("2006-01-02", query.EndDate)
 		if err != nil {
-			return nil, fmt.Errorf("invalid end_date format: %v", err)
+			return nil, fmt.Errorf("invalid end_date required format (YYYY-MM-DD): %v", err)
 		}
 		// Tambahkan waktu ke akhir hari
 		endDate = endDate.Add(23*time.Hour + 59*time.Minute + 59*time.Second)

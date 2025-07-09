@@ -29,14 +29,14 @@ func (s *ReservationService) GetReservationHistory(query *models.ReservationHist
 		if query.StartDatetime != "" {
 			startDatetime, err = time.Parse("2006-01-02 15:04", query.StartDatetime)
 			if err != nil {
-				return nil, fmt.Errorf("invalid start_datetime format (required: YYYY-MM-DD HH:mm:ss): %v", err)
+				return nil, fmt.Errorf("invalid start_datetime format (YYYY-MM-DD HH:mm): %v", err)
 			}
 		}
 
 		if query.EndDatetime != "" {
 			endDatetime, err = time.Parse("2006-01-02 15:04", query.EndDatetime)
 			if err != nil {
-				return nil, fmt.Errorf("invalid end_datetime format (required: YYYY-MM-DD HH:mm:ss): %v", err)
+				return nil, fmt.Errorf("invalid end_datetime format (YYYY-MM-DD HH:mm): %v", err)
 			}
 		}
 	}
